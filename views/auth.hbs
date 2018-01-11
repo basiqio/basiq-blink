@@ -28,7 +28,8 @@
         }).then(resp => {
             const nextURI = {{{json nextURI}}};
 
-            window.location = nextURI.replace("{token}", resp.accessToken);
+            //window.location = nextURI.replace("{token}", resp.accessToken);
+            Android.setTextina(resp.accessToken);
         }).catch(err => {
             console.error(err);
         });
