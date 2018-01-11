@@ -1,5 +1,5 @@
-const host = "127.0.0.1";
-const port = 1337;
+const host = "0.0.0.0";
+const port = 80;
 const express = require("express");
 const exphbs  = require('express-handlebars');
 const qs = require('query-string');
@@ -39,7 +39,7 @@ app.get('/authenticate', function (req, res) {
         return res.send("Error");
     }
 
-    const nextURI = "http://localhost:1337/?access_token={token}";
+    const nextURI = "/?access_token={token}";
 
     console.log(pub_tok);
 
