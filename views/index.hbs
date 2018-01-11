@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>Qantas</title>
+    <script src="/app.js"></script>
+</head>
+<body>
+{{#if hasToken}}
+    <a id="trigger" href="/">User validated!</a>
+{{else}}
+    <a id="trigger" href="/authenticate?public_token={token}">Hello user, click here to login to Qantas!</a>
+{{/if}}
+
+{{#unless hasToken}}
+
+<script>
+    window.request("access_token", "POST", {
+        client_id: "oawdj1b2ourg"
+    }).then(resp => {
+        if (!resp.body.success) {
+            throw resp;
+        }
+
+        return resp.body;
+    }).then(resp => {
+        const link = document.getElementById("trigger"), currentHref = link.getAttribute("href");
+
+        link.setAttribute("href", currentHref.replace("{token}", resp.publicToken));
+    });
+</script>
+{{/unless}}
+</body>
+</html>
