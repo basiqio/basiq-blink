@@ -13,10 +13,12 @@
 
     </div>
     <button id="submit" class="btn btn-blue btn-border-o">Submit</button>
+    <button id="cancel" class="btn btn-blue btn-border-o">Cancel</button>
 </form>
 <script>
     var form = document.getElementById("form"),
         submitBtn = document.getElementById("submit"),
+        cancelBtn = document.getElementById("cancel"),
         errorContainer = document.getElementById("errorContainer");
 
     if (!window.Android) {
@@ -52,6 +54,11 @@
 
     form.addEventListener("submit", formHandler);
     submitBtn.addEventListener("click", formHandler);
+    cancelBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        Android.cancelActions();
+    });
 
 
 </script>
