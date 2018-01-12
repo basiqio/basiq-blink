@@ -2,12 +2,18 @@
 <head>
     <title>Qantas</title>
     <script src="/app.js"></script>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 {{#if hasToken}}
     <a id="trigger" href="/">User validated!</a>
 {{else}}
-    <a id="trigger" href="/authenticate?public_token={token}">Hello user, click here to login to Qantas!</a>
+    <h2>Hello user, select your institution to login</h2>
+    <ul>
+        <li><a id="trigger" href="/authenticate?institution_id=dio1jdo21oj12e&public_token={token}">Quantas</a></li>
+        <li><a id="" href="#">NAB</a></li>
+        <li><a id="" href="#">Westpac</a></li>
+    </ul>​
 {{/if}}
 
 {{#unless hasToken}}

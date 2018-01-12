@@ -1,0 +1,106 @@
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    padding: 30px;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+    background: #fff;
+}
+a {
+    display: block;
+    padding: 9px 10px 5px 10px;
+    border-bottom: 1px solid #E7E7E7;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+}
+a:hover, a:active {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#058cf5), color-stop(100%,#015ee6));
+    background: -webkit-linear-gradient(top, #058cf5 0%,#015ee6 100%);
+    background: linear-gradient(top, #058cf5 0%,#015ee6 100%);
+    color: #fff;
+}
+a:after {
+    content: "〉";
+    float: right;
+    font-weight: bold;
+    color: #808080;
+    font-size: 13px;
+}
+a:hover:after, a:hover:after {
+    color: #fff;
+}
+
+h2 {
+    padding: 15px 0;
+    font-size: 35px;
+    color: #2c3e50;
+}
+
+input {
+    margin: 10px 0;
+    padding: 5px;
+    font-size: 13pt;
+}
+
+#errorContainer {
+    color: red;
+    margin: 15px;
+}
+
+.btn {
+    line-height: 35px;
+    margin: 8px;
+    margin-top: 15px;
+    padding: 0 15px;
+    font-size: 15px;
+    position: relative;
+    opacity: .999;
+    border-radius: 3px;
+}
+.btn-border-o {
+    background-color: transparent;
+    border: 1px solid #d0d0d0;
+    color: #B8B8B8;
+}
+.btn-border-o:before, .btn-border-o:after {
+    content: '';
+    border-style: solid;
+    position: absolute;
+    z-index: 5;
+    border-radius: 3px;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+}
+.btn-border-o:before {
+    width: 0;
+    height: 100%;
+    border-width: 1px 0 1px 0;
+    top: -1px;
+    left: 0;
+    -webkit-transition-delay: 0.05s;
+    transition-delay: 0.05s;
+}
+.btn-border-o:after {
+    width: 100%;
+    height: 0;
+    border-width: 0 1px 0 1px;
+    top: 0;
+    left: -1px;
+}
+.btn-border-o:hover:before {
+    width: 100%;
+}
+.btn-border-o:hover:after {
+    height: 100%;
+}
+.btn-border-o.btn-blue:before, .btn-border-o.btn-blue:after {
+    border-color: #3498db;
+}
+.btn-border-o.btn-blue:hover {
+    color: #3498db;
+}

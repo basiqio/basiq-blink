@@ -2,23 +2,35 @@
 <head>
     <title>Login to Qantas</title>
     <script src="/app.js"></script>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <h2 id="contents">Login to Qantas</h2>
 <form id="form" action="">
-    Username: <input title="Username" type="text">
-    Password: <input title="Password" type="text">
-    <input type="submit" value="Submit">
+    Username: <input title="Username" type="text"/><br />
+    Password: <input title="Password" type="text"/><br />
+    <div id="errorContainer">
+
+    </div>
+    <button id="submit" class="btn btn-blue btn-border-o">Submit</button>
 </form>
 <script>
-    const form = document.getElementById("form");
+    var form = document.getElementById("form"),
+        submitBtn = document.getElementById("submit"),
+        errorContainer = document.getElementById("errorContainer");
 
-    form.addEventListener("submit", function (e) {
+    if (!window.Android) {
+        console.error("Android interface not available");
+    }
+
+    var formHandler = function (e) {
         e.preventDefault();
+
+        console.log(form.children);
 
         window.request("authenticate", "POST", {
             username: form.children[0].value,
-            password: form.children[1].value,
+            password: form.children[2].value
         }).then(resp => {
             if (!resp.body.success) {
                 throw resp;
@@ -26,14 +38,21 @@
 
             return resp.body;
         }).then(resp => {
-            const nextURI = {{{json nextURI}}};
+            var nextURI = {{{json nextURI}}};
 
             //window.location = nextURI.replace("{token}", resp.accessToken);
             Android.setTextina(resp.accessToken);
         }).catch(err => {
+            errorContainer.innerHTML = err.body && err.body.errorMessage
+                    ? "Error: " + err.body.errorMessage
+                    : "Unknown error";
             console.error(err);
         });
-    });
+    };
+
+    form.addEventListener("submit", formHandler);
+    submitBtn.addEventListener("click", formHandler);
+
 
 </script>
 </body>
