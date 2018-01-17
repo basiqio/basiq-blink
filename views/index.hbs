@@ -30,7 +30,7 @@
     }).then(resp => {
         const link = document.getElementById("trigger"), currentHref = link.getAttribute("href");
 
-        link.setAttribute("href", currentHref.replace("{token}", resp.publicToken));
+        link.setAttribute("href", currentHref.replace("{token}", resp.result.access_token));
     });
 </script>
 {{/unless}}

@@ -43,7 +43,7 @@
             var nextURI = {{{json nextURI}}};
 
             //window.location = nextURI.replace("{token}", resp.accessToken);
-            Android.setTextina(resp.accessToken);
+            Android.setToken(resp.accessToken);
         }).catch(err => {
             errorContainer.innerHTML = err.body && err.body.errorMessage
                     ? "Error: " + err.body.errorMessage

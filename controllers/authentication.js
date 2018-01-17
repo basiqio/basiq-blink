@@ -1,4 +1,6 @@
-const crypto = require("crypto");
+const crypto = require("crypto"),
+    apiKey = "MjQxOGViNGItMDdiZC00MDg2LThhMDEtZTBhN2MxNWJhNDNmOjhiZmE1NmFkLWYzZWMtNGY0My04MmQ0LTZkNTAxNGE2Y2I0OQ==",
+    API = new (require("../utils/request"))("https://au-api.basiq.io", apiKey);
 
 const credentialsCheck = function (req, res) {
     const username = req.body.username ? req.body.username : null,
@@ -33,12 +35,20 @@ const accessTokenCheck = function (req, res) {
             errorMessage: "Client ID not received"
         });
     }
-    setTimeout(function() {
+
+    API.send("oauth2/token", "POST", {
+        "grant_type": "client_credentials"
+    }, function (body) {
         res.json({
             success: true,
-            publicToken: randomString(38)
+            result: body
         });
-    }, 1000);
+    }, function (err) {
+        res.json({
+            success: false,
+            result: err
+        });
+    })
 };
 
 function randomString(len) {
