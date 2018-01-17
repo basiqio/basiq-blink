@@ -40,10 +40,6 @@
         }, {
             "Authorization": "Bearer " + queryVars.access_token
         }).then(resp => {
-            if (!resp.body.success) {
-                throw resp;
-            }
-
             return resp.body;
         }).then(resp => {
             var nextURI = {{{json nextURI}}};
