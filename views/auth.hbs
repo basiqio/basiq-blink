@@ -31,9 +31,14 @@
 
         console.log(form.children);
 
-        window.request("authenticate", "POST", {
-            username: form.children[0].value,
-            password: form.children[2].value
+        window.request("https://au-api.basiq.io/users/" + queryVars.user_id + "/connections", "POST", {
+            loginId: form.children[0].value,
+            password: form.children[2].value,
+            institution: {
+                id: queryVars.institution_id
+            }
+        }, {
+            "Authorization": "Bearer " + queryVars.access_token
         }).then(resp => {
             if (!resp.body.success) {
                 throw resp;
@@ -44,7 +49,7 @@
             var nextURI = {{{json nextURI}}};
 
             //window.location = nextURI.replace("{token}", resp.accessToken);
-            Android.setToken(resp.accessToken);
+            Android.setConnectionId(resp.id);
         }).catch(err => {
             errorContainer.innerHTML = err.body && err.body.errorMessage
                     ? "Error: " + err.body.errorMessage

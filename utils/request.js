@@ -1,6 +1,6 @@
 const request = require('request');
 
-//require('request').debug = true;
+require('request').debug = true;
 
 const API = function(host, apiKey) {
     this.postOptions = {

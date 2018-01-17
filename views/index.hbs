@@ -15,55 +15,72 @@
             <li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>
         </ul>​
     </div>
+    <div id="errorContainer"></div>
 {{/if}}
 {{#unless hasToken}}
 
 <script>
     document.getElementById("loading").style.display = "block";
     document.getElementById("content").style.display = "none";
+    var authToken = localStorage.getItem("authToken"),
+        errorContainer = document.getElementById("errorContainer"),
+        url = "/authenticate?user_id=d2e5afbc-6d4f-4706-88e2-fdb1191eeb2b&institution_id={inst_id}&access_token={token}";
 
-    window.request("access_token", "POST", {
-        client_id: "oawdj1b2ourg"
+    /*window.request("user", "POST", {
+        email: "nenadspp@gmail.com"
     }).then(resp => {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("content").style.display = "block";
-
         if (!resp.body.success) {
             throw resp;
         }
 
         return resp.body;
     }).then(resp => {
-        const link = document.getElementById("trigger"), currentHref = link.getAttribute("href");
+        console.log("User resp", resp);
+    });*/
 
-        link.setAttribute("href", currentHref.replace("{token}", resp.result.access_token));
-
-        /*window.request("user", "POST", {
-            email: "nenadspp@gmail.com"
+    if (authToken) {
+        url = url.replace("{token}", authToken);
+        loadInstitutions(authToken);
+    } else {
+        window.request("access_token", "POST", {
+            client_id: "oawdj1b2ourg"
         }).then(resp => {
             if (!resp.body.success) {
+                errorContainer.innerHTML = resp.result.errorMessage;
                 throw resp;
             }
 
             return resp.body;
         }).then(resp => {
-            console.log("User resp", resp);
-        });*/
+            var link = document.getElementById("trigger"), currentHref = link.getAttribute("href");
+            localStorage.setItem("authToken", resp.result.access_token);
+            url = url.replace("{token}", resp.result.access_token);
+
+            loadInstitutions(resp.result.access_token);
+        });
+    }
+
+    function loadInstitutions(token) {
         window.request("https://au-api.basiq.io/institutions", "GET", {}, {
-            "Authorization": "Bearer " + resp.result.access_token
+            "Authorization": "Bearer " + token
         }).then(resp => {
             return resp.body;
         }).then(resp => {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").style.display = "block";
+
             var instCont = document.getElementById("institutionsContainer");
             console.log("Institutions resp", resp);
             for (var institution in resp.data) {
+                url = url.replace("{inst_id}", resp.data[institution].id);
                 var li = document.createElement("li"), a = document.createElement("a");
                 a.innerHTML = resp.data[institution].name;
+                a.setAttribute("href", url);
                 li.appendChild(a);
                 instCont.appendChild(li);
             }
         });
-    });
+    }
 </script>
 {{/unless}}
 </body>
