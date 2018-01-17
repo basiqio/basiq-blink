@@ -1,13 +1,26 @@
-function request(url, method, data) {
+function request(url, method, data, headers) {
     return new SimplePromise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
+
 
         if (method.toUpperCase() === "POST") {
             xhttp.open("POST", url, true);
             xhttp.setRequestHeader("Content-type", "application/json");
-            xhttp.send(JSON.stringify(data));
         } else {
             xhttp.open("GET", url, true);
+        }
+
+        for (var header in headers) {
+            if (!headers.hasOwnProperty(header)) {
+                continue;
+            }
+            xhttp.setRequestHeader(header, headers[header]);
+        }
+
+        if (method.toUpperCase() === "POST") {
+            xhttp.send(JSON.stringify(data));
+        } else {
+            xhttp.send();
         }
 
         xhttp.addEventListener("load", function (res) {
@@ -57,7 +70,7 @@ function SimplePromise(executor) {
                 return rejector(err)
             }
 
-            throw err;
+            console.error(err);
         }
     };
 
@@ -91,4 +104,16 @@ function SimplePromise(executor) {
     }
 
     return self;
+}
+
+function parseQueryVariables() {
+    var queryString = window.location.search.substring(1),
+        query = {},
+        pairs = queryString.split('&');
+
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=');
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+    }
+    return query;
 }

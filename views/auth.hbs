@@ -16,7 +16,8 @@
     <button id="cancel" class="btn btn-blue btn-border-o">Cancel</button>
 </form>
 <script>
-    var form = document.getElementById("form"),
+    var queryVars = parseQueryVariables(),
+        form = document.getElementById("form"),
         submitBtn = document.getElementById("submit"),
         cancelBtn = document.getElementById("cancel"),
         errorContainer = document.getElementById("errorContainer");

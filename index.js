@@ -33,15 +33,15 @@ app.get('/', function (req, res) {
 });
 
 app.get('/authenticate', function (req, res) {
-    const pub_tok = req.query.public_token ? req.query.public_token : null;
+    const access_token = req.query.access_token ? req.query.access_token : null;
 
-    if (!pub_tok) {
+    if (!access_token) {
         return res.send("Error");
     }
 
     const nextURI = "/?access_token={token}";
 
-    console.log(pub_tok);
+    console.log(access_token);
 
     res.render('auth', {
         nextURI: nextURI
@@ -52,6 +52,7 @@ app.get('/authenticate', function (req, res) {
 
 app.post('/authenticate', authenticationController.credentialsCheck);
 app.post('/access_token', authenticationController.accessTokenCheck);
+app.post('/user', authenticationController.createAUser);
 
 app.use('/', express.static(__dirname + '/static'));
 

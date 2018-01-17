@@ -8,20 +8,26 @@
 {{#if hasToken}}
     <a id="trigger" href="/">User validated!</a>
 {{else}}
-    <h2>Hello user, select your institution to login</h2>
-    <ul>
-        <li><a id="trigger" href="/authenticate?institution_id=dio1jdo21oj12e&public_token={token}">Quantas</a></li>
-        <li><a id="" href="#">NAB</a></li>
-        <li><a id="" href="#">Westpac</a></li>
-    </ul>​
+    <h2 id="loading">Loading data...</h2>
+    <div id="content">
+        <h2>Hello user, select your institution to login</h2>
+        <ul id="institutionsContainer">
+            <li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>
+        </ul>​
+    </div>
 {{/if}}
-
 {{#unless hasToken}}
 
 <script>
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("content").style.display = "none";
+
     window.request("access_token", "POST", {
         client_id: "oawdj1b2ourg"
     }).then(resp => {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("content").style.display = "block";
+
         if (!resp.body.success) {
             throw resp;
         }
@@ -31,6 +37,32 @@
         const link = document.getElementById("trigger"), currentHref = link.getAttribute("href");
 
         link.setAttribute("href", currentHref.replace("{token}", resp.result.access_token));
+
+        /*window.request("user", "POST", {
+            email: "nenadspp@gmail.com"
+        }).then(resp => {
+            if (!resp.body.success) {
+                throw resp;
+            }
+
+            return resp.body;
+        }).then(resp => {
+            console.log("User resp", resp);
+        });*/
+        window.request("https://au-api.basiq.io/institutions", "GET", {}, {
+            "Authorization": "Bearer " + resp.result.access_token
+        }).then(resp => {
+            return resp.body;
+        }).then(resp => {
+            var instCont = document.getElementById("institutionsContainer");
+            console.log("Institutions resp", resp);
+            for (var institution in resp.data) {
+                var li = document.createElement("li"), a = document.createElement("a");
+                a.innerHTML = resp.data[institution].name;
+                li.appendChild(a);
+                instCont.appendChild(li);
+            }
+        });
     });
 </script>
 {{/unless}}

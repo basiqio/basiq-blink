@@ -14,6 +14,12 @@ const API = function(host, apiKey) {
     return this;
 };
 
+API.prototype.setHeader = function (header, value) {
+    this.postOptions.headers[header] = value;
+
+    return this;
+};
+
 API.prototype.send = function (path, method, data, cb, errCb) {
     this.postOptions.uri = this.postOptions.host + "/" + path;
     this.postOptions.method = method.toUpperCase();
@@ -26,6 +32,8 @@ API.prototype.send = function (path, method, data, cb, errCb) {
         }
         cb(JSON.parse(body));
     });
+
+    return this;
 };
 
 module.exports = API;
