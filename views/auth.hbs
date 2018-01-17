@@ -54,7 +54,7 @@
             errorContainer.innerHTML = err.body && err.body.errorMessage
                     ? "Error: " + err.body.errorMessage
                     : "Unknown error";
-            console.error(err);
+            console.error(JSON.stringify(err));
         });
     };
 
