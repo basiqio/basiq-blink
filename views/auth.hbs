@@ -40,6 +40,10 @@
         }, {
             "Authorization": "Bearer " + queryVars.access_token
         }).then(resp => {
+            if (resp.statusCode > 299) {
+                throw new Error(resp);
+            }
+
             return resp.body;
         }).then(resp => {
             var nextURI = {{{json nextURI}}};
