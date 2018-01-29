@@ -5,18 +5,36 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<h2 id="contents">Login to Qantas</h2>
-<form id="form" action="">
-    Username: <input title="Username" type="text"/><br />
-    Password: <input title="Password" type="text"/><br />
-    <div id="errorContainer">
+<h2 id="loading">Loading data...</h2>
+<div id="content">
+    <h2 id="title">Login</h2>
+    <h5 id="serviceName"></h5>
+    <form id="form" action="">
+        <table class="credentials-table">
+            <tr>
+                <td><span id="usernameInput">Username:</span></td>
+                <td><input title="Username" type="text"/></td>
+            </tr>
+            <tr>
+                <td><span id="passwordInput">Password:</span></td>
+                <td><input title="Password" type="text"/></td>
+            </tr>
+        </table>
+        <div id="errorContainer">
 
-    </div>
-    <button id="submit" class="btn btn-blue btn-border-o">Submit</button>
-    <button id="cancel" class="btn btn-blue btn-border-o">Cancel</button>
-</form>
+        </div>
+        <button id="submit" class="btn btn-blue btn-border-o">Submit</button>
+        <button id="cancel" class="btn btn-blue btn-border-o">Cancel</button>
+    </form>
+</div>
+
 <script>
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("content").style.display = "none";
+
     var queryVars = parseQueryVariables(),
+        institutionId = queryVars.institution_id,
+        accessToken = queryVars.access_token,
         form = document.getElementById("form"),
         submitBtn = document.getElementById("submit"),
         cancelBtn = document.getElementById("cancel"),
@@ -25,6 +43,12 @@
     if (!window.Android) {
         console.error("Android interface not available");
     }
+
+    if (!institutionId) {
+        console.error("No institution id provided");
+    }
+
+    loadInstitution(institutionId, accessToken);
 
     var formHandler = function (e) {
         e.preventDefault();
@@ -35,7 +59,7 @@
             loginId: form.children[0].value,
             password: form.children[2].value,
             institution: {
-                id: queryVars.institution_id
+                id: institutionId
             }
         }, {
             "Authorization": "Bearer " + queryVars.access_token
@@ -65,6 +89,41 @@
 
         Android.cancelActions();
     });
+
+
+    function loadInstitution(id, token) {
+        if (!id) {
+            return console.log("No id provided");
+        }
+
+        window.request("https://au-api.basiq.io/institutions/" + id, "GET", {}, {
+            "Authorization": "Bearer " + token
+        }).then(resp => {
+            if (resp.statusCode > 299) {
+                throw new Error(resp);
+            }
+
+            return resp.body;
+        }).then(resp => {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            if (resp.loginIdCaption) {
+                document.getElementById("usernameInput").innerHTML = resp.loginIdCaption + ":";
+            }
+            if (resp.passwordCaption) {
+                document.getElementById("passwordInput").innerHTML = resp.passwordCaption + ":";
+            }
+
+            document.getElementById("title").innerHTML = "Login to " + resp.name;
+            document.getElementById("serviceName").innerHTML = resp.serviceName;
+        }).catch(err => {
+            errorContainer.innerHTML = err.body && err.body.errorMessage
+                    ? "Error: " + err.body.errorMessage
+                    : "Unknown error";
+
+            console.error(JSON.stringify(err));
+        });
+    }
 
 
 </script>
