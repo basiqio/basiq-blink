@@ -33,8 +33,6 @@ function request(url, method, data, headers) {
 }
 
 function parseResponse(res) {
-    console.log(res);
-
     try {
         return {
             statusText: res.statusText,

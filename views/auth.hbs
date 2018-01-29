@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+
 <h2 id="loading">Loading data...</h2>
 <div id="content">
     <h2 id="title">Login</h2>
@@ -20,13 +21,11 @@
                 <td><input title="Password" type="text"/></td>
             </tr>
         </table>
-        <div id="errorContainer">
-
-        </div>
         <button id="submit" class="btn btn-blue btn-border-o">Submit</button>
         <button id="cancel" class="btn btn-blue btn-border-o">Cancel</button>
     </form>
 </div>
+<div id="errorContainer"></div>
 
 <script>
     document.getElementById("loading").style.display = "block";
@@ -65,7 +64,7 @@
             "Authorization": "Bearer " + queryVars.access_token
         }).then(resp => {
             if (resp.statusCode > 299) {
-                throw new Error(resp);
+                throw resp;
             }
 
             return resp.body;
@@ -75,6 +74,8 @@
             //window.location = nextURI.replace("{token}", resp.accessToken);
             Android.setConnectionId(resp.id);
         }).catch(err => {
+            document.getElementById("loading").style.display = "none";
+
             errorContainer.innerHTML = err.body && err.body.errorMessage
                     ? "Error: " + err.body.errorMessage
                     : "Unknown error";
@@ -100,7 +101,7 @@
             "Authorization": "Bearer " + token
         }).then(resp => {
             if (resp.statusCode > 299) {
-                throw new Error(resp);
+                throw resp;
             }
 
             return resp.body;
@@ -117,11 +118,13 @@
             document.getElementById("title").innerHTML = "Login to " + resp.name;
             document.getElementById("serviceName").innerHTML = resp.serviceName;
         }).catch(err => {
-            errorContainer.innerHTML = err.body && err.body.errorMessage
-                    ? "Error: " + err.body.errorMessage
+            document.getElementById("loading").style.display = "none";
+
+            errorContainer.innerHTML = err.body && err.body.data && err.body.data[0]
+                    ? "Error: " + err.body.data[0].title
                     : "Unknown error";
 
-            console.error(JSON.stringify(err));
+            console.error(err);
         });
     }
 
