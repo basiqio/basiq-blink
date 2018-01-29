@@ -36,7 +36,7 @@ const accessTokenCheck = function (req, res) {
         });
     }
 
-    API.setHeader("basiq-version", "1.0").send("oauth2/token", "POST", {
+    API.setHeader("Authorization", "Basic "+apiKey).setHeader("basiq-version", "1.0").send("oauth2/token", "POST", {
         "grant_type": "client_credentials"
     }, function (body) {
         res.json({

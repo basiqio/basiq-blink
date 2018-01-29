@@ -6,8 +6,6 @@
 </head>
 <body>
 {{#if hasToken}}
-    <a id="trigger" href="/">User validated!</a>
-{{else}}
     <h2 id="loading">Loading data...</h2>
     <div id="content">
         <h2>Hello user, select your institution to login</h2>
@@ -16,57 +14,26 @@
         </ul>​
     </div>
     <div id="errorContainer"></div>
+{{else}}
+    <a id="trigger" href="/">No access token provided!</a>
 {{/if}}
-{{#unless hasToken}}
+{{#if hasToken}}
 
 <script>
     document.getElementById("loading").style.display = "block";
     document.getElementById("content").style.display = "none";
-    var authToken = localStorage.getItem("authToken"),
+
+    var queryVars = parseQueryVariables(),
+        userId = queryVars["user_id"],
+        authToken = queryVars["access_token"],
         errorContainer = document.getElementById("errorContainer"),
-        url = "/authenticate?user_id=d2e5afbc-6d4f-4706-88e2-fdb1191eeb2b&institution_id={inst_id}&access_token={token}";
+        url = "/authenticate?user_id="+userId+"&institution_id={inst_id}&access_token={token}";
 
-    /*window.request("user", "POST", {
-        email: "nenadspp@gmail.com"
-    }).then(resp => {
-        if (!resp.body.success) {
-            throw resp;
-        }
-
-        return resp.body;
-    }).then(resp => {
-        console.log("User resp", resp);
-    });*/
-
-    if (authToken) {
-        url = url.replace("{token}", authToken);
-        loadInstitutions(authToken);
-    } else {
-        getAccessToken();
-    }
-
-    function getAccessToken() {
-        window.request("access_token", "POST", {
-            client_id: "oawdj1b2ourg"
-        }).then(resp => {
-            if (!resp.body.success) {
-                errorContainer.innerHTML = resp.result.errorMessage;
-                throw resp;
-            }
-
-            return resp.body;
-        }).then(resp => {
-            var link = document.getElementById("trigger"), currentHref = link.getAttribute("href");
-            localStorage.setItem("authToken", resp.result.access_token);
-            url = url.replace("{token}", resp.result.access_token);
-
-            loadInstitutions(resp.result.access_token);
-        });
-    }
+    loadInstitutions(authToken);
 
     function loadInstitutions(token) {
         window.request("https://au-api.basiq.io/institutions", "GET", {}, {
-            "Authorization": "Bearerd " + token
+            "Authorization": "Bearer " + token
         }).then(resp => {
             if (resp.statusCode > 299) {
                 throw new Error(resp);
@@ -96,6 +63,6 @@
         });
     }
 </script>
-{{/unless}}
+{{/if}}
 </body>
 </html>
