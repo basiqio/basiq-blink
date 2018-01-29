@@ -28,7 +28,7 @@ API.prototype.send = function (path, method, data, cb, errCb) {
 
     request(this.postOptions, function (error, response, body) {
         if (error) {
-            return errCb(JSON.parse(erro));
+            return errCb(JSON.parse(error));
         }
         cb(JSON.parse(body));
     });
