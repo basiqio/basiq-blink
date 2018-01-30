@@ -27,6 +27,7 @@
 </div>
 <div id="errorContainer"></div>
 
+<script src="/API.js"></script>
 <script>
     document.getElementById("loading").style.display = "block";
     document.getElementById("content").style.display = "none";
@@ -47,40 +48,18 @@
         console.error("No institution id provided");
     }
 
-    loadInstitution(institutionId, accessToken);
+    API.loadInstitution(institutionId, accessToken);
 
     var formHandler = function (e) {
         e.preventDefault();
 
         console.log(form.children);
 
-        window.request("https://au-api.basiq.io/users/" + queryVars.user_id + "/connections", "POST", {
-            loginId: document.getElementById("usernameInput").value,
-            password: document.getElementById("passwordInput").value,
-            institution: {
-                id: institutionId
-            }
-        }, {
-            "Authorization": "Bearer " + queryVars.access_token
-        }).then(resp => {
-            if (resp.statusCode > 299) {
-                throw resp;
-            }
-
-            return resp.body;
-        }).then(resp => {
-            var nextURI = {{{json nextURI}}};
-
-            //window.location = nextURI.replace("{token}", resp.accessToken);
-            Android.setConnectionId(resp.id);
-        }).catch(err => {
-            document.getElementById("loading").style.display = "none";
-
-            errorContainer.innerHTML = err.body && err.body.errorMessage
-                    ? "Error: " + err.body.errorMessage
-                    : "Unknown error";
-            console.error(JSON.stringify(err));
-        });
+        API.createUser(
+            queryVars.user_id,
+            document.getElementById("usernameInput").value,
+            document.getElementById("passwordInput").value
+        );
     };
 
     form.addEventListener("submit", formHandler);
@@ -88,45 +67,10 @@
     cancelBtn.addEventListener("click", function (e) {
         e.preventDefault();
 
-        Android.cancelActions();
-    });
-
-
-    function loadInstitution(id, token) {
-        if (!id) {
-            return console.log("No id provided");
+        if (window.Android !== undefined) {
+            Android.cancelActions && Android.cancelActions();
         }
-
-        window.request("https://au-api.basiq.io/institutions/" + id, "GET", {}, {
-            "Authorization": "Bearer " + token
-        }).then(resp => {
-            if (resp.statusCode > 299) {
-                throw resp;
-            }
-
-            return resp.body;
-        }).then(resp => {
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("content").style.display = "block";
-            if (resp.loginIdCaption) {
-                document.getElementById("usernameInputLabel").innerHTML = resp.loginIdCaption + ":";
-            }
-            if (resp.passwordCaption) {
-                document.getElementById("passwordInputLabel").innerHTML = resp.passwordCaption + ":";
-            }
-
-            document.getElementById("title").innerHTML = "Login to " + resp.name;
-            document.getElementById("serviceName").innerHTML = resp.serviceName;
-        }).catch(err => {
-            document.getElementById("loading").style.display = "none";
-
-            errorContainer.innerHTML = err.body && err.body.data && err.body.data[0]
-                    ? "Error: " + err.body.data[0].title
-                    : "Unknown error";
-
-            console.error(err);
-        });
-    }
+    });
 
 
 </script>

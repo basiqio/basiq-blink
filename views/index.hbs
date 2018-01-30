@@ -19,6 +19,7 @@
 {{/if}}
 {{#if hasToken}}
 
+<script src="/API.js"></script>
 <script>
     document.getElementById("loading").style.display = "block";
     document.getElementById("content").style.display = "none";
@@ -29,39 +30,9 @@
         errorContainer = document.getElementById("errorContainer"),
         url = "/authenticate?user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken;
 
-    loadInstitutions(accessToken);
+    API.loadInstitutions(accessToken);
 
-    function loadInstitutions(token) {
-        window.request("https://au-api.basiq.io/institutions", "GET", {}, {
-            "Authorization": "Bearer " + token
-        }).then(resp => {
-            if (resp.statusCode > 299) {
-                throw resp;
-            }
 
-            return resp.body;
-        }).then(resp => {
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("content").style.display = "block";
-
-            var instCont = document.getElementById("institutionsContainer");
-            console.log("Institutions resp", resp);
-            for (var institution in resp.data) {
-                url = url.replace("{inst_id}", resp.data[institution].id);
-                var li = document.createElement("li"), a = document.createElement("a");
-                a.innerHTML = resp.data[institution].name;
-                a.setAttribute("href", url);
-                li.appendChild(a);
-                instCont.appendChild(li);
-            }
-        }).catch(err => {
-            errorContainer.innerHTML = err.body && err.body.errorMessage
-                    ? "Error: " + err.body.errorMessage
-                    : "Unknown error";
-
-            console.error(JSON.stringify(err));
-        });
-    }
 </script>
 {{/if}}
 </body>
