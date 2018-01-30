@@ -65,7 +65,7 @@ var API = {
             console.error(err);
         });
     },
-    createUser: function (userId, loginId, password) {
+    createUser: function (userId, token, loginId, password) {
         if (!loginId || !password) {
             throw new Error("No user id or password provided: " + JSON.stringify(arguments));
         }
@@ -77,7 +77,7 @@ var API = {
                 id: institutionId
             }
         }, {
-            "Authorization": "Bearer " + queryVars.access_token
+            "Authorization": "Bearer " + token
         }).then(resp => {
             if (resp.statusCode > 299) {
                 throw resp;
