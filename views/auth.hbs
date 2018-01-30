@@ -13,12 +13,12 @@
     <form id="form" action="">
         <table class="credentials-table">
             <tr>
-                <td><span id="usernameInput">Username:</span></td>
-                <td><input title="Username" type="text"/></td>
+                <td><span id="usernameInputLabel">Username:</span></td>
+                <td><input id="usernameInput" title="Username" type="text"/></td>
             </tr>
             <tr>
-                <td><span id="passwordInput">Password:</span></td>
-                <td><input title="Password" type="text"/></td>
+                <td><span id="passwordInputLabel">Password:</span></td>
+                <td><input id="passwordInput" title="Password" type="password"/></td>
             </tr>
         </table>
         <button id="submit" class="btn btn-blue btn-border-o">Submit</button>
@@ -55,8 +55,8 @@
         console.log(form.children);
 
         window.request("https://au-api.basiq.io/users/" + queryVars.user_id + "/connections", "POST", {
-            loginId: form.children[0].value,
-            password: form.children[2].value,
+            loginId: document.getElementById("usernameInput").value,
+            password: document.getElementById("passwordInput").value,
             institution: {
                 id: institutionId
             }
@@ -109,10 +109,10 @@
             document.getElementById("loading").style.display = "none";
             document.getElementById("content").style.display = "block";
             if (resp.loginIdCaption) {
-                document.getElementById("usernameInput").innerHTML = resp.loginIdCaption + ":";
+                document.getElementById("usernameInputLabel").innerHTML = resp.loginIdCaption + ":";
             }
             if (resp.passwordCaption) {
-                document.getElementById("passwordInput").innerHTML = resp.passwordCaption + ":";
+                document.getElementById("passwordInputLabel").innerHTML = resp.passwordCaption + ":";
             }
 
             document.getElementById("title").innerHTML = "Login to " + resp.name;
