@@ -48,7 +48,7 @@ const accessTokenCheck = function (req, res) {
             success: false,
             result: err
         });
-    })
+    });
 };
 
 const createAUser = function (req, res) {
@@ -76,13 +76,13 @@ const createAUser = function (req, res) {
                 success: false,
                 result: err
             });
-        })
+        });
     }, function (err) {
         res.json({
             success: false,
             result: err
         });
-    })
+    });
 
 };
 
@@ -90,7 +90,7 @@ function randomString(len) {
     let str = "";
 
     while (str.length < len) {
-        str += crypto.randomBytes(100).toString('hex');
+        str += crypto.randomBytes(100).toString("hex");
     }
 
     return str.substr(0, len);

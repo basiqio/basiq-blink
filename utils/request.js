@@ -1,8 +1,8 @@
-const request = require('request');
+const request = require("request");
 
-require('request').debug = true;
+require("request").debug = true;
 
-const API = function(host, apiKey) {
+var API = function(host, apiKey) {
     this.postOptions = {
         host: host,
         headers: {

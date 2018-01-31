@@ -10,8 +10,12 @@
     "query-string": "^5.0.1",
     "request": "^2.83.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^4.16.0"
+  },
   "scripts": {
+    "start": "sudo nodemon index.js",
+    "lint": "",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

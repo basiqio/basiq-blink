@@ -1,14 +1,17 @@
-var API = {
-    loadInstitutions: function (token) {
+/*global Android*/
+/*eslint no-console: "off"*/
+
+window.API = {
+    loadInstitutions: function (token, url) {
         window.request("https://au-api.basiq.io/institutions", "GET", {}, {
             "Authorization": "Bearer " + token
-        }).then(resp => {
+        }).then(function (resp) {
             if (resp.statusCode > 299) {
                 throw resp;
             }
 
             return resp.body;
-        }).then(resp => {
+        }).then(function (resp) {
             document.getElementById("loading").style.display = "none";
             document.getElementById("content").style.display = "block";
 
@@ -22,8 +25,8 @@ var API = {
                 li.appendChild(a);
                 instCont.appendChild(li);
             }
-        }).catch(err => {
-            errorContainer.innerHTML = err.body && err.body.errorMessage
+        }).catch(function (err) {
+            window.errorContainer.innerHTML = err.body && err.body.errorMessage
                 ? "Error: " + err.body.errorMessage
                 : "Unknown error";
 
@@ -37,13 +40,13 @@ var API = {
 
         window.request("https://au-api.basiq.io/institutions/" + id, "GET", {}, {
             "Authorization": "Bearer " + token
-        }).then(resp => {
+        }).then(function (resp) {
             if (resp.statusCode > 299) {
                 throw resp;
             }
 
             return resp.body;
-        }).then(resp => {
+        }).then(function (resp) {
             document.getElementById("loading").style.display = "none";
             document.getElementById("content").style.display = "block";
             if (resp.loginIdCaption) {
@@ -55,17 +58,17 @@ var API = {
 
             document.getElementById("title").innerHTML = "Login to " + resp.name;
             document.getElementById("serviceName").innerHTML = resp.serviceName;
-        }).catch(err => {
+        }).catch(function (err) {
             document.getElementById("loading").style.display = "none";
 
-            errorContainer.innerHTML = err.body && err.body.data && err.body.data[0]
+            window.errorContainer.innerHTML = err.body && err.body.data && err.body.data[0]
                 ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail
                 : "Unknown error";
 
             console.error(err);
         });
     },
-    createUser: function (userId, token, loginId, password) {
+    createUserConnection: function (token, userId, institutionId, loginId, password) {
         if (!loginId || !password) {
             throw new Error("No user id or password provided: " + JSON.stringify(arguments));
         }
@@ -78,21 +81,21 @@ var API = {
             }
         }, {
             "Authorization": "Bearer " + token
-        }).then(resp => {
+        }).then(function (resp) {
             if (resp.statusCode > 299) {
                 throw resp;
             }
 
             return resp.body;
-        }).then(resp => {
+        }).then(function (resp) {
             //window.location = nextURI.replace("{token}", resp.accessToken);
             if (window.Android !== undefined) {
                 Android.setConnectionId && Android.setConnectionId(resp.id);
             }
-        }).catch(err => {
+        }).catch(function (err) {
             document.getElementById("loading").style.display = "none";
 
-            errorContainer.innerHTML = err.body && err.body.errorMessage
+            window.errorContainer.innerHTML = err.body && err.body.errorMessage
                 ? "Error: " + err.body.errorMessage
                 : "Unknown error";
             console.error(err);

@@ -34,6 +34,7 @@
 
     var queryVars = parseQueryVariables(),
         institutionId = queryVars.institution_id,
+        userId = queryVars.user_id,
         accessToken = queryVars.access_token,
         form = document.getElementById("form"),
         submitBtn = document.getElementById("submit"),
@@ -55,9 +56,10 @@
 
         console.log(form.children);
 
-        API.createUser(
-            queryVars.user_id,
-            queryVars.access_token,
+        API.createUserConnection(
+            accessToken,
+            userId,
+            institutionId,
             document.getElementById("usernameInput").value,
             document.getElementById("passwordInput").value
         );

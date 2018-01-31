@@ -1,4 +1,6 @@
-function request(url, method, data, headers) {
+/*eslint no-console: "off"*/
+
+window.request = function(url, method, data, headers) {
     return new SimplePromise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
 
@@ -23,14 +25,14 @@ function request(url, method, data, headers) {
             xhttp.send();
         }
 
-        xhttp.addEventListener("load", function (res) {
+        xhttp.addEventListener("load", function () {
             resolve(parseResponse(xhttp));
         });
-        xhttp.addEventListener("error", function (err) {
-            reject(parseResponse(xhttp))
+        xhttp.addEventListener("error", function () {
+            reject(parseResponse(xhttp));
         });
     });
-}
+};
 
 function parseResponse(res) {
     try {
@@ -67,7 +69,7 @@ function SimplePromise(executor) {
             }
         } catch (err) {
             if (self.rejectorFunction) {
-                return rejector(err)
+                return rejector(err);
             }
 
             console.error(err);
@@ -96,7 +98,7 @@ function SimplePromise(executor) {
     } catch (err) {
         setTimeout(function () {
             if (self.rejectorFunction) {
-                return rejector(err)
+                return rejector(err);
             }
 
             throw err;
@@ -106,14 +108,14 @@ function SimplePromise(executor) {
     return self;
 }
 
-function parseQueryVariables() {
+window.parseQueryVariables = function() {
     var queryString = window.location.search.substring(1),
         query = {},
-        pairs = queryString.split('&');
+        pairs = queryString.split("&");
 
     for (var i = 0; i < pairs.length; i++) {
-        var pair = pairs[i].split('=');
-        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+        var pair = pairs[i].split("=");
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
     }
     return query;
-}
+};
