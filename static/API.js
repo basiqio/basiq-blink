@@ -17,10 +17,10 @@ window.API = {
             var instCont = document.getElementById("institutionsContainer");
             console.log("Institutions resp", resp);
             for (var institution in resp.data) {
-                url = url.replace("{inst_id}", resp.data[institution].id);
+                var instUrl = url.replace("{inst_id}", resp.data[institution].id);
                 var li = document.createElement("li"), a = document.createElement("a");
                 a.innerHTML = resp.data[institution].name;
-                a.setAttribute("href", url);
+                a.setAttribute("href", instUrl);
                 li.appendChild(a);
                 instCont.appendChild(li);
             }
