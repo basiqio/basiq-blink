@@ -2,7 +2,7 @@ const request = require("request");
 
 require("request").debug = true;
 
-var API = function(host, apiKey) {
+const API = function(host, apiKey) {
     this.postOptions = {
         host: host,
         headers: {

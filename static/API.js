@@ -1,4 +1,3 @@
-/*global Android*/
 /*eslint no-console: "off"*/
 
 window.API = {
@@ -73,6 +72,9 @@ window.API = {
             throw new Error("No user id or password provided: " + JSON.stringify(arguments));
         }
 
+        loginId = loginId.trim();
+        password = password.trim();
+
         window.request("https://au-api.basiq.io/users/" + userId + "/connections", "POST", {
             loginId: loginId,
             password: password,
@@ -88,10 +90,9 @@ window.API = {
 
             return resp.body;
         }).then(function (resp) {
-            //window.location = nextURI.replace("{token}", resp.accessToken);
-            if (window.Android !== undefined) {
-                Android.setConnectionId && Android.setConnectionId(resp.id);
-            }
+            var connectionData = {};
+            connectionData.id = resp.id;
+            window.location.replace("basiq://connection/" + JSON.stringify(connectionData, null, 0));
         }).catch(function (err) {
             document.getElementById("loading").style.display = "none";
 

@@ -41,10 +41,6 @@
         cancelBtn = document.getElementById("cancel"),
         errorContainer = document.getElementById("errorContainer");
 
-    if (!window.Android) {
-        console.error("Android interface not available");
-    }
-
     if (!institutionId) {
         console.error("No institution id provided");
     }
@@ -70,9 +66,7 @@
     cancelBtn.addEventListener("click", function (e) {
         e.preventDefault();
 
-        if (window.Android !== undefined) {
-            Android.cancelActions && Android.cancelActions();
-        }
+        window.location.replace("basiq://cancelation");
     });
 
 
