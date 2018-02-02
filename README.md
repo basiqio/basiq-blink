@@ -2,17 +2,16 @@
 
 
 ## Installing
-To run the package you should have nodemon installed
+To run the package you should have a local server installed
 
-```npm i -g nodemon```
+```$ npm -g install static-server```
 
-```npm install```
+```$ npm install```
 
 ## Running
 
-Because the node server listens to the port 80 you need to run
-index.js using an account with elevated priviledges or using sudo
+While in the static directory just run static server to serve the files
 
-```sudo nodemon index.js```
+```$ static-server```
 
-The app should listen to port 80 and everything should work.
+The app should listen by default to port 9080.
