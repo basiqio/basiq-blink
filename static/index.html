@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-{{#if hasToken}}
     <h2 id="loading">Loading data...</h2>
     <div id="content">
         <h2>Hello user, select your institution to login</h2>
@@ -14,10 +13,7 @@
         </ul>​
     </div>
     <div id="errorContainer"></div>
-{{else}}
-    <a id="trigger" href="/">No access token provided!</a>
-{{/if}}
-{{#if hasToken}}
+
 
 <script src="/API.js"></script>
 <script>
@@ -28,12 +24,11 @@
         userId = queryVars["user_id"],
         accessToken = queryVars["access_token"],
         errorContainer = document.getElementById("errorContainer"),
-        url = "/authenticate?user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken;
+        url = "/authenticate.html?user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken;
 
     API.loadInstitutions(accessToken, url);
 
 
 </script>
-{{/if}}
 </body>
 </html>
