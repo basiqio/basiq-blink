@@ -1,8 +1,8 @@
 <html>
 <head>
     <title>Qantas</title>
-    <script src="/app.js"></script>
-    <script src="/polyfills/promise-polyfill.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/polyfills/promise-polyfill.min.js"></script>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -12,13 +12,13 @@
         <form id="institutionSearchForm" class="search-form">
             <input id="institutionSearch" type="text" placeholder="Search institutions">
         </form>
-        <ul id="institutionsContainer">
+        <div id="institutionsContainer">
             <!--<li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>-->
-        </ul>
+        </div>
     </div>
     <div id="errorContainer"></div>
 
-<script src="/API.js"></script>
+<script src="/js/API.js"></script>
 <script>
     document.getElementById("loading").style.display = "block";
     document.getElementById("content").style.display = "none";
@@ -29,7 +29,7 @@
         errorContainer = document.getElementById("errorContainer"),
         url = "/authenticate.html?user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken;
 
-    API.loadInstitutions(accessToken, url).then(function (institutions) {
+    API.loadInstitutions(accessToken).then(function (institutions) {
         document.getElementById("loading").style.display = "none";
         document.getElementById("content").style.display = "block";
 
@@ -60,7 +60,7 @@
                     instCont = document.getElementById("institutionsContainer");
 
                 if (term.length < 2) {
-                    window.renderInstitutions(instCont, window.institutions);
+                    window.renderInstitutions(instCont, window.institutions, url);
                     return;
                 }
 
@@ -78,7 +78,7 @@
                     }
                 }
 
-                window.renderInstitutions(instCont, matched);
+                window.renderInstitutions(instCont, matched, url);
             };
 
         if (!proceed) {

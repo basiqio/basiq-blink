@@ -4,15 +4,6 @@ body {
     background: #f5f5f5;
     color: #2c3e50;
 }
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-ul:after {
-    content: "";
-    clear: both;
-    display: table;
-}
 
 a {
     display: block;
@@ -44,11 +35,17 @@ input {
     border-radius: 5px;
     border: 1px solid #2c3e50;
     width: 100%;
+    height: 50px;
 }
 
 input:focus {
     outline: none;
     border: 1px solid #3498db;
+}
+
+#institutionsContainer {
+    text-align: center;
+    padding: 0;
 }
 
 .credentials-table {
@@ -60,66 +57,27 @@ input:focus {
     margin: 15px;
 }
 
-.btn {
-    line-height: 35px;
-    margin: 4% 0;
-    font-size: 15px;
-    position: relative;
-    border-radius: 3px;
-    display: block;
+.button {
+    background-color: rgba(255,255,255,0.12);
+    border: 0;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1), inset 0 1px 0 0 rgba(255,255,255,0.1);
+    font-size: 20px;
+    height: 50px;
+    color: #fff;
+    outline: 0;
+    text-align: center;
+    text-transform: none;
+    transition-duration: 200ms;
+    transition-property: box-shadow;
+    transition-timing-function: ease-in-out;
     width: 100%;
+    margin-top: 20px;
 }
 
-.btn-border-o {
-    background-color: rgba(255, 255, 255, 0.25);
-    border: 1px solid #d0d0d0;
-    color: #B8B8B8;
-}
-
-.btn-border-o:active, .btn-border-o:focus {
-    outline: none;
-    background-color: rgba(255, 255, 255, 0.6);
-}
-
-.btn-border-o:before, .btn-border-o:after {
-    content: '';
-    border-style: solid;
-    position: absolute;
-    z-index: 5;
-    border-radius: 3px;
-    -webkit-box-sizing: content-box;
-    box-sizing: content-box;
-}
-
-.btn-border-o:before {
-    width: 0;
-    height: 100%;
-    border-width: 1px 0 1px 0;
-    top: -1px;
-    left: 0;
-    -webkit-transition-delay: 0.05s;
-    transition-delay: 0.05s;
-}
-
-.btn-border-o:after {
-    width: 100%;
-    height: 0;
-    border-width: 0 1px 0 1px;
-    top: 0;
-    left: -1px;
-}
-.btn-border-o:hover:before {
-    width: 100%;
-}
-.btn-border-o:hover:after {
-    height: 100%;
-}
-.btn-border-o.btn-blue:before, .btn-border-o.btn-blue:after {
-    border-color: #3498db;
-}
-.btn-border-o.btn-blue:hover {
-    background-color: rgba(255, 255, 255, 0.35);
-    color: #3498db;
+.button:hover {
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.2), inset 0 1px 0 0 rgba(255,255,255,0.15);
+    cursor: pointer;
 }
 
 .search-form {
@@ -140,7 +98,11 @@ input:focus {
     height:200px;
     background: #fbfbfb;
     margin: 2%;
-    float: left;
+    vertical-align: top;
+}
+
+.bank-link a:hover {
+    border: 1px solid #d4d4d4;
 }
 
 .bank-link:after {

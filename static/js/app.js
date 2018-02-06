@@ -45,24 +45,23 @@ window.renderInstitutions = function (container, institutions, url) {
         if (!institutions.hasOwnProperty(institution)) {
             continue;
         }
+
         var instUrl = url.replace("{inst_id}", institutions[institution].id);
-        var li = document.createElement("li"),
+        var div = document.createElement("div"),
             a = document.createElement("a"),
             img = document.createElement("img");
 
         a.appendChild(img);
         a.setAttribute("href", instUrl);
 
-        li.appendChild(a);
-        li.className = "bank-link";
-        li.style.width = liW + "px";
-        li.style.height = liW + "px";
+        div.appendChild(a);
+        div.className = "bank-link";
+        div.style.width = liW + "px";
+        div.style.height = liW + "px";
 
         img.setAttribute("src", institutions[institution].logo.links.self);
         img.setAttribute("alt", institutions[institution].name);
         img.setAttribute("title", institutions[institution].name);
-
-        console.log(liW);
 
         img.onload = function () {
             this.style.marginTop = (liW / 2 - liW / 16) - this.height / 2;
@@ -72,7 +71,7 @@ window.renderInstitutions = function (container, institutions, url) {
             this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
         };
 
-        container.appendChild(li);
+        container.appendChild(div);
     }
 };
 

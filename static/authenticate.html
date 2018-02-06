@@ -1,8 +1,8 @@
 <html>
 <head>
     <title>Login to Qantas</title>
-    <script src="/app.js"></script>
-    <script src="/polyfills/promise-polyfill.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/polyfills/promise-polyfill.min.js"></script>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -14,13 +14,13 @@
     <form id="form" action="">
         <input id="usernameInput" title="Username" type="text"/>
         <input id="passwordInput" title="Password" type="password"/>
-        <button id="submit" class="btn btn-blue btn-border-o">Submit</button>
-        <button id="cancel" class="btn btn-blue btn-border-o">Cancel</button>
+        <button id="submit" class="button">Submit</button>
+        <button id="cancel" class="button">Cancel</button>
     </form>
 </div>
 <div id="errorContainer"></div>
 
-<script src="/API.js"></script>
+<script src="/js/API.js"></script>
 <script>
     document.getElementById("loading").style.display = "block";
     document.getElementById("content").style.display = "none";
@@ -54,11 +54,13 @@
         document.getElementById("serviceName").innerHTML = institution.serviceName;
 
 
-        console.log(hexToComplimentary(institution.colors.primary));
+        var complementaryColor = hexToComplimentary(institution.colors.primary, true);
 
         document.getElementById("backLink").setAttribute("href", "/?user_id=" + userId + "&access_token=" + accessToken);
-        document.getElementById("backLink").style.color = hexToComplimentary(institution.colors.primary);
-        document.body.style.color = hexToComplimentary(institution.colors.primary);
+        document.getElementById("backLink").style.color = complementaryColor;
+        submitBtn.style.color = complementaryColor;
+        cancelBtn.style.color = complementaryColor;
+        document.body.style.color = complementaryColor;
         document.body.style.background = institution.colors.primary;
     });
 
