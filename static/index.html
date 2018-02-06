@@ -2,18 +2,21 @@
 <head>
     <title>Qantas</title>
     <script src="/app.js"></script>
+    <script src="/polyfills/promise-polyfill.min.js"></script>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <h2 id="loading">Loading data...</h2>
     <div id="content">
-        <h2>Hello user, select your institution to login</h2>
+        <h2>Select your institution</h2>
+        <form id="institutionSearchForm" class="search-form">
+            <input id="institutionSearch" type="text" placeholder="Search institutions">
+        </form>
         <ul id="institutionsContainer">
             <!--<li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>-->
-        </ul>​
+        </ul>
     </div>
     <div id="errorContainer"></div>
-
 
 <script src="/API.js"></script>
 <script>
@@ -26,8 +29,77 @@
         errorContainer = document.getElementById("errorContainer"),
         url = "/authenticate.html?user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken;
 
-    API.loadInstitutions(accessToken, url);
+    API.loadInstitutions(accessToken, url).then(function (institutions) {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("content").style.display = "block";
 
+        var instCont = document.getElementById("institutionsContainer");
+
+        window.renderInstitutions(instCont, institutions, url);
+    });
+
+    var institutionSearch = function (e) {
+        e.preventDefault();
+
+        var target, proceed = false;
+
+        if (e.target.nodeName.toLowerCase() === "input") {
+            target = e.target;
+        } else {
+            proceed = true;
+            target = document.getElementById("institutionSearch");
+        }
+
+        var searchTerm = target.value.trim(),
+            searchParser = function (term) {
+                if (!window.institutions) {
+                    return;
+                }
+
+                var matched = [],
+                    instCont = document.getElementById("institutionsContainer");
+
+                if (term.length < 2) {
+                    window.renderInstitutions(instCont, window.institutions);
+                    return;
+                }
+
+
+                for (var x = 0; x < window.institutions.length; x++) {
+                    var institution = window.institutions[x];
+
+                    if (institution.shortName.toLowerCase().indexOf(term.toLowerCase()) > -1) {
+                        matched.push(institution);
+                        continue;
+                    }
+
+                    if (institution.name.toLowerCase().indexOf(term.toLowerCase()) > -1) {
+                        matched.push(institution);
+                    }
+                }
+
+                window.renderInstitutions(instCont, matched);
+            };
+
+        if (!proceed) {
+            setTimeout(function () {
+                var searchTermNew = target.value.trim();
+
+                if (searchTermNew !== searchTerm) {
+                    return;
+                }
+
+                searchParser(searchTerm);
+            }, 700);
+
+            return;
+        }
+
+        searchParser(searchTerm);
+    };
+
+    document.getElementById("institutionSearchForm").addEventListener("submit", institutionSearch)
+    document.getElementById("institutionSearch").addEventListener("input", institutionSearch)
 
 </script>
 </body>

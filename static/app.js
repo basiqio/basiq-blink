@@ -1,7 +1,8 @@
+/*global Promise*/
 /*eslint no-console: "off"*/
 
 window.request = function(url, method, data, headers) {
-    return new SimplePromise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
 
 
@@ -34,6 +35,47 @@ window.request = function(url, method, data, headers) {
     });
 };
 
+window.renderInstitutions = function (container, institutions, url) {
+    container.innerHTML = "";
+
+    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+        liW = w / 3 - w / 9;
+
+    for (var institution in institutions) {
+        if (!institutions.hasOwnProperty(institution)) {
+            continue;
+        }
+        var instUrl = url.replace("{inst_id}", institutions[institution].id);
+        var li = document.createElement("li"),
+            a = document.createElement("a"),
+            img = document.createElement("img");
+
+        a.appendChild(img);
+        a.setAttribute("href", instUrl);
+
+        li.appendChild(a);
+        li.className = "bank-link";
+        li.style.width = liW + "px";
+        li.style.height = liW + "px";
+
+        img.setAttribute("src", institutions[institution].logo.links.self);
+        img.setAttribute("alt", institutions[institution].name);
+        img.setAttribute("title", institutions[institution].name);
+
+        console.log(liW);
+
+        img.onload = function () {
+            this.style.marginTop = (liW / 2 - liW / 16) - this.height / 2;
+        };
+
+        img.onerror = function () {
+            this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
+        };
+
+        container.appendChild(li);
+    }
+};
+
 function parseResponse(res) {
     try {
         return {
@@ -50,7 +92,7 @@ function parseResponse(res) {
     }
 }
 
-function SimplePromise(executor) {
+/*function SimplePromise(executor) {
     var self = this;
 
     self.state = "pending";
@@ -106,7 +148,7 @@ function SimplePromise(executor) {
     }
 
     return self;
-}
+}*/
 
 window.parseQueryVariables = function() {
     var queryString = window.location.search.substring(1),
