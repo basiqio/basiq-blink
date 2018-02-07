@@ -36,12 +36,12 @@ window.API = {
                 return resp.body;
             }).then(function (resp) {
                 var institutions = resp.data.map(function (inst) {
-                    return Object.assign({}, inst, {colors: {primary: "#f5f5f5"}});
+                    return Object.assign({}, inst, {colors: {primary: colors[inst.shortName] || colors["default"]}});
                 });
                 window.institutions = institutions;
 
                 if (window.localStorage && window.JSON) {
-                    localStorage.setItem("cachedInstitutions", JSON.stringify(resp.data));
+                    localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
                     localStorage.setItem("cacheTime", Date.now());
                 }
 
@@ -60,6 +60,15 @@ window.API = {
             return console.log("No id provided");
         }
         return new Promise(function (resolve) {
+            if (window.localStorage) {
+                var selectedInstitution = window.localStorage.getItem("selectedInstitution"),
+                    selectedInstitutionTime = window.localStorage.getItem("selectedInstitutionTime");
+
+                if (selectedInstitution && (Date.now() - parseInt(selectedInstitutionTime)) < 1000 * 60 * 5) {
+                    return resolve(JSON.parse(selectedInstitution));
+                }
+            }
+
             window.request("https://au-api.basiq.io/institutions/" + id, "GET", {}, {
                 "Authorization": "Bearer " + token
             }).then(function (resp) {
@@ -70,7 +79,12 @@ window.API = {
                 return resp.body;
             }).then(function (resp) {
                 resp.colors = {primary: colors[resp.shortName] || colors["default"]};
-                console.log(resp);
+
+                if (window.localStorage) {
+                    window.localStorage.setItem("selectedInstitution", JSON.stringify(resp));
+                    window.localStorage.setItem("selectedInstitutionTime", Date.now());
+                }
+
                 resolve(resp);
             }).catch(function (err) {
                 document.getElementById("loading").style.display = "none";

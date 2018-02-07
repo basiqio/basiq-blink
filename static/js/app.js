@@ -35,7 +35,7 @@ window.request = function(url, method, data, headers) {
     });
 };
 
-window.renderInstitutions = function (container, institutions, url) {
+window.renderInstitutions = function (container, institutions, url, search) {
     container.innerHTML = "";
 
     var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
@@ -54,6 +54,17 @@ window.renderInstitutions = function (container, institutions, url) {
         a.appendChild(img);
         a.setAttribute("href", instUrl);
 
+        a.onclick = (function (index) {
+            return function (e) {
+                e.preventDefault();
+                var institution = institutions[index];
+                window.localStorage.setItem("selectedInstitution", JSON.stringify(institution));
+                window.localStorage.setItem("selectedInstitutionTime", Date.now());
+
+                window.location.replace(this.href);
+            };
+        })(institution);
+
         div.appendChild(a);
         div.className = "bank-link";
         div.style.width = liW + "px";
@@ -64,15 +75,67 @@ window.renderInstitutions = function (container, institutions, url) {
         img.setAttribute("title", institutions[institution].name);
 
         img.onload = function () {
-            this.style.marginTop = (liW / 2 - liW / 16) - this.height / 2;
+            if (!search) {
+                this.style.marginTop = (liW / 2 - liW / 16) - this.height / 2;
+            } else {
+                this.style.marginTop = ((liW - (liW / 16) * 2) / 2) - (this.height);
+            }
         };
 
         img.onerror = function () {
             this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
         };
 
+        if (search) {
+            div.style.width = "100%";
+            div.style.height = liW / 2 + "px";
+            div.style.display = "block";
+            div.style.textAlign = "left";
+            var h3 = document.createElement("h3");
+            h3.style.display = "inline-block";
+            h3.style.verticalAlign = "middle";
+            img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
+            a.style.display = "inline-block";
+            a.style.width = "auto";
+            a.style.verticalAlign = "middle";
+
+            h3.innerHTML = institutions[institution].name;
+            div.appendChild(h3);
+        }
+
         container.appendChild(div);
     }
+};
+
+window.renderInstitution = function (institution, userId, accessToken) {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    if (institution.loginIdCaption) {
+        //document.getElementById("usernameInputLabel").innerHTML = institution.loginIdCaption + ":";
+        document.getElementById("usernameInput").setAttribute("placeholder", institution.loginIdCaption);
+    }
+    if (institution.passwordCaption) {
+        //document.getElementById("passwordInputLabel").innerHTML = institution.passwordCaption + ":";
+        document.getElementById("passwordInput").setAttribute("placeholder", institution.passwordCaption);
+    }
+
+    document.getElementById("title").innerHTML += "Login to " + institution.name;
+    document.getElementById("serviceName").innerHTML = institution.serviceName;
+
+    if (!institution.colors) {
+        institution.colors = {
+            primary: "#f5f5f5"
+        };
+    }
+
+    var complementaryColor = hexToComplimentary(institution.colors.primary, true);
+
+    document.getElementById("backLink").setAttribute("href", "/?user_id=" + userId + "&access_token=" + accessToken);
+    document.getElementById("backLink").style.color = complementaryColor;
+    document.getElementById("submitBtn").style.color = complementaryColor;
+    document.getElementById("cancelBtn").style.color = complementaryColor;
+    document.body.style.color = complementaryColor;
+    document.body.style.background = institution.colors.primary;
 };
 
 function parseResponse(res) {
@@ -90,6 +153,53 @@ function parseResponse(res) {
         };
     }
 }
+
+function hexToComplimentary(hex, bw){
+    if (hex.indexOf("#") === 0) {
+        hex = hex.slice(1);
+    }
+    // convert 3-digit hex to 6-digits.
+    if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    if (hex.length !== 6) {
+        throw new Error("Invalid HEX color.");
+    }
+    var r = parseInt(hex.slice(0, 2), 16),
+        g = parseInt(hex.slice(2, 4), 16),
+        b = parseInt(hex.slice(4, 6), 16);
+    if (bw) {
+        // http://stackoverflow.com/a/3943023/112731
+        return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+            ? "#000000"
+            : "#FFFFFF";
+    }
+
+    var padZero = function(str, len) {
+        len = len || 2;
+        var zeros = new Array(len).join("0");
+        return (zeros + str).slice(-len);
+    };
+
+    // invert color components
+    r = (255 - r).toString(16);
+    g = (255 - g).toString(16);
+    b = (255 - b).toString(16);
+    // pad each with zeros and return
+    return "#" + padZero(r) + padZero(g) + padZero(b);
+}
+
+window.parseQueryVariables = function() {
+    var queryString = window.location.search.substring(1),
+        query = {},
+        pairs = queryString.split("&");
+
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split("=");
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
+    }
+    return query;
+};
 
 /*function SimplePromise(executor) {
     var self = this;
@@ -148,15 +258,3 @@ function parseResponse(res) {
 
     return self;
 }*/
-
-window.parseQueryVariables = function() {
-    var queryString = window.location.search.substring(1),
-        query = {},
-        pairs = queryString.split("&");
-
-    for (var i = 0; i < pairs.length; i++) {
-        var pair = pairs[i].split("=");
-        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
-    }
-    return query;
-};
