@@ -15,6 +15,7 @@
         <div id="institutionsContainer">
             <!--<li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>-->
         </div>
+        <button style="color: #1c4765; margin: 3%; width: 94%" id="cancelBtn" class="button">Cancel</button>
     </div>
     <div id="errorContainer"></div>
 
@@ -100,7 +101,11 @@
 
     document.getElementById("institutionSearchForm").addEventListener("submit", institutionSearch)
     document.getElementById("institutionSearch").addEventListener("input", institutionSearch)
+    document.getElementById("cancelBtn").addEventListener("click", function (e) {
+        e.preventDefault();
 
+        window.location.replace("basiq://cancellation");
+    });
 </script>
 </body>
 </html>

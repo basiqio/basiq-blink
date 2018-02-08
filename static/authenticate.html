@@ -53,8 +53,8 @@
     };
 
     form.addEventListener("submit", formHandler);
-    submitBtn.addEventListener("click", formHandler);
-    cancelBtn.addEventListener("click", function (e) {
+    document.getElementById("submitBtn").addEventListener("click", formHandler);
+    document.getElementById("cancelBtn").addEventListener("click", function (e) {
         e.preventDefault();
 
         window.location.replace("basiq://cancellation");

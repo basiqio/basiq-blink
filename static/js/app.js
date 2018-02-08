@@ -39,6 +39,7 @@ window.renderInstitutions = function (container, institutions, url, search) {
     container.innerHTML = "";
 
     var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+        h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
         liW = w / 3 - w / 9;
 
     for (var institution in institutions) {
@@ -46,10 +47,12 @@ window.renderInstitutions = function (container, institutions, url, search) {
             continue;
         }
 
+
         var instUrl = url.replace("{inst_id}", institutions[institution].id);
         var div = document.createElement("div"),
             a = document.createElement("a"),
-            img = document.createElement("img");
+            img = document.createElement("img"),
+            searchHeight = liW / (w/h > 0.8 ? 1.1 : 0.8);
 
         a.appendChild(img);
         a.setAttribute("href", instUrl);
@@ -78,7 +81,9 @@ window.renderInstitutions = function (container, institutions, url, search) {
             if (!search) {
                 this.style.marginTop = (liW / 2 - liW / 16) - this.height / 2;
             } else {
-                this.style.marginTop = ((liW - (liW / 16) * 2) / 2) - (this.height);
+                var target = this.parentElement;
+
+                target.style.lineHeight = (searchHeight) / 2 + "px";
             }
         };
 
@@ -88,19 +93,25 @@ window.renderInstitutions = function (container, institutions, url, search) {
 
         if (search) {
             div.style.width = "100%";
-            div.style.height = liW / 2 + "px";
-            div.style.display = "block";
-            div.style.textAlign = "left";
+            div.style.height = searchHeight + "px";
+            div.className = "bank-link-search";
+
             var h3 = document.createElement("h3");
-            h3.style.display = "inline-block";
-            h3.style.verticalAlign = "middle";
+            h3.className = "bank-link-search-header";
+
             img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
-            a.style.display = "inline-block";
-            a.style.width = "auto";
-            a.style.verticalAlign = "middle";
+            a.className = "bank-link-nav-search";
+
+            if (naiveFlexBoxSupport(document)) {
+                a.style.display = "flex";
+                a.style.alignItems = "center";
+            } else {
+                a.style.display = "inline-block";
+                a.style.verticalAlign = "middle";
+            }
 
             h3.innerHTML = institutions[institution].name;
-            div.appendChild(h3);
+            a.appendChild(h3);
         }
 
         container.appendChild(div);
@@ -200,6 +211,12 @@ window.parseQueryVariables = function() {
     }
     return query;
 };
+
+function naiveFlexBoxSupport (d){
+    var f = "flex", e = d.createElement("b");
+    e.style.display = f;
+    return e.style.display === f;
+}
 
 /*function SimplePromise(executor) {
     var self = this;
