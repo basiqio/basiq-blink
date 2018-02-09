@@ -63,8 +63,6 @@
                 if (steps[step].title === "verify-credentials") {
                     switch (steps[step].status) {
                         case "failed":
-                            console.log("Credentials step has failed", steps[step]);
-
                             return sendEventNotification("connection", {
                                 success: false,
                                 data: steps[step].result
@@ -73,8 +71,6 @@
                         case "success":
                             var url = steps[step].result.url,
                                 connectionId = url.substr(url.lastIndexOf("/") + 1);
-
-                            console.log("Credentials step is successfull");
 
                             return sendEventNotification("connection", {
                                 success: true,

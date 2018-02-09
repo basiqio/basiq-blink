@@ -167,7 +167,6 @@ window.sendEventNotification = function (event, payload) {
             url += JSON.stringify(payload, null, 0);
         }
         window.location.replace(url);
-        console.log("Protocol");
     }
 };
 
