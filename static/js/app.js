@@ -150,14 +150,25 @@ window.renderInstitution = function (institution, userId, accessToken) {
 };
 
 window.sendEventNotification = function (event, payload) {
-    var url = "basiq://"+event+"/";
+    var queryVars = parseQueryVariables(),
+        iframe = queryVars["iframe"];
 
-    if (payload) {
-        url += JSON.stringify(payload,  null, 0);
+    if (iframe && iframe === "true") {
+        var data = {
+            event: event,
+            payload: payload
+        };
+
+        window.parent.postMessage(JSON.stringify(data), window.parent.location.origin);
+    } else {
+        var url = "basiq://" + event + "/";
+
+        if (payload) {
+            url += JSON.stringify(payload, null, 0);
+        }
+        window.location.replace(url);
+        console.log("Protocol");
     }
-    window.location.replace(url);
-
-    return url;
 };
 
 function parseResponse(res) {
@@ -211,7 +222,7 @@ function hexToComplimentary(hex, bw){
     return "#" + padZero(r) + padZero(g) + padZero(b);
 }
 
-window.parseQueryVariables = function() {
+function parseQueryVariables() {
     var queryString = window.location.search.substring(1),
         query = {},
         pairs = queryString.split("&");
@@ -221,7 +232,7 @@ window.parseQueryVariables = function() {
         query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
     }
     return query;
-};
+}
 
 function naiveFlexBoxSupport (d){
     var f = "flex", e = d.createElement("b");

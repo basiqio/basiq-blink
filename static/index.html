@@ -109,6 +109,10 @@
 
         sendEventNotification("cancellation");
     });
+
+    setTimeout(function () {
+        sendEventNotification("handshake", {"success": true});
+    }, 1000)
 </script>
 </body>
 </html>
