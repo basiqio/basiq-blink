@@ -30,14 +30,18 @@
         errorContainer = document.getElementById("errorContainer"),
         url = "/authenticate.html?user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken;
 
-    API.loadInstitutions(accessToken).then(function (institutions) {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("content").style.display = "block";
+    if (!userId || !accessToken) {
+        errorContainer.innerHTML = "Necessary parameters not provided";
+    } else {
+        API.loadInstitutions(accessToken).then(function (institutions) {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").style.display = "block";
 
-        var instCont = document.getElementById("institutionsContainer");
+            var instCont = document.getElementById("institutionsContainer");
 
-        window.renderInstitutions(instCont, institutions, url);
-    });
+            window.renderInstitutions(instCont, institutions, url);
+        });
+    }
 
     var institutionSearch = function (e) {
         e.preventDefault();
@@ -64,7 +68,6 @@
                     window.renderInstitutions(instCont, window.institutions, url);
                     return;
                 }
-
 
                 for (var x = 0; x < window.institutions.length; x++) {
                     var institution = window.institutions[x];
@@ -104,7 +107,7 @@
     document.getElementById("cancelBtn").addEventListener("click", function (e) {
         e.preventDefault();
 
-        window.location.replace("basiq://cancellation");
+        sendEventNotification("cancellation");
     });
 </script>
 </body>

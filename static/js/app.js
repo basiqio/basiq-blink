@@ -149,6 +149,17 @@ window.renderInstitution = function (institution, userId, accessToken) {
     document.body.style.background = institution.colors.primary;
 };
 
+window.sendEventNotification = function (event, payload) {
+    var url = "basiq://"+event+"/";
+
+    if (payload) {
+        url += JSON.stringify(payload,  null, 0);
+    }
+    window.location.replace(url);
+
+    return url;
+};
+
 function parseResponse(res) {
     try {
         return {

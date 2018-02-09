@@ -1,4 +1,5 @@
 /*global Promise*/
+/*global sendEventNotification*/
 /*eslint no-console: "off"*/
 
 var colors = {
@@ -105,7 +106,7 @@ window.API = {
         loginId = loginId.trim();
         password = password.trim();
 
-        return new Promise(function () {
+        return new Promise(function (resolve) {
             window.request("https://au-api.basiq.io/users/" + userId + "/connections", "POST", {
                 loginId: loginId,
                 password: password,
@@ -121,9 +122,40 @@ window.API = {
 
                 return resp.body;
             }).then(function (resp) {
-                var connectionData = {};
-                connectionData.id = resp.id;
-                window.location.replace("basiq://connection/" + JSON.stringify(connectionData, null, 0));
+                sendEventNotification("job", {
+                    success: true,
+                    data: {
+                        id: resp.id
+                    }
+                });
+
+                resolve(resp);
+            }).catch(function (err) {
+                document.getElementById("loading").style.display = "none";
+
+                window.errorContainer.innerHTML = err.body && err.body.errorMessage
+                    ? "Error: " + err.body.errorMessage
+                    : "Unknown error";
+                console.error(err);
+            });
+        });
+    },
+    checkJobStatus: function (token, jobId) {
+        if (!jobId) {
+            throw new Error("Job id not provided: " + JSON.stringify(arguments));
+        }
+
+        return new Promise(function (resolve) {
+            window.request("https://au-api.basiq.io/jobs/" + jobId, "GET", {}, {
+                "Authorization": "Bearer " + token
+            }).then(function (resp) {
+                if (resp.statusCode > 299) {
+                    throw resp;
+                }
+
+                return resp.body;
+            }).then(function (resp) {
+                resolve(resp);
             }).catch(function (err) {
                 document.getElementById("loading").style.display = "none";
 
