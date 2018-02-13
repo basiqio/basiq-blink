@@ -52,8 +52,9 @@ window.renderInstitutions = function (container, institutions, url, search) {
         var div = document.createElement("div"),
             a = document.createElement("a"),
             img = document.createElement("img"),
-            searchHeight = liW / (w/h > 0.8 ? 1.1 : 0.8);
+            searchHeight = liW / (w/h > 0.8 ? 1.2 : 1);
 
+        console.log(w/h);
         a.appendChild(img);
         a.setAttribute("href", instUrl);
 
@@ -238,6 +239,20 @@ function naiveFlexBoxSupport (d){
     e.style.display = f;
     return e.style.display === f;
 }
+
+window.supportsCSSAnimations = function() {
+    var domPrefixes = "Webkit Moz O ms Khtml".split(" "),
+        elem = document.createElement("div");
+
+    if( elem.style.animationName !== undefined ) { return true; }    
+    for( var i = 0; i < domPrefixes.length; i++ ) {
+        if( elem.style[ domPrefixes[i] + "AnimationName" ] !== undefined ) {
+            return true;
+        }
+    }
+
+    return false;
+};
 
 /*function SimplePromise(executor) {
     var self = this;

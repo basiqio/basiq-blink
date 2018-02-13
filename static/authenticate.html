@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-
 <h2 id="loading">Loading data...</h2>
 <div id="content">
     <h2 id="title"><a id="backLink" class="back-link" href="/"><</a></h2>
@@ -19,7 +18,11 @@
     </form>
 </div>
 <div id="errorContainer"></div>
-
+<div id="statusContainer" class="status-container loading-pulse">
+    <h2 id="statusTitle">Connecting to your account. Please wait</h2>
+    <div id="statusMessage"></div>
+    <a href="#" class="close-button" onclick="hideLoadingScreen()">Close X</a>
+</div>
 <script src="/js/API.js"></script>
 <script>
     document.getElementById("loading").style.display = "block";
@@ -43,14 +46,26 @@
     var formHandler = function (e) {
         e.preventDefault();
 
+        var username = document.getElementById("usernameInput").value.trim(),
+            password = document.getElementById("passwordInput").value.trim();
+
+        if (!username || !password) {
+            document.getElementById("errorContainer").innerHTML = "No username or password provided";
+            return;
+        }
+
+        showLoadingScreen();
+
         API.createUserConnection(
             accessToken,
             userId,
             institutionId,
-            document.getElementById("usernameInput").value,
-            document.getElementById("passwordInput").value
+            username,
+            password
         ).then(function (jobData) {
             setTimeout(checkJobStatus.bind(undefined, jobData), 100);
+        }).catch(function(err) {
+            document.getElementById("errorContainer").innerHTML = e.message;
         })
     };
 
@@ -63,12 +78,18 @@
                 if (steps[step].title === "verify-credentials") {
                     switch (steps[step].status) {
                         case "failed":
+                            document.getElementById("statusTitle").innerHTML = "Invalid credentials";
+                            document.getElementById("statusMessage").innerHTML = steps[step].result.detail;
+
                             return sendEventNotification("connection", {
                                 success: false,
                                 data: steps[step].result
                             });
                             break;
                         case "success":
+                            document.getElementById("statusTitle").innerHTML = "Success";
+                            document.getElementById("statusMessage").innerHTML = "You are connected to your account.";
+
                             var url = steps[step].result.url,
                                 connectionId = url.substr(url.lastIndexOf("/") + 1);
 
@@ -96,6 +117,46 @@
 
         sendEventNotification("cancellation");
     });
+
+    //setTimeout(showLoadingScreen.bind(undefined, 0), 500)
+
+    var fast = 0, slow = 60;
+
+    function showLoadingScreen(x) {
+        if (supportsCSSAnimations()) {
+            document.getElementById("statusContainer").classList.remove("status-animate-inactive");
+            document.getElementById("statusContainer").classList.add("status-animate-active");
+            return;
+        }
+
+        if (!x) x = 0;
+
+        document.getElementById("statusContainer").style.top = 150-x + "%";
+
+        var tween = Math.max(x/150/3 * slow, fast);
+
+        if (x < 150) {
+            setTimeout(showLoadingScreen.bind(undefined, x+0.5), tween);
+        }
+    }
+
+    function hideLoadingScreen(x) {
+        if (supportsCSSAnimations()) {
+            document.getElementById("statusContainer").classList.remove("status-animate-active");            
+            document.getElementById("statusContainer").classList.add("status-animate-inactive");
+            return;
+        }
+
+        if (!x) x = 0;
+
+        document.getElementById("statusContainer").style.top = 0+x + "%";
+
+        var tween = Math.max(x/150/3 * slow, fast);
+
+        if (x < 150) {
+            setTimeout(hideLoadingScreen.bind(undefined, x+0.5), tween);
+        }
+    }
 
 </script>
 </body>
