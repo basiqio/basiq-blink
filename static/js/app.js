@@ -1,4 +1,9 @@
 /*global Promise*/
+/*global API*/
+/*global sendEventNotification*/
+/*exported showLoadingScreen*/
+/*exported hideLoadingScreen*/
+/*exported checkJobStatus*/
 /*eslint no-console: "off"*/
 
 window.request = function(url, method, data, headers) {
@@ -54,7 +59,6 @@ window.renderInstitutions = function (container, institutions, url, search) {
             img = document.createElement("img"),
             searchHeight = liW / (w/h > 0.8 ? 1.2 : 1);
 
-        console.log(w/h);
         a.appendChild(img);
         a.setAttribute("href", instUrl);
 
@@ -240,7 +244,7 @@ function naiveFlexBoxSupport (d){
     return e.style.display === f;
 }
 
-window.supportsCSSAnimations = function() {
+function supportsCSSAnimations() {
     var domPrefixes = "Webkit Moz O ms Khtml".split(" "),
         elem = document.createElement("div");
 
@@ -252,7 +256,152 @@ window.supportsCSSAnimations = function() {
     }
 
     return false;
+}
+
+
+var fast = 0, slow = 60;
+
+function showLoadingScreen(x) {
+    if (!x) {
+        document.getElementById("statusTitle").innerHTML = "Connecting to your account. Please wait";
+        document.getElementById("statusMessage").innerHTML = "";
+        document.getElementById("closeStatusOverlay").style.display = "none";
+        x = 0;
+    }
+
+    if (supportsCSSAnimations()) {
+        document.getElementById("statusContainer").classList.remove("status-animate-inactive");
+        document.getElementById("statusContainer").classList.add("status-animate-active");
+        return;
+    }
+
+    document.getElementById("statusContainer").style.top = 150-x + "%";
+
+    var tween = Math.max(x/150/3 * slow, fast);
+
+    if (x < 150) {
+        setTimeout(showLoadingScreen.bind(undefined, x+0.5), tween);
+    }
+}
+
+function hideLoadingScreen(x) {
+    if (supportsCSSAnimations()) {
+        document.getElementById("statusContainer").classList.remove("status-animate-active");            
+        document.getElementById("statusContainer").classList.add("status-animate-inactive");
+        return;
+    }
+
+    if (!x) x = 0;
+
+    document.getElementById("statusContainer").style.top = 0+x + "%";
+
+    var tween = Math.max(x/150/3 * slow, fast);
+
+    if (x < 150) {
+        setTimeout(hideLoadingScreen.bind(undefined, x+0.5), tween);
+    }
+}
+
+
+window.institutionSearch = function (url, e) {
+    e.preventDefault();
+
+    var target, proceed = false;
+
+    if (e.target.nodeName.toLowerCase() === "input") {
+        target = e.target;
+    } else {
+        proceed = true;
+        target = document.getElementById("institutionSearch");
+    }
+
+    var searchTerm = target.value.trim(),
+        searchParser = function (term) {
+            if (!window.institutions) {
+                return;
+            }
+
+            var matched = [],
+                instCont = document.getElementById("institutionsContainer");
+
+            if (term.length < 2) {
+                window.renderInstitutions(instCont, window.institutions, url);
+                return;
+            }
+
+            for (var x = 0; x < window.institutions.length; x++) {
+                var institution = window.institutions[x];
+
+                if (institution.shortName.toLowerCase().indexOf(term.toLowerCase()) > -1) {
+                    matched.push(institution);
+                    continue;
+                }
+
+                if (institution.name.toLowerCase().indexOf(term.toLowerCase()) > -1) {
+                    matched.push(institution);
+                }
+            }
+
+            window.renderInstitutions(instCont, matched, url, true);
+        };
+
+    if (!proceed) {
+        setTimeout(function () {
+            var searchTermNew = target.value.trim();
+
+            if (searchTermNew !== searchTerm) {
+                return;
+            }
+
+            searchParser(searchTerm);
+        }, 700);
+
+        return;
+    }
+
+    searchParser(searchTerm);
 };
+
+function checkJobStatus(accessToken, jobData) {
+    API.checkJobStatus(accessToken, jobData.id).then(function (resp) {
+        console.log(resp);
+        var steps = resp.steps;
+
+        for (var step in steps) {
+            if (steps[step].title === "verify-credentials") {
+                switch (steps[step].status) {
+                case "failed":
+                    document.getElementById("statusTitle").innerHTML = "Invalid credentials";
+                    document.getElementById("statusMessage").innerHTML = steps[step].result.detail;
+                    document.getElementById("closeStatusOverlay").style.display = "block";
+
+                    return sendEventNotification("connection", {
+                        success: false,
+                        data: steps[step].result
+                    });
+                case "success":
+                    document.getElementById("statusTitle").innerHTML = "Success";
+                    document.getElementById("statusMessage").innerHTML = "You are connected to your account.";
+                    document.getElementById("closeStatusOverlay").style.display = "block";
+
+                    var url = steps[step].result.url,
+                        connectionId = url.substr(url.lastIndexOf("/") + 1);
+
+                    return sendEventNotification("connection", {
+                        success: true,
+                        data: {
+                            id: connectionId
+                        }
+                    });
+                case "pending":
+                case "in-progress":
+                    setTimeout(checkJobStatus.bind(undefined, jobData), 1000);
+                }
+
+            }
+        }
+    });
+}
 
 /*function SimplePromise(executor) {
     var self = this;

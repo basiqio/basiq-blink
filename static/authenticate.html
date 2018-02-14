@@ -21,7 +21,7 @@
 <div id="statusContainer" class="status-container loading-pulse">
     <h2 id="statusTitle">Connecting to your account. Please wait</h2>
     <div id="statusMessage"></div>
-    <a href="#" class="close-button" onclick="hideLoadingScreen()">Close X</a>
+    <a href="#" id="closeStatusOverlay" class="close-button" onclick="hideLoadingScreen()">Close X</a>
 </div>
 <script src="/js/API.js"></script>
 <script>
@@ -63,52 +63,11 @@
             username,
             password
         ).then(function (jobData) {
-            setTimeout(checkJobStatus.bind(undefined, jobData), 100);
+            setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
         }).catch(function(err) {
             document.getElementById("errorContainer").innerHTML = e.message;
         })
     };
-
-    function checkJobStatus(jobData) {
-        API.checkJobStatus(accessToken, jobData.id).then(function (resp) {
-            console.log(resp);
-            var steps = resp.steps;
-
-            for (var step in steps) {
-                if (steps[step].title === "verify-credentials") {
-                    switch (steps[step].status) {
-                        case "failed":
-                            document.getElementById("statusTitle").innerHTML = "Invalid credentials";
-                            document.getElementById("statusMessage").innerHTML = steps[step].result.detail;
-
-                            return sendEventNotification("connection", {
-                                success: false,
-                                data: steps[step].result
-                            });
-                            break;
-                        case "success":
-                            document.getElementById("statusTitle").innerHTML = "Success";
-                            document.getElementById("statusMessage").innerHTML = "You are connected to your account.";
-
-                            var url = steps[step].result.url,
-                                connectionId = url.substr(url.lastIndexOf("/") + 1);
-
-                            return sendEventNotification("connection", {
-                                success: true,
-                                data: {
-                                    id: connectionId
-                                }
-                            });
-                            break;
-                        case "pending":
-                        case "in-progress":
-                            setTimeout(checkJobStatus.bind(undefined, jobData), 1000);
-                    }
-
-                }
-            }
-        })
-    }
 
     form.addEventListener("submit", formHandler);
     document.getElementById("submitBtn").addEventListener("click", formHandler);
@@ -120,43 +79,6 @@
 
     //setTimeout(showLoadingScreen.bind(undefined, 0), 500)
 
-    var fast = 0, slow = 60;
-
-    function showLoadingScreen(x) {
-        if (supportsCSSAnimations()) {
-            document.getElementById("statusContainer").classList.remove("status-animate-inactive");
-            document.getElementById("statusContainer").classList.add("status-animate-active");
-            return;
-        }
-
-        if (!x) x = 0;
-
-        document.getElementById("statusContainer").style.top = 150-x + "%";
-
-        var tween = Math.max(x/150/3 * slow, fast);
-
-        if (x < 150) {
-            setTimeout(showLoadingScreen.bind(undefined, x+0.5), tween);
-        }
-    }
-
-    function hideLoadingScreen(x) {
-        if (supportsCSSAnimations()) {
-            document.getElementById("statusContainer").classList.remove("status-animate-active");            
-            document.getElementById("statusContainer").classList.add("status-animate-inactive");
-            return;
-        }
-
-        if (!x) x = 0;
-
-        document.getElementById("statusContainer").style.top = 0+x + "%";
-
-        var tween = Math.max(x/150/3 * slow, fast);
-
-        if (x < 150) {
-            setTimeout(hideLoadingScreen.bind(undefined, x+0.5), tween);
-        }
-    }
 
 </script>
 </body>
