@@ -25,7 +25,7 @@
     document.getElementById("content").style.display = "none";
 
     var queryVars = parseQueryVariables(),
-        iFrame = !!queryVars["iframe"],
+        iFrame = !!queryVars["iframe"] && queryVars["iframe"] === true,
         userId = queryVars["user_id"],
         accessToken = queryVars["access_token"],
         errorContainer = document.getElementById("errorContainer"),

@@ -10,6 +10,7 @@ window.request = function(url, method, data, headers) {
     return new Promise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
 
+        console.log("withCredentials" in xhttp);
 
         if (method.toUpperCase() === "POST") {
             xhttp.open("POST", url, true);
@@ -34,7 +35,8 @@ window.request = function(url, method, data, headers) {
         xhttp.addEventListener("load", function () {
             resolve(parseResponse(xhttp));
         });
-        xhttp.addEventListener("error", function () {
+        xhttp.addEventListener("error", function (e) {
+            console.log(xhttp, e);
             reject(parseResponse(xhttp));
         });
     });

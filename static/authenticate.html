@@ -65,7 +65,7 @@
         ).then(function (jobData) {
             setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
         }).catch(function(err) {
-            document.getElementById("errorContainer").innerHTML = e.message;
+            document.getElementById("errorContainer").innerHTML = err.message;
         })
     };
 

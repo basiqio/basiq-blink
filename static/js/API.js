@@ -62,11 +62,11 @@ window.API = {
         }
         return new Promise(function (resolve) {
             if (window.localStorage) {
-                var selectedInstitution = window.localStorage.getItem("selectedInstitution"),
+                var selectedInstitution = window.localStorage.getItem("selectedInstitution") && JSON.parse(window.localStorage.getItem("selectedInstitution")),
                     selectedInstitutionTime = window.localStorage.getItem("selectedInstitutionTime");
 
-                if (selectedInstitution && (Date.now() - parseInt(selectedInstitutionTime)) < 1000 * 60 * 5) {
-                    return resolve(JSON.parse(selectedInstitution));
+                if (selectedInstitution && selectedInstitution.id === id && (Date.now() - parseInt(selectedInstitutionTime)) < 1000 * 60 * 5) {
+                    return resolve(selectedInstitution);
                 }
             }
 
