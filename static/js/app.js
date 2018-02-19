@@ -136,6 +136,11 @@ window.renderInstitution = function (institution, userId, accessToken) {
         //document.getElementById("passwordInputLabel").innerHTML = institution.passwordCaption + ":";
         document.getElementById("passwordInput").setAttribute("placeholder", institution.passwordCaption);
     }
+    if (institution.securityCodeCaption) {
+        document.getElementById("securityInput").style.display = "block";
+        document.getElementById("securityInput").setAttribute("placeholder", institution.securityCodeCaption);
+        document.getElementById("securityInput").setAttribute("required", "true");
+    }
 
     document.getElementById("title").innerHTML += "Login to " + institution.name;
     document.getElementById("serviceName").innerHTML = institution.serviceName;

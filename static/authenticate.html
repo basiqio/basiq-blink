@@ -13,6 +13,7 @@
     <form id="form" action="">
         <input id="usernameInput" title="Username" type="text"/>
         <input id="passwordInput" title="Password" type="password"/>
+        <input id="securityInput" title="Security code" type="password"/>
         <button id="submitBtn" class="button">Submit</button>
         <button id="cancelBtn" class="button">Cancel</button>
     </form>
@@ -27,6 +28,7 @@
 <script>
     document.getElementById("loading").style.display = "block";
     document.getElementById("content").style.display = "none";
+    document.getElementById("securityInput").style.display = "none";
 
     var queryVars = parseQueryVariables(),
         institutionId = queryVars.institution_id,
@@ -47,10 +49,22 @@
         e.preventDefault();
 
         var username = document.getElementById("usernameInput").value.trim(),
-            password = document.getElementById("passwordInput").value.trim();
+            password = document.getElementById("passwordInput").value.trim(),
+            security = document.getElementById("securityInput").value.trim(),
+            securityRequired = document.getElementById("securityInput").getAttribute("required") === "true";
 
-        if (!username || !password) {
-            document.getElementById("errorContainer").innerHTML = "No username or password provided";
+        if (!username) {
+            document.getElementById("errorContainer").innerHTML = "No username provided";
+            return;
+        }
+
+        if (!password) {
+            document.getElementById("errorContainer").innerHTML = "No password provided";
+            return;
+        }
+
+        if (securityRequired && security.length === 0) {
+            document.getElementById("errorContainer").innerHTML = "No security code provided";
             return;
         }
 
