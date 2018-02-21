@@ -11,6 +11,7 @@
   },
   "scripts": {
     "start": "sudo nodemon index.js",
+    "deploy": "aws s3 sync static s3://basiq-blink --acl public-read",
     "lint": "./node_modules/.bin/eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

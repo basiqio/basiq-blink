@@ -139,7 +139,6 @@ window.renderInstitution = function (institution, userId, accessToken) {
     if (institution.securityCodeCaption) {
         document.getElementById("securityInput").style.display = "block";
         document.getElementById("securityInput").setAttribute("placeholder", institution.securityCodeCaption);
-        document.getElementById("securityInput").setAttribute("required", "true");
     }
 
     document.getElementById("title").innerHTML += "Login to " + institution.name;
@@ -171,7 +170,7 @@ window.sendEventNotification = function (event, payload) {
             payload: payload
         };
 
-        window.parent.postMessage(JSON.stringify(data), window.parent.location.origin);
+        window.parent.postMessage(JSON.stringify(data), "*");
     } else {
         var url = "basiq://" + event + "/";
 
@@ -375,6 +374,9 @@ function checkJobStatus(accessToken, jobData) {
         var steps = resp.steps;
 
         for (var step in steps) {
+            if (!steps.hasOwnProperty(step)) {
+                continue;
+            }
             if (steps[step].title === "verify-credentials") {
                 switch (steps[step].status) {
                 case "failed":
@@ -402,7 +404,7 @@ function checkJobStatus(accessToken, jobData) {
                     });
                 case "pending":
                 case "in-progress":
-                    setTimeout(checkJobStatus.bind(undefined, jobData), 1000);
+                    setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 1000);
                 }
 
             }

@@ -50,8 +50,7 @@
 
         var username = document.getElementById("usernameInput").value.trim(),
             password = document.getElementById("passwordInput").value.trim(),
-            security = document.getElementById("securityInput").value.trim(),
-            securityRequired = document.getElementById("securityInput").getAttribute("required") === "true";
+            security = document.getElementById("securityInput").value.trim();
 
         if (!username) {
             document.getElementById("errorContainer").innerHTML = "No username provided";
@@ -63,11 +62,6 @@
             return;
         }
 
-        if (securityRequired && security.length === 0) {
-            document.getElementById("errorContainer").innerHTML = "No security code provided";
-            return;
-        }
-
         showLoadingScreen();
 
         API.createUserConnection(
@@ -75,7 +69,8 @@
             userId,
             institutionId,
             username,
-            password
+            password,
+            security
         ).then(function (jobData) {
             setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
         }).catch(function(err) {

@@ -98,22 +98,29 @@ window.API = {
             });
         });
     },
-    createUserConnection: function (token, userId, institutionId, loginId, password) {
+    createUserConnection: function (token, userId, institutionId, loginId, password, securityCode) {
         if (!loginId || !password) {
             throw new Error("No user id or password provided: " + JSON.stringify(arguments));
         }
 
         loginId = loginId.trim();
         password = password.trim();
+        securityCode = securityCode.trim();
+
+        var payload = {
+            loginId: loginId,
+            password: password,
+            institution: {
+                id: institutionId
+            }
+        };
+
+        if (securityCode.length > 0) {
+            payload["securityCode"] = securityCode;
+        }
 
         return new Promise(function (resolve) {
-            window.request("https://au-api.basiq.io/users/" + userId + "/connections", "POST", {
-                loginId: loginId,
-                password: password,
-                institution: {
-                    id: institutionId
-                }
-            }, {
+            window.request("https://au-api.basiq.io/users/" + userId + "/connections", "POST", payload, {
                 "Authorization": "Bearer " + token
             }).then(function (resp) {
                 if (resp.statusCode > 299) {
