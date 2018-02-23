@@ -5,8 +5,8 @@ your applications.
 
 ## Introduction
 
-The Basiq Blink service enables you  to easily implement our services
-into your application by providing you with a simple usage interface. The interface provided is a web based, served from Cloudfront so the latency should be minimal. It can be used from your iOS or Android apps using a webview, or web based apps by using our JS control, or by manually displaying it using an iframe.
+The Basiq Blink service enables you to easily implement our services
+into your application by providing you with a simple usage interface. The interface provided is web based, served from Cloudfront so the latency should be minimal. It can be used from your iOS or Android apps using a webview, or web based apps by using our JS control, or by manually displaying it using an iframe.
 
 ## Setup
 
