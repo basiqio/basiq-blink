@@ -10,8 +10,6 @@ window.request = function(url, method, data, headers) {
     return new Promise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
 
-        console.log("withCredentials" in xhttp);
-
         if (method.toUpperCase() === "POST") {
             xhttp.open("POST", url, true);
             xhttp.setRequestHeader("Content-type", "application/json");
@@ -370,7 +368,6 @@ window.institutionSearch = function (url, e) {
 
 function checkJobStatus(accessToken, jobData) {
     API.checkJobStatus(accessToken, jobData.id).then(function (resp) {
-        console.log(resp);
         var steps = resp.steps;
 
         for (var step in steps) {
