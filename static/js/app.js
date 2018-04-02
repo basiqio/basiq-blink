@@ -179,6 +179,29 @@ window.sendEventNotification = function (event, payload) {
     }
 };
 
+window.checkAccessToken = function(token) {
+    if (!token) {
+        return "No token provided"; 
+    }
+
+    var sections = token.split(".").filter(Boolean);
+    if (sections.length < 3) {
+        return "Invalid token provided";
+    }
+
+    try {
+        var claims = JSON.parse(atob(sections[1]));
+        if (!claims.scope || claims.scope.toUpperCase() !== "CLIENT_ACCESS") {
+            return "Invalid token scope provided";
+        }
+    } catch (err) {
+        return err.message;
+    }
+
+    return null;
+
+};
+
 function parseResponse(res) {
     try {
         return {

@@ -35,59 +35,65 @@
         userId = queryVars.user_id,
         accessToken = queryVars.access_token,
         form = document.getElementById("form"),
-        errorContainer = document.getElementById("errorContainer");
+        errorContainer = document.getElementById("errorContainer"),
+        error = checkAccessToken(accessToken);
 
-    if (!institutionId) {
-        throw new Error("No institution id provided");
-    }
+    if (error) {
+        document.getElementById("loading").style.display = "none";
+        window.errorContainer.innerHTML = error;
+    } else {
 
-    API.loadInstitution(institutionId, accessToken).then(function (institution) {
-        renderInstitution(institution, userId, accessToken);
-    });
-
-    var formHandler = function (e) {
-        e.preventDefault();
-
-        var username = document.getElementById("usernameInput").value.trim(),
-            password = document.getElementById("passwordInput").value.trim(),
-            security = document.getElementById("securityInput").value.trim();
-
-        if (!username) {
-            document.getElementById("errorContainer").innerHTML = "No username provided";
-            return;
+        if (!institutionId) {
+            throw new Error("No institution id provided");
         }
 
-        if (!password) {
-            document.getElementById("errorContainer").innerHTML = "No password provided";
-            return;
-        }
+        API.loadInstitution(institutionId, accessToken).then(function (institution) {
+            renderInstitution(institution, userId, accessToken);
+        });
 
-        showLoadingScreen();
+        var formHandler = function (e) {
+            e.preventDefault();
 
-        API.createUserConnection(
-            accessToken,
-            userId,
-            institutionId,
-            username,
-            password,
-            security
-        ).then(function (jobData) {
-            setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
-        }).catch(function(err) {
-            document.getElementById("errorContainer").innerHTML = err.message;
-        })
-    };
+            var username = document.getElementById("usernameInput").value.trim(),
+                password = document.getElementById("passwordInput").value.trim(),
+                security = document.getElementById("securityInput").value.trim();
 
-    form.addEventListener("submit", formHandler);
-    document.getElementById("submitBtn").addEventListener("click", formHandler);
-    document.getElementById("cancelBtn").addEventListener("click", function (e) {
-        e.preventDefault();
+            if (!username) {
+                document.getElementById("errorContainer").innerHTML = "No username provided";
+                return;
+            }
 
-        sendEventNotification("cancellation");
-    });
+            if (!password) {
+                document.getElementById("errorContainer").innerHTML = "No password provided";
+                return;
+            }
+
+            showLoadingScreen();
+
+            API.createUserConnection(
+                accessToken,
+                userId,
+                institutionId,
+                username,
+                password,
+                security
+            ).then(function (jobData) {
+                setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
+            }).catch(function(err) {
+                document.getElementById("errorContainer").innerHTML = err.message;
+            })
+        };
+
+        form.addEventListener("submit", formHandler);
+        document.getElementById("submitBtn").addEventListener("click", formHandler);
+        document.getElementById("cancelBtn").addEventListener("click", function (e) {
+            e.preventDefault();
+
+            sendEventNotification("cancellation");
+        });
 
     //setTimeout(showLoadingScreen.bind(undefined, 0), 500)
-
+    }
 
 </script>
 </body>
