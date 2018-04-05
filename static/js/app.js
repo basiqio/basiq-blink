@@ -1,6 +1,8 @@
 /*global Promise*/
 /*global API*/
 /*global sendEventNotification*/
+/*exported showConsentScreen*/
+/*exported hideConsentScreen*/
 /*exported showLoadingScreen*/
 /*exported hideLoadingScreen*/
 /*exported checkJobStatus*/
@@ -45,7 +47,18 @@ window.renderInstitutions = function (container, institutions, url, search) {
 
     var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
         h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
-        liW = w / 3 - w / 9;
+        liW = Math.min(150, w / 3 - w / 9);
+
+    /*institutions.sort(function (a, b) {
+        if (a.name.charCodeAt(0) < b.name.charCodeAt(0)) {
+            return -1;
+        }
+        if (a.name.charCodeAt(0) > b.name.charCodeAt(0)) {
+            return 1;
+        }
+
+        return 0;
+    })*/
 
     for (var institution in institutions) {
         if (!institutions.hasOwnProperty(institution)) {
@@ -123,7 +136,7 @@ window.renderInstitutions = function (container, institutions, url, search) {
     }
 };
 
-window.renderInstitution = function (institution, userId, accessToken) {
+window.renderInstitution = function (institution) {
     document.getElementById("loading").style.display = "none";
     document.getElementById("content").style.display = "block";
     if (institution.loginIdCaption) {
@@ -135,12 +148,22 @@ window.renderInstitution = function (institution, userId, accessToken) {
         document.getElementById("passwordInput").setAttribute("placeholder", institution.passwordCaption);
     }
     if (institution.securityCodeCaption) {
-        document.getElementById("securityInput").style.display = "block";
+        document.getElementById("securityInputContainer").style.display = "block";
         document.getElementById("securityInput").setAttribute("placeholder", institution.securityCodeCaption);
     }
 
-    document.getElementById("title").innerHTML += "Login to " + institution.name;
-    document.getElementById("serviceName").innerHTML = institution.serviceName;
+    var logo = document.getElementById("bankLogo");
+
+    logo.src = institution.logo.links.self;
+
+    logo.onload = function () {
+        if (this.width > this.height) {
+            return this.style.width = "70%";
+
+        }
+
+        this.style.height = "30%";
+    };
 
     if (!institution.colors) {
         institution.colors = {
@@ -148,14 +171,7 @@ window.renderInstitution = function (institution, userId, accessToken) {
         };
     }
 
-    var complementaryColor = hexToComplimentary(institution.colors.primary, true);
-
-    document.getElementById("backLink").setAttribute("href", "/?user_id=" + userId + "&access_token=" + accessToken);
-    document.getElementById("backLink").style.color = complementaryColor;
-    document.getElementById("submitBtn").style.color = complementaryColor;
-    document.getElementById("cancelBtn").style.color = complementaryColor;
-    document.body.style.color = complementaryColor;
-    document.body.style.background = institution.colors.primary;
+    window.institution = institution;
 };
 
 window.sendEventNotification = function (event, payload) {
@@ -218,41 +234,6 @@ function parseResponse(res) {
     }
 }
 
-function hexToComplimentary(hex, bw){
-    if (hex.indexOf("#") === 0) {
-        hex = hex.slice(1);
-    }
-    // convert 3-digit hex to 6-digits.
-    if (hex.length === 3) {
-        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-    }
-    if (hex.length !== 6) {
-        throw new Error("Invalid HEX color.");
-    }
-    var r = parseInt(hex.slice(0, 2), 16),
-        g = parseInt(hex.slice(2, 4), 16),
-        b = parseInt(hex.slice(4, 6), 16);
-    if (bw) {
-        // http://stackoverflow.com/a/3943023/112731
-        return (r * 0.299 + g * 0.587 + b * 0.114) > 186
-            ? "#000000"
-            : "#FFFFFF";
-    }
-
-    var padZero = function(str, len) {
-        len = len || 2;
-        var zeros = new Array(len).join("0");
-        return (zeros + str).slice(-len);
-    };
-
-    // invert color components
-    r = (255 - r).toString(16);
-    g = (255 - g).toString(16);
-    b = (255 - b).toString(16);
-    // pad each with zeros and return
-    return "#" + padZero(r) + padZero(g) + padZero(b);
-}
-
 function parseQueryVariables() {
     var queryString = window.location.search.substring(1),
         query = {},
@@ -271,64 +252,33 @@ function naiveFlexBoxSupport (d){
     return e.style.display === f;
 }
 
-function supportsCSSAnimations() {
-    var domPrefixes = "Webkit Moz O ms Khtml".split(" "),
-        elem = document.createElement("div");
-
-    if( elem.style.animationName !== undefined ) { return true; }    
-    for( var i = 0; i < domPrefixes.length; i++ ) {
-        if( elem.style[ domPrefixes[i] + "AnimationName" ] !== undefined ) {
-            return true;
-        }
-    }
-
-    return false;
+function showLoadingScreen() {    
+    document.getElementById("headerTitle").innerHTML = "Connecting to " + window.institution.name;
+    document.getElementById("statusContainer").style.display = "block";
+    document.getElementById("credentialsForm").style.display = "none";
+    document.getElementById("consentForm").style.display = "none";
 }
 
-
-var fast = 0, slow = 60;
-
-function showLoadingScreen(x) {
-    if (!x) {
-        document.getElementById("statusTitle").innerHTML = "Connecting to your account. Please wait";
-        document.getElementById("statusMessage").innerHTML = "";
-        document.getElementById("closeStatusOverlay").style.display = "none";
-        x = 0;
-    }
-
-    if (supportsCSSAnimations()) {
-        document.getElementById("statusContainer").classList.remove("status-animate-inactive");
-        document.getElementById("statusContainer").classList.add("status-animate-active");
-        return;
-    }
-
-    document.getElementById("statusContainer").style.top = 150-x + "%";
-
-    var tween = Math.max(x/150/3 * slow, fast);
-
-    if (x < 150) {
-        setTimeout(showLoadingScreen.bind(undefined, x+0.5), tween);
-    }
+function hideLoadingScreen() {
+    document.getElementById("headerTitle").innerHTML = "Enter your credentials";
+    document.getElementById("statusContainer").style.display = "none";
+    document.getElementById("credentialsForm").style.display = "block";
+    document.getElementById("consentForm").style.display = "none";
 }
 
-function hideLoadingScreen(x) {
-    if (supportsCSSAnimations()) {
-        document.getElementById("statusContainer").classList.remove("status-animate-active");            
-        document.getElementById("statusContainer").classList.add("status-animate-inactive");
-        return;
-    }
-
-    if (!x) x = 0;
-
-    document.getElementById("statusContainer").style.top = 0+x + "%";
-
-    var tween = Math.max(x/150/3 * slow, fast);
-
-    if (x < 150) {
-        setTimeout(hideLoadingScreen.bind(undefined, x+0.5), tween);
-    }
+function showConsentScreen() {    
+    document.getElementById("headerTitle").innerHTML = "Consent to access your data";
+    document.getElementById("consentForm").style.display = "block";
+    document.getElementById("statusContainer").style.display = "none";
+    document.getElementById("credentialsForm").style.display = "none";
 }
 
+function hideConsentScreen() {
+    document.getElementById("headerTitle").innerHTML = "Enter your credentials";
+    document.getElementById("statusContainer").style.display = "none";
+    document.getElementById("credentialsForm").style.display = "none";
+    document.getElementById("consentForm").style.display = "block";
+}
 
 window.institutionSearch = function (url, e) {
     e.preventDefault();
@@ -400,18 +350,24 @@ function checkJobStatus(accessToken, jobData) {
             if (steps[step].title === "verify-credentials") {
                 switch (steps[step].status) {
                 case "failed":
+                    document.getElementById("statusFooter").style.display = "block";
+                    document.getElementById("retryBtn").style.display = "block";
+                    document.getElementById("doneBtn").style.display = "none";
                     document.getElementById("statusTitle").innerHTML = "Invalid credentials";
+                    document.getElementById("statusIcon").innerHTML = "<div class='rounded-cross'></div>";
                     document.getElementById("statusMessage").innerHTML = steps[step].result.detail;
-                    document.getElementById("closeStatusOverlay").style.display = "block";
 
                     return sendEventNotification("connection", {
                         success: false,
                         data: steps[step].result
                     });
                 case "success":
+                    document.getElementById("statusFooter").style.display = "block";
+                    document.getElementById("retryBtn").style.display = "none";
+                    document.getElementById("doneBtn").style.display = "block";
                     document.getElementById("statusTitle").innerHTML = "Success";
+                    document.getElementById("statusIcon").innerHTML = "<div class='rounded-check'></div>";
                     document.getElementById("statusMessage").innerHTML = "You are connected to your account.";
-                    document.getElementById("closeStatusOverlay").style.display = "block";
 
                     var url = steps[step].result.url,
                         connectionId = url.substr(url.lastIndexOf("/") + 1);
@@ -432,60 +388,11 @@ function checkJobStatus(accessToken, jobData) {
     });
 }
 
-/*function SimplePromise(executor) {
-    var self = this;
-
-    self.state = "pending";
-    self.iterator = 0;
-
-    self.resolverFunctions = [];
-    self.rejectorFunction = null;
-
-    var resolver = function (data) {
-        self.state = "resolved";
-        self.data = data;
-        try {
-            while (self.resolverFunctions[self.iterator]) {
-                self.data = self.resolverFunctions[self.iterator](self.data);
-                self.iterator++;
-            }
-        } catch (err) {
-            if (self.rejectorFunction) {
-                return rejector(err);
-            }
-
-            console.error(err);
+window.stringifyQueryParams = function(obj) {
+    var str = [];
+    for (var p in obj)
+        if (obj.hasOwnProperty(p)) {
+            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
         }
-    };
-
-    var rejector = function (data) {
-        self.state = "rejected";
-        self.data = data;
-        self.rejectorFunction(self.data);
-    };
-
-    self.then = function (resolver) {
-        self.resolverFunctions.push(resolver);
-
-        return self;
-    };
-    self.catch = function (rejector) {
-        self.rejectorFunction = rejector;
-
-        return self;
-    };
-
-    try {
-        executor(resolver, rejector);
-    } catch (err) {
-        setTimeout(function () {
-            if (self.rejectorFunction) {
-                return rejector(err);
-            }
-
-            throw err;
-        }, 0);
-    }
-
-    return self;
-}*/
+    return str.join("&");
+};

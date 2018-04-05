@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Qantas</title>
+    <title>Bank Connect</title>
     <script src="/js/app.js"></script>
     <script src="/js/polyfills/promise-polyfill.min.js"></script>
     <link rel="stylesheet" href="/style.css">
@@ -9,15 +9,21 @@
     <h2 id="loading">Loading data...</h2>
     <div id="content">
         <div id="header">
-            <h2>Select your institution</h2>
+            <h2 id="headerTitle">Select your bank</h2>
+            <a href="#" id="closeButton"></a>
             <form id="institutionSearchForm" class="search-form">
-                <input id="institutionSearch" type="text" placeholder="Search institutions">
+                <div class="input-container-left">
+                    <span class="ico-mglass"></span>
+                    <input id="institutionSearch" type="text" placeholder="Search institutions">
+                </div>
             </form>
         </div>
         <div id="institutionsContainer">
             <!--<li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>-->
         </div>
-        <button style="color: #1c4765; margin: 3%; width: 94%" id="cancelBtn" class="button">Cancel</button>
+        <div id="footer" class="footer">
+            <button id="cancelBtn" class="button footer-button">Cancel</button>
+        </div>
     </div>
     <div id="errorContainer"></div>
 
@@ -30,14 +36,34 @@
         iFrame = !!queryVars["iframe"] && queryVars["iframe"] === "true",
         userId = queryVars["user_id"],
         accessToken = queryVars["access_token"],
+        showClose = queryVars["show_close"] && queryVars["show_close"] === "true" ? true : false,
+        serviceTypes = queryVars["service_types"],
+        countries = queryVars["countries"],
         errorContainer = document.getElementById("errorContainer"),
-        url = "/authenticate.html?user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken,
+        url = "/authenticate.html?show_close="+showClose+"&user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken,
         error = checkAccessToken(accessToken);
 
     if (error) {
         document.getElementById("loading").style.display = "none";
         window.errorContainer.innerHTML = error;
     } else {
+        /*if (!countries) {
+            document.getElementById("loading").style.display = "none";
+            window.errorContainer.innerHTML = "No countries parameter provided";
+        }
+
+        countries = countries.split(",").filter(Boolean);
+        serviceTypes = serviceTypes ? serviceTypes.split(",").filter(Boolean) : null;
+        */
+        if (showClose) {
+            document.getElementById("closeButton").style.display = "block";
+            document.getElementById("closeButton").addEventListener("click", function (e) {
+                e.preventDefault();
+
+                sendEventNotification("cancellation");
+            });
+        }
+
         if (iFrame) {
             url += "&iframe=true";
         }

@@ -48,8 +48,10 @@ window.API = {
 
                 resolve(institutions);
             }).catch(function (err) {
-                window.errorContainer.innerHTML = err.body && err.body.errorMessage
-                    ? "Error: " + err.body.errorMessage
+                document.getElementById("loading").style.display = "none";
+                
+                window.errorContainer.innerHTML = err.body && err.body.data && err.body.data[0]
+                    ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail
                     : "Unknown error";
 
                 console.error(JSON.stringify(err));
