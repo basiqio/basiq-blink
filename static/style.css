@@ -65,8 +65,8 @@ input:focus {
 }
 
 #errorContainer {
-    color: red;
-    margin: 2.5% 3%;
+    color: #cc1e1e;
+    margin: 10% 6%;
     font-size: 14pt;
 }
 
@@ -453,7 +453,7 @@ a#closeButton:hover {
     width: 100%;
     background: #f5f5f5;
     border-top: 1px solid #dddddd;
-    height: 70px;
+    height: 60px;
     display: flex;
 }
 
