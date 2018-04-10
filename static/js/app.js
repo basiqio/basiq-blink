@@ -45,9 +45,17 @@ window.request = function(url, method, data, headers) {
 window.renderInstitutions = function (container, institutions, url, search) {
     container.innerHTML = "";
 
-    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+    var parentHeight = window.getComputedStyle(container.parentNode).getPropertyValue("height"),
+        w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
         h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
         liW = Math.min(150, w / 3 - w / 9);
+
+    window.addEventListener("resize", function () {
+        var parentHeight = window.getComputedStyle(container.parentNode).getPropertyValue("height");
+        container.style.height = parentHeight.substr(0, parentHeight.length - 2) - 150 - 65 - 20 + "px";
+    });
+
+    container.style.height = parentHeight.substr(0, parentHeight.length - 2) - 150 - 65 - 20 + "px";
 
     /*institutions.sort(function (a, b) {
         if (a.name.charCodeAt(0) < b.name.charCodeAt(0)) {
