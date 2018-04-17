@@ -36,7 +36,7 @@
         iFrame = !!queryVars["iframe"] && queryVars["iframe"] === "true",
         userId = queryVars["user_id"],
         accessToken = queryVars["access_token"],
-        showClose = queryVars["show_close"] && queryVars["show_close"] === "true" ? true : false,
+        showClose = !!queryVars["show_close"] && queryVars["show_close"] === "true",
         serviceTypes = queryVars["service_types"],
         countries = queryVars["countries"],
         errorContainer = document.getElementById("errorContainer"),

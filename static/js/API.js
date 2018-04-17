@@ -15,11 +15,15 @@ window.API = {
     loadInstitutions: function (token) {
         return new Promise(function (resolve) {
             if (window.localStorage && window.JSON) {
-                var cachedInstitutions = localStorage.getItem("cachedInstitutions"),
+                var cachedToken = localStorage.getItem("cachedToken"),
+                    cachedInstitutions = localStorage.getItem("cachedInstitutions"),
                     cacheTime = localStorage.getItem("cacheTime");
 
                 // Cache should expire after one hour
-                if (cachedInstitutions && (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60) {
+                if (cachedToken === token
+                    && cachedInstitutions
+                    && (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
+                ) {
                     var institutions = JSON.parse(cachedInstitutions);
                     window.institutions = institutions;
                     resolve(institutions);
@@ -44,6 +48,7 @@ window.API = {
                 if (window.localStorage && window.JSON) {
                     localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
                     localStorage.setItem("cacheTime", Date.now());
+                    localStorage.setItem("cachedToken", token);
                 }
 
                 resolve(institutions);
@@ -64,10 +69,11 @@ window.API = {
         }
         return new Promise(function (resolve) {
             if (window.localStorage) {
-                var selectedInstitution = window.localStorage.getItem("selectedInstitution") && JSON.parse(window.localStorage.getItem("selectedInstitution")),
+                var cachedToken = localStorage.getItem("cachedToken"),
+                    selectedInstitution = window.localStorage.getItem("selectedInstitution") && JSON.parse(window.localStorage.getItem("selectedInstitution")),
                     selectedInstitutionTime = window.localStorage.getItem("selectedInstitutionTime");
 
-                if (selectedInstitution && selectedInstitution.id === id && (Date.now() - parseInt(selectedInstitutionTime)) < 1000 * 60 * 5) {
+                if (cachedToken === token && selectedInstitution && selectedInstitution.id === id && (Date.now() - parseInt(selectedInstitutionTime)) < 1000 * 60 * 5) {
                     return resolve(selectedInstitution);
                 }
             }
@@ -141,6 +147,8 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 document.getElementById("loading").style.display = "none";
+
+                window.hideLoadingScreen();
 
                 window.errorContainer.innerHTML = err.body && err.body.errorMessage
                     ? "Error: " + err.body.errorMessage

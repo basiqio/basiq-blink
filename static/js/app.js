@@ -99,11 +99,21 @@ window.renderInstitutions = function (container, institutions, url, search) {
         div.style.width = liW + "px";
         div.style.height = liW + "px";
 
-        img.setAttribute("src", institutions[institution].logo.links.self);
+        if (institutions[institution].logo.links.square) {
+            img.setAttribute("src", institutions[institution].logo.links.square);
+        } else {
+            img.setAttribute("src", institutions[institution].logo.links.self);
+        }
+
         img.setAttribute("alt", institutions[institution].name);
         img.setAttribute("title", institutions[institution].name);
 
         img.onload = function () {
+            if (this.width > this.height) {
+                this.style.width = "100%";
+            } else {
+                this.style.height = "100%";
+            }
             if (!search) {
                 this.style.marginTop = (liW / 2 - liW / 16) - this.height / 2;
             } else {
@@ -162,7 +172,11 @@ window.renderInstitution = function (institution) {
 
     var logo = document.getElementById("bankLogo");
 
-    logo.src = institution.logo.links.self;
+    if (institution.logo.links.full) {
+        logo.src = institution.logo.links.full;
+    } else {
+        logo.src = institution.logo.links.self;
+    }
 
     logo.onload = function () {
         if (this.width > this.height) {
