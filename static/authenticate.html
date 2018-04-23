@@ -10,55 +10,22 @@
 <div id="content">
     <div id="header">
         <!-- <a id="backLink" class="back-link" href="/"><</a> -->
-        <h2 id="headerTitle">Enter your credentials</h2>
+        <h2 id="headerTitle">Connect your account</h2>
         <a href="#" id="closeButton"></a>
+        <a href="#" id="backButton"></a>
     </div>
     <div id="statusContainer" class="status-container">
         <div id="statusIcon">
-            <div class="signal"></div>
+            <div class="loader-container">
+                <div class="spinner"></div>
+            </div>
         </div>
-        <h2 id="statusTitle">Logging on securely</h2>
-        <div id="statusMessage"></div>
+        <h2 id="statusTitle"></h2>
+        <div id="statusMessage">Logging on securely</div>
         <!-- Multiple ids of footer, needs refactor -->
         <div id="statusFooter" class="footer">
-            <button id="doneBtn" class="button footer-button hidden button-primary">Done</button>
-            <button id="retryBtn" class="button footer-button hidden button-primary">Retry</button>
-        </div>
-    </div>
-    <div id="consentForm" class="consent-form">
-        <div class="content">
-            <div class="consent-header">
-                    Grow Super has requested read-only access to the
-                    following information from your Bankwest account. The
-                    app will be able to access your data until you disable it.
-            </div>
-            <div class="consent-permissions">
-                <h4>It will be able to:</h4>
-                <ul>
-                    <li>See your account Information
-                    (number, balance, currency, etc.)</li>
-                    <li>See your transaction history
-                    (Amount, currency, date, description, etc.)</li>
-                </ul>
-            </div>
-            <div class="consent-permissions">
-                <h4>It won't be able to:</h4>
-                <ul>
-                    <li>Execute payments or transfer funds</li>
-                    <li>Modify any of your banking details</li>
-                </ul>
-            </div>
-            <div class="consent-legal">
-                    By clicking Allow, you are consenting to Grow Super to use Basiq Pty Ltd
-                    services to make this request to your financial institution to retrieve the above
-                    information. Please read Basiq terms of service and the privacy policy for
-                    details. You can change this and other account permissions at any time from
-                    within the Grow Super application.
-            </div>
-        </div>
-        <div id="footer" class="footer">
-            <button id="allowBtn" class="button footer-button half-button button-primary">Allow</button>
-            <button id="denyBtn" class="button footer-button half-button">Deny</button>
+            <button id="doneBtn" class="button footer-button hidden">Done</button>
+            <button id="retryBtn" class="button footer-button error-button hidden">Try again</button>
         </div>
     </div>
     <form id="credentialsForm" class="credentials-form" action="">
@@ -75,9 +42,20 @@
             <span class="ico-lock"></span>
             <input id="securityInput" title="Security code" type="password"/>
         </div>
+        <div class="tag-line">
+            <div class="tag-line-icon">
+                <img src="fortress.svg" alt="We secure your information">
+            </div>
+            <div class="tag-line-description">
+                <h4>Bank level security</h4>
+                <p>
+                    We employ state of the art security practies meeting the
+                    highest level of standards by leading financial institutions.
+                </p>
+            </div>
+        </div>
         <div id="footer" class="footer">
-                <button id="submitBtn" class="button footer-button button-primary half-button">Continue</button>
-                <button id="cancelBtn" class="button footer-button half-button">Cancel</button>
+            <button id="submitBtn" class="button footer-button">Connect</button>
         </div>
     </form>
 </div>
@@ -87,12 +65,13 @@
     document.getElementById("loading").style.display = "block";
     document.getElementById("content").style.display = "none";
     document.getElementById("securityInput").style.display = "none";
+    document.getElementById("backButton").style.display = "block";
 
     var queryVars = parseQueryVariables(),
         institutionId = queryVars.institution_id,
         userId = queryVars.user_id,
         accessToken = queryVars.access_token,
-        showClose = queryVars["show_close"] && queryVars["show_close"] === "true" ? true : false,
+        showClose = queryVars["show_close"] && queryVars["show_close"] === "true",
         form = document.getElementById("credentialsForm"),
         errorContainer = document.getElementById("errorContainer"),
         error = checkAccessToken(accessToken);
@@ -121,18 +100,6 @@
         var formHandler = function (e) {
             e.preventDefault();
 
-            showConsentScreen();
-        };
-
-        form.addEventListener("submit", formHandler);
-        document.getElementById("submitBtn").addEventListener("click", formHandler);
-        document.getElementById("cancelBtn").addEventListener("click", function(e) {
-            e.preventDefault();
-            window.location.href = "/?"+stringifyQueryParams(queryVars);
-        });
-        document.getElementById("allowBtn").addEventListener("click", function(e) {
-            e.preventDefault();
-
             var username = document.getElementById("usernameInput").value.trim(),
                 password = document.getElementById("passwordInput").value.trim(),
                 security = document.getElementById("securityInput").value.trim();
@@ -158,13 +125,20 @@
                 setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
             }).catch(function(err) {
                 document.getElementById("errorContainer").innerHTML = err.message;
-            })
+            });
 
             showLoadingScreen();
-        });
-        document.getElementById("denyBtn").addEventListener("click", function(e) {
+        };
+
+        form.addEventListener("submit", formHandler);
+        document.getElementById("submitBtn").addEventListener("click", formHandler);
+        document.getElementById("backButton").addEventListener("click", function(e) {
             e.preventDefault();
             window.location.href = "/?"+stringifyQueryParams(queryVars);
+        });
+        document.getElementById("retryBtn").addEventListener("click", function(e) {
+            e.preventDefault();
+            window.location.reload();
         });
 
     //setTimeout(showConsentScreen, 1500)

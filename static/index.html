@@ -12,7 +12,7 @@
             <h2 id="headerTitle">Select your bank</h2>
             <a href="#" id="closeButton"></a>
             <form id="institutionSearchForm" class="search-form">
-                <div class="input-container-left">
+                <div class="institution-search input-container-right">
                     <span class="ico-mglass"></span>
                     <input id="institutionSearch" type="text" placeholder="Search institutions">
                 </div>
@@ -22,7 +22,8 @@
             <!--<li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>-->
         </div>
         <div id="footer" class="footer">
-            <button id="cancelBtn" class="button footer-button">Cancel</button>
+            <!--<button id="cancelBtn" class="button footer-button">Cancel</button>-->
+            <button id="proceedBtn" class="button footer-button">Next</button>
         </div>
     </div>
     <div id="errorContainer"></div>
@@ -40,6 +41,8 @@
         serviceTypes = queryVars["service_types"],
         countries = queryVars["countries"],
         errorContainer = document.getElementById("errorContainer"),
+        proceedBtn = document.getElementById("proceedBtn"),
+        footer = document.getElementById("footer"),
         url = "/authenticate.html?show_close="+showClose+"&user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken,
         error = checkAccessToken(accessToken);
 
@@ -47,6 +50,7 @@
         document.getElementById("loading").style.display = "none";
         window.errorContainer.innerHTML = error;
     } else {
+        footer.style.display = "none";
         /*if (!countries) {
             document.getElementById("loading").style.display = "none";
             window.errorContainer.innerHTML = "No countries parameter provided";
@@ -83,11 +87,11 @@
 
         document.getElementById("institutionSearchForm").addEventListener("submit", institutionSearch.bind(undefined, url))
         document.getElementById("institutionSearch").addEventListener("input", institutionSearch.bind(undefined, url))
-        document.getElementById("cancelBtn").addEventListener("click", function (e) {
+        /*document.getElementById("cancelBtn").addEventListener("click", function (e) {
             e.preventDefault();
 
             sendEventNotification("cancellation");
-        });
+        });*/
 
         setTimeout(function () {
             sendEventNotification("handshake", {"success": true});

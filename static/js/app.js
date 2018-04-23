@@ -1,6 +1,8 @@
 /*global Promise*/
 /*global API*/
 /*global sendEventNotification*/
+/*global footer*/
+/*global proceedBtn*/
 /*exported showConsentScreen*/
 /*exported hideConsentScreen*/
 /*exported showLoadingScreen*/
@@ -48,7 +50,11 @@ window.renderInstitutions = function (container, institutions, url, search) {
     var parentHeight = window.getComputedStyle(container.parentNode).getPropertyValue("height"),
         w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
         h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
-        liW = Math.min(150, w / 3 - w / 9);
+        searchWidthPx = window.getComputedStyle(document.getElementById("institutionSearch")).getPropertyValue("width"),
+        searchWidth = searchWidthPx.substr(0, searchWidthPx.length - 2),
+        liW =  searchWidth / 2 - (w / 10 / 5);
+
+    //document.getElementById("closeButton").style.right = (w - searchWidth) / 2 + "px";
 
     window.addEventListener("resize", function () {
         var parentHeight = window.getComputedStyle(container.parentNode).getPropertyValue("height");
@@ -57,47 +63,58 @@ window.renderInstitutions = function (container, institutions, url, search) {
 
     container.style.height = parentHeight.substr(0, parentHeight.length - 2) - 150 - 65 - 20 + "px";
 
-    /*institutions.sort(function (a, b) {
-        if (a.name.charCodeAt(0) < b.name.charCodeAt(0)) {
-            return -1;
-        }
-        if (a.name.charCodeAt(0) > b.name.charCodeAt(0)) {
-            return 1;
-        }
-
-        return 0;
-    })*/
+    var links = [];
 
     for (var institution in institutions) {
         if (!institutions.hasOwnProperty(institution)) {
             continue;
         }
 
-
         var instUrl = url.replace("{inst_id}", institutions[institution].id);
         var div = document.createElement("div"),
             a = document.createElement("a"),
             img = document.createElement("img"),
-            searchHeight = liW / (w/h > 0.8 ? 1.2 : 1);
+            searchHeight = liW / (w/h > 0.8 ? 1.4 : 2.5);
 
         a.appendChild(img);
         a.setAttribute("href", instUrl);
+        links.push(a);
 
         a.onclick = (function (index) {
-            return function (e) {
+            return function(institution, e) {
                 e.preventDefault();
-                var institution = institutions[index];
+                resetSelection(search, institutions);
+
                 window.localStorage.setItem("selectedInstitution", JSON.stringify(institution));
                 window.localStorage.setItem("selectedInstitutionTime", Date.now());
-
-                window.location.replace(this.href);
-            };
-        })(institution);
+                footer.style.display = "block";
+                if (!search) {
+                    this.style.border = "2px solid #4A90E2";
+                } else {
+                    this.style.borderTop = "2px solid #4A90E2";
+                    if (this.parentElement.nextSibling) {
+                        this.parentElement.nextSibling.getElementsByTagName("a")[0].style.borderTop = "2px solid #4A90E2";
+                    } else {
+                        this.style.borderBottom = "2px solid #4A90E2";
+                    }
+                }
+                if (this.classList.contains("active")) {
+                    this.classList.remove("active");
+                    footer.style.display = "none";
+                    resetSelection(search);
+                } else {
+                    this.classList.add("active");
+                }
+                proceedBtn.onclick = function () {
+                    window.location.replace(this.href);
+                }.bind(this);
+            }.bind(this, institutions[index]);
+        }.bind(a))(institution);
 
         div.appendChild(a);
         div.className = "bank-link";
         div.style.width = liW + "px";
-        div.style.height = liW + "px";
+        div.style.height = liW/2 + "px";
 
         if (institutions[institution].logo.links.square) {
             img.setAttribute("src", institutions[institution].logo.links.square);
@@ -109,17 +126,22 @@ window.renderInstitutions = function (container, institutions, url, search) {
         img.setAttribute("title", institutions[institution].name);
 
         img.onload = function () {
-            if (this.width > this.height) {
-                this.style.width = "100%";
-            } else {
-                this.style.height = "100%";
-            }
             if (!search) {
-                this.style.marginTop = (liW / 2 - liW / 16) - this.height / 2;
+                if (this.width - this.height > this.height / 2) {
+                    this.style.width = "99%";
+                    this.style.marginTop = (liW / 2 - this.height) / 6 + "px";
+                } else {
+                    this.style.height = "99%";
+                }
             } else {
                 var target = this.parentElement;
 
                 target.style.lineHeight = (searchHeight) / 2 + "px";
+                if (this.width - this.height > this.height / 6) {
+                    this.style.width = "20%";
+                } else {
+                    this.style.height = searchHeight-40 + "px";
+                }
             }
         };
 
@@ -128,9 +150,11 @@ window.renderInstitutions = function (container, institutions, url, search) {
         };
 
         if (search) {
-            div.style.width = "100%";
-            div.style.height = searchHeight + "px";
+            resetSelection(search);
             div.className = "bank-link-search";
+            div.style.width = searchWidth;
+            div.style.marginLeft = (w - searchWidth) / 2;
+            div.style.height = searchHeight + "px";
 
             var h3 = document.createElement("h3");
             h3.className = "bank-link-search-header";
@@ -256,6 +280,20 @@ function parseResponse(res) {
     }
 }
 
+function resetSelection(search) {
+    var links = document.getElementById("institutionsContainer").getElementsByTagName("a");
+
+    [].forEach.call(links, function (link) {
+        link.classList.remove("active");
+        if (!search) {
+            link.style.border = "2px solid #EDEDED";
+        } else {
+            link.style.borderTop = "2px solid #E1E1E1";
+            link.style.borderBottom = "none";
+        }
+    });
+}
+
 function parseQueryVariables() {
     var queryString = window.location.search.substring(1),
         query = {},
@@ -277,29 +315,16 @@ function naiveFlexBoxSupport (d){
 function showLoadingScreen() {    
     document.getElementById("headerTitle").innerHTML = "Connecting to " + window.institution.name;
     document.getElementById("statusContainer").style.display = "block";
+    document.getElementById("statusMessage").innerHTML = "Logging on securely";
+    document.getElementById("statusMessage").className = "";
+    document.getElementById("statusMessage").classList.add("result-text-default");
     document.getElementById("credentialsForm").style.display = "none";
-    document.getElementById("consentForm").style.display = "none";
 }
 
 function hideLoadingScreen() {
     document.getElementById("headerTitle").innerHTML = "Enter your credentials";
     document.getElementById("statusContainer").style.display = "none";
     document.getElementById("credentialsForm").style.display = "block";
-    document.getElementById("consentForm").style.display = "none";
-}
-
-function showConsentScreen() {    
-    document.getElementById("headerTitle").innerHTML = "Consent to access your data";
-    document.getElementById("consentForm").style.display = "block";
-    document.getElementById("statusContainer").style.display = "none";
-    document.getElementById("credentialsForm").style.display = "none";
-}
-
-function hideConsentScreen() {
-    document.getElementById("headerTitle").innerHTML = "Enter your credentials";
-    document.getElementById("statusContainer").style.display = "none";
-    document.getElementById("credentialsForm").style.display = "none";
-    document.getElementById("consentForm").style.display = "block";
 }
 
 window.institutionSearch = function (url, e) {
@@ -372,24 +397,34 @@ function checkJobStatus(accessToken, jobData) {
             if (steps[step].title === "verify-credentials") {
                 switch (steps[step].status) {
                 case "failed":
+                    document.getElementById("backButton").style.display = "none";
+                    document.getElementById("statusTitle").innerHTML = "";
                     document.getElementById("statusFooter").style.display = "block";
                     document.getElementById("retryBtn").style.display = "block";
                     document.getElementById("doneBtn").style.display = "none";
-                    document.getElementById("statusTitle").innerHTML = "Invalid credentials";
                     document.getElementById("statusIcon").innerHTML = "<div class='rounded-cross'></div>";
                     document.getElementById("statusMessage").innerHTML = steps[step].result.detail;
+                    document.getElementById("headerTitle").innerHTML = "Unsuccessful";
+
+                    document.getElementById("statusMessage").className = "";
+                    document.getElementById("statusMessage").classList.add("result-text-error");
 
                     return sendEventNotification("connection", {
                         success: false,
                         data: steps[step].result
                     });
                 case "success":
+                    document.getElementById("backButton").style.display = "none";
+                    document.getElementById("statusTitle").innerHTML = "";
                     document.getElementById("statusFooter").style.display = "block";
                     document.getElementById("retryBtn").style.display = "none";
                     document.getElementById("doneBtn").style.display = "block";
-                    document.getElementById("statusTitle").innerHTML = "Success";
                     document.getElementById("statusIcon").innerHTML = "<div class='rounded-check'></div>";
-                    document.getElementById("statusMessage").innerHTML = "You are connected to your account.";
+                    document.getElementById("statusMessage").innerHTML = "Your account has been successfully linked.";
+                    document.getElementById("headerTitle").innerHTML = "Success";
+
+                    document.getElementById("statusMessage").className = "";
+                    document.getElementById("statusMessage").classList.add("result-text-success");
 
                     var url = steps[step].result.url,
                         connectionId = url.substr(url.lastIndexOf("/") + 1);

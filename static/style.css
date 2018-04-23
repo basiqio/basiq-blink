@@ -1,7 +1,7 @@
 body {
     font-family: Helvetica, Arial, sans-serif;
-    background: #f8faf9;
-    color: #2c3e50;
+    background: #fafafa;
+    color: #9B9B9B;
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -27,6 +27,7 @@ h2 {
     margin: 5% 3% 3% 3%;
     font-size: 25px;
     padding-bottom: 15px;
+    color: #000000;
 }
 
 h3 {
@@ -37,14 +38,16 @@ h3 {
 h5 {
     margin: 3%;
 }
+
 input {
     margin: 10px 0;
     padding: 8px 13px;
     font-size: 12pt;
-    border-radius: 5px;
-    border: 1px solid #2c3e50;
+    border-radius: 14px;
+    border: 2px solid #EDEDED;
     width: 100%;
     height: 50px;
+    color: #000000;
 }
 
 input:focus {
@@ -52,12 +55,19 @@ input:focus {
     border: 1px solid #3498db;
 }
 
+input::placeholder {
+    color: #9B9B9B;
+}
+
 #institutionsContainer {
     text-align: center;
-    padding-top: 20px;
-    box-shadow: inset 0 7px 9px -7px rgba(0,0,0,0.7);
-    height: 55%;
+    margin-top: 20px;
     overflow-y: scroll;
+    padding-bottom: 70px;
+}
+
+.institution-search {
+    margin-top: 45px;
 }
 
 .credentials-table {
@@ -73,7 +83,6 @@ input:focus {
 #header {
     padding: 30px 40px 5px 40px;
     text-align: center;
-    border-bottom: 1px solid #dddddd;
 }
 
 #header h2, #header form {
@@ -89,11 +98,11 @@ input:focus {
 }
 
 .button {
-    background-color: rgba(255,255,255,0.12);
+    background-color: #2c90e9;
+    color: #fff;
     border: 0;
     font-size: 20px;
     height: 50px;
-    color: #fff;
     outline: 0;
     text-align: center;
     text-transform: none;
@@ -129,7 +138,7 @@ button.button-primary {
 .ico-mglass {
     position: absolute;
     top: 24px;
-    left: 15px;
+    right: 19px;
     display: inline-block;
     background: #fff;
     border-radius: 30px;
@@ -144,7 +153,7 @@ button.button-primary {
     background: #888;
     position: absolute;
     top: 12.5px;
-    left: 8.5;
+    left: 8.5px;
     -webkit-transform: rotate(45deg);
     -moz-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
@@ -200,7 +209,7 @@ button.button-primary {
 }
 
 .bank-link a:hover {
-    border: 1px solid #d4d4d4;
+    border: 2px solid #d4d4d4;
 }
 
 .bank-link:after {
@@ -212,6 +221,11 @@ button.button-primary {
 .bank-link a {
     width: 100%;
     height: 100%;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    background: #FFFFFF;
+    border:2px solid #EDEDED;
 }
 
 .bank-link img {
@@ -224,7 +238,6 @@ button.button-primary {
     text-align: left;
     background: none;
     vertical-align: top;
-    border-top: 1px solid #E7E7E7;
 }
 
 .bank-link-search-header:after {
@@ -246,12 +259,11 @@ button.button-primary {
 
 .bank-link-search a {
     border: none;
-    width: 98%;
     vertical-align: middle;
     height: 100%;
-    margin-left: 2%;
     display: flex;
     align-items: center;
+    color: #4A4A4A;
 }
 
 .bank-link-search a:active, .bank-link-search a:hover, .bank-link-search a:focus {
@@ -259,9 +271,8 @@ button.button-primary {
     outline: none;
 }
 
-.bank-link-search:hover {
-    border-top: 1px solid #d4d4d4;
-    background: #f9f9f9;
+.bank-link-search:hover a {
+    background: #fff;
 }
 
 .bank-link-search a img {
@@ -355,10 +366,10 @@ button.button-primary {
 
 .rounded-check {
     padding: 10px;
-    border-radius: 60px;
-    background: green;
-    width: 60px;
-    height: 60px;
+    background: #4A90E2;
+    border-radius: 80px;
+    width: 80px;
+    height: 80px;
     margin: auto;
 }
 
@@ -366,43 +377,111 @@ button.button-primary {
     content: '';
     display: inline-block;
     transform: rotate(45deg);
-    height: 34px;
-    margin-top: 5px;
-    width: 16px;
-    border-right: 7px solid #f5f5f5;
-    border-bottom: 7px solid #f5f5f5;
+    height: 48px;
+    margin-top: 7px;
+    width: 22px;
+    border-right: 7px solid #fafafa;
+    border-bottom: 7px solid #fafafa;
+}
+
+.result-text-success {
+    color: #4A90E2 !important;
+}
+
+.result-text-error {
+    color: #E24A4A !important;
+}
+
+.result-text-default {
+    color: #4A4A4A !important;
+}
+
+.error-button {
+    background: #E24A4A;
 }
 
 .rounded-cross {
     padding: 10px;
-    border-radius: 40px;
-    background: red;
-    width: 60px;
-    height: 60px;
+    border-radius: 80px;
+    background: #E24A4A;
+    width: 80px;
+    height: 80px;
     margin: auto;
-  }
-  
-.rounded-cross:before, .rounded-cross:after {
+}
+
+.rounded-cross:before {
     content: '';
     display: inline-block;
     transform: rotate(45deg);
-    height: 30px;
-    width: 30px;
-}
-.rounded-cross:before {
-    margin-top: -10px;
-    border-right: 7px solid #f5f5f5;
-    border-bottom: 7px solid #f5f5f5;
+    height: 35px;
+    width: 65px;
+    margin-top: 6px;
+    margin-left: 20px;
+    border-bottom: 7px solid #fafafa;
 }
 
 .rounded-cross:after {
-    margin-top: 5px;
-    border-top: 7px solid #f5f5f5;
-    border-left: 7px solid #f5f5f5;
+    content: '';
+    display: inline-block;
+    transform: rotate(45deg);
+    height: 65px;
+    width: 35px;
+    margin-left: 26px;
+    margin-top: -29px;
+    border-left: 7px solid #fafafa;
 }
 
 .hidden {
     display: none;
+}
+
+.tag-line {
+    margin-top: 3%;
+    color: #9B9B9B;
+}
+
+.tag-line-icon {
+    display: inline-block;
+    width: 20%;
+}
+
+.tag-line-description {
+    display: inline-block;
+    width: 60%;
+    text-align: left;
+    margin-left: 20px;
+}
+
+a#backButton {
+    position: fixed;
+    top: 30px;
+    z-index: 102;
+    left: 9%;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    border: solid black;
+    border-width: 0 5px 5px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+}
+
+a#backButton:after,a#backButton:before {
+    content: "";
+    position: absolute;
+    background: #fafafa;
+    top: 13px;
+    right: 12px;
+    width: 15px;
+    height: 15px;
+    transform: rotate(45deg);
+}
+
+a#backButton:before {
+    top: -11px;
+    left: 15px;
 }
 
 a#closeButton {
@@ -419,11 +498,11 @@ a#closeButton {
     overflow: hidden;
     transition: transform 0.5s cubic-bezier(.16,.81,.32,1), opacity 0.5s ease;
     transform: rotate(45deg);
-    background: #65818a;
+    background: #D8D8D8;
     padding: 2px;
     border-radius: 20px;
 }
-  
+
 a#closeButton:after {
     transform: rotate(90deg)
 }
@@ -431,14 +510,16 @@ a#closeButton:after {
 a#closeButton:after, a#closeButton:before {
     content: '';
     position: absolute;
-    height: 1px;
     width: 60%;
     top: 50%;
     left: 20%;
-    margin-top: -0.5px;
-    background: #000;
+    background: #9B9B9B;
     height: 2px;
     margin-top: -1px;
+}
+
+a#closeButton:before {
+    width: 61%;
 }
   
 a#closeButton:hover {
@@ -449,20 +530,23 @@ a#closeButton:hover {
     display: none;
 }
 
+#statusMessage {
+    font-size: 20px;
+    color: #4A90E2;
+}
+
 .footer {
     position: fixed;
     bottom: 0%;
     left: 0%;
     width: 100%;
     background: #f5f5f5;
-    border-top: 1px solid #dddddd;
     height: 60px;
     display: flex;
 }
 
 .footer-button {
     flex: 1;
-    color: #1c4765; 
     width: 100%;
     padding: 0;
     margin: 0;
@@ -474,7 +558,7 @@ a#closeButton:hover {
 }
 
 #statusIcon {
-    margin: 30px auto auto auto;
+    margin: 30% auto auto auto;
 }
 
 .signal {
@@ -482,12 +566,45 @@ a#closeButton:hover {
     border-radius: 30px;
     height: 30px;
     margin: 20% auto auto auto;
-    margin-top: 20%;
     opacity: 0;
     width: 30px;
     animation: pulsate 1s ease-out;
     animation-iteration-count: infinite;
 }
+
+.loader-container {
+    margin: auto;
+    width: 80px;
+    height: 80px;
+    border-radius: 180px;
+    background: #4A90E2;
+}
+
+@keyframes spinner {
+    to {transform: rotate(360deg);}
+}
+
+.spinner {
+    position: relative;
+}
+
+.spinner:before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin-top: 14px;
+    margin-left: -25px;
+    border-radius: 50%;
+    border: 2px solid #fafafa;
+    border-top-color: #5b90dc;
+    animation: spinner .6s linear infinite;
+}
+
+
 
 @keyframes pulsate {
     0% {
