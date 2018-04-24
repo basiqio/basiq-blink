@@ -176,12 +176,11 @@ button.button-primary {
     position: absolute;
     border: 3px solid gray;
     top: -11px;
-    left: 2.3px;
+    left: 0.12em;
     width: 10px;
     height: 12px;
     border-radius: 35px 35px 0 0;
-  }
-  
+}
 
 .search-form {
 
@@ -189,6 +188,11 @@ button.button-primary {
 
 #securityInputContainer {
     display: none;
+}
+
+.img-placeholder {
+    width: 100%;
+    height: 100%;
 }
 
 .back-link {
@@ -208,8 +212,8 @@ button.button-primary {
     vertical-align: top;
 }
 
-.bank-link a:hover {
-    border: 2px solid #d4d4d4;
+.bank-link a:hover:not(.active) {
+    border: 2px solid #d4d4d4 !important;
 }
 
 .bank-link:after {
@@ -588,6 +592,10 @@ a#closeButton:hover {
     position: relative;
 }
 
+.img-placeholder-search {
+    width: 30%;
+}
+
 .spinner:before {
     content: '';
     box-sizing: border-box;
@@ -602,56 +610,4 @@ a#closeButton:hover {
     border: 2px solid #fafafa;
     border-top-color: #5b90dc;
     animation: spinner .6s linear infinite;
-}
-
-
-
-@keyframes pulsate {
-    0% {
-      transform: scale(.1);
-      opacity: 0.0;
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1.2);
-      opacity: 0;
-    }
-}
-
-@-webkit-keyframes loading-pulse {
-	0% {
-		background-position: 0% 50%
-	}
-	50% {
-		background-position: 100% 50%
-	}
-	100% {
-		background-position: 0% 50%
-	}
-}
-
-@-moz-keyframes loading-pulse {
-	0% {
-		background-position: 0% 50%
-	}
-	50% {
-		background-position: 100% 50%
-	}
-	100% {
-		background-position: 0% 50%
-	}
-}
-
-@keyframes loading-pulse {
-	0% {
-		background-position: 0% 50%
-	}
-	50% {
-		background-position: 100% 50%
-	}
-	100% {
-		background-position: 0% 50%
-	}
 }

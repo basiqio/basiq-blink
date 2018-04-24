@@ -87,6 +87,17 @@
 
         document.getElementById("institutionSearchForm").addEventListener("submit", institutionSearch.bind(undefined, url))
         document.getElementById("institutionSearch").addEventListener("input", institutionSearch.bind(undefined, url))
+        document.getElementById("institutionSearch").addEventListener("focus", function (e) {
+            document.getElementById("institutionsContainer").innerHTML = "";
+        });
+        document.getElementById("institutionSearch").addEventListener("blur", function (e) {
+            var instCont = document.getElementById("institutionsContainer"),
+                term = e.target.value;
+
+            if (term.length < 2) {
+                window.renderInstitutions(instCont, institutions, url);
+            }
+        });
         /*document.getElementById("cancelBtn").addEventListener("click", function (e) {
             e.preventDefault();
 

@@ -73,10 +73,16 @@ window.renderInstitutions = function (container, institutions, url, search) {
         var instUrl = url.replace("{inst_id}", institutions[institution].id);
         var div = document.createElement("div"),
             a = document.createElement("a"),
+            imgPlaceholder = document.createElement("div"),
+            imgPlaceholderSpinner = document.createElement("div"),
             img = document.createElement("img"),
             searchHeight = liW / (w/h > 0.8 ? 1.4 : 2.5);
 
         a.appendChild(img);
+        a.appendChild(imgPlaceholder);
+        imgPlaceholder.classList.add("img-placeholder");
+        imgPlaceholder.appendChild(imgPlaceholderSpinner);
+        imgPlaceholderSpinner.className = "spinner img-placeholder-spinner";
         a.setAttribute("href", instUrl);
         links.push(a);
 
@@ -116,6 +122,8 @@ window.renderInstitutions = function (container, institutions, url, search) {
         div.style.width = liW + "px";
         div.style.height = liW/2 + "px";
 
+        imgPlaceholderSpinner.style.marginTop = liW/4 - 50 + "px";
+
         if (institutions[institution].logo.links.square) {
             img.setAttribute("src", institutions[institution].logo.links.square);
         } else {
@@ -125,25 +133,28 @@ window.renderInstitutions = function (container, institutions, url, search) {
         img.setAttribute("alt", institutions[institution].name);
         img.setAttribute("title", institutions[institution].name);
 
-        img.onload = function () {
-            if (!search) {
-                if (this.width - this.height > this.height / 2) {
-                    this.style.width = "99%";
-                    this.style.marginTop = (liW / 2 - this.height) / 6 + "px";
+        img.onload = (function (a, imgPlaceholder, searchHeight) {
+            return function () {
+                a.removeChild(imgPlaceholder);
+                if (!search) {
+                    if (this.width - this.height > this.height / 2) {
+                        this.style.width = "99%";
+                        this.style.marginTop = (liW / 2 - this.height) / 6 + "px";
+                    } else {
+                        this.style.height = "99%";
+                    }
                 } else {
-                    this.style.height = "99%";
-                }
-            } else {
-                var target = this.parentElement;
+                    var target = this.parentElement;
 
-                target.style.lineHeight = (searchHeight) / 2 + "px";
-                if (this.width - this.height > this.height / 6) {
-                    this.style.width = "20%";
-                } else {
-                    this.style.height = searchHeight-40 + "px";
+                    target.style.lineHeight = (searchHeight) / 2 + "px";
+                    if (this.width - this.height > this.height / 6) {
+                        this.style.width = "20%";
+                    } else {
+                        this.style.height = searchHeight - 40 + "px";
+                    }
                 }
-            }
-        };
+            };
+        })(a, imgPlaceholder, searchHeight);
 
         img.onerror = function () {
             this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
@@ -155,7 +166,8 @@ window.renderInstitutions = function (container, institutions, url, search) {
             div.style.width = searchWidth;
             div.style.marginLeft = (w - searchWidth) / 2;
             div.style.height = searchHeight + "px";
-
+            imgPlaceholderSpinner.style.marginTop = searchHeight/2-50 + "px";
+            imgPlaceholder.classList.add("img-placeholder-search");
             var h3 = document.createElement("h3");
             h3.className = "bank-link-search-header";
 
