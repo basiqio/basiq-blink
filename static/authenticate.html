@@ -10,15 +10,20 @@
 <h2 id="loading">Loading data...</h2>
 <div id="content">
     <div id="header">
-        <!-- <a id="backLink" class="back-link" href="/"><</a> -->
         <h2 id="headerTitle">Connect your account</h2>
         <a href="#" id="closeButton"></a>
         <a href="#" id="backButton"></a>
     </div>
     <div id="statusContainer" class="status-container">
         <div id="statusIcon">
-            <div class="loader-container">
-                <div class="spinner"></div>
+            <div id="connectionLoader" class="loader-container">
+                <div id="connectionSpinner" class="spinner"></div>
+                <svg id="connectionCheckmark" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="5 0 40 36">
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+                <svg id="connectionCross" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="5 0 40 52">
+                    <path class="checkmark__cross" d="M 15,20 L 35,40 M 35,20 L 15,40" />
+                </svg>
             </div>
         </div>
         <h2 id="statusTitle"></h2>

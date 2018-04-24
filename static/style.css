@@ -1,5 +1,13 @@
+@font-face {
+    font-family: "Lucida Grande";
+    src: url("fonts/LucidaGrande.woff2") format("woff2"),
+    url("fonts/LucidaGrande.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: Lucida Grande, sans-serif;
     background: #fafafa;
     color: #9B9B9B;
     margin: 0;
@@ -57,6 +65,10 @@ input:focus {
 
 input::placeholder {
     color: #9B9B9B;
+}
+
+input, button, a {
+    font-family: Lucida Grande, sans-serif;
 }
 
 #institutionsContainer {
@@ -195,14 +207,6 @@ button.button-primary {
     height: 100%;
 }
 
-.back-link {
-    display: inline-block;
-    border: none;
-    font-family: "Trebuchet MS", sans-serif;
-    font-size: 18pt;
-    font-weight: bold;
-}
-
 .bank-link {
     display: inline-block;
     width: 200px;
@@ -284,6 +288,23 @@ button.button-primary {
     vertical-align: middle;
 }
 
+.search-placeholder {
+    text-align: center;
+    width: 70%;
+    margin: 80px auto auto auto;
+}
+
+.search-placeholder img {
+    margin: auto;
+    text-align: center;
+    width: 40px;
+}
+
+.search-placeholder span {
+    display: block;
+    margin-top: 20px;
+}
+
 #consentForm {
     display: none;
 }
@@ -359,9 +380,11 @@ button.button-primary {
 }
 
 .credentials-form {
-    padding: 40px;
+    padding: 50px;
     text-align: center;
     height: 80%;
+    margin: 0;
+    background: #fff;
 }
 
 #bankLogo {
@@ -390,6 +413,10 @@ button.button-primary {
 
 .result-text-success {
     color: #4A90E2 !important;
+}
+
+.result-error {
+    background: #E24A4A !important;
 }
 
 .result-text-error {
@@ -590,6 +617,7 @@ a#closeButton:hover {
 
 .spinner {
     position: relative;
+    transition: all 1.5s;
 }
 
 .img-placeholder-search {
@@ -609,5 +637,43 @@ a#closeButton:hover {
     border-radius: 50%;
     border: 2px solid #fafafa;
     border-top-color: #5b90dc;
-    animation: spinner .6s linear infinite;
+    animation: spinner .4s linear infinite;
+}
+
+.checkmark {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    stroke-width: 2;
+    stroke: #fff;
+    stroke-miterlimit: 10;
+    margin: 10% auto;
+    box-shadow: inset 0px 0px 0px #7ac142;
+    animation: scale .3s ease-in-out .9s both;
+    display: none;
+}
+
+.checkmark__check, .checkmark__cross {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+#connectionCross {
+    height: 70px;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
 }

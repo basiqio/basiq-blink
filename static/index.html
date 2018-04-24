@@ -15,7 +15,7 @@
             <form id="institutionSearchForm" class="search-form">
                 <div class="institution-search input-container-right">
                     <span class="ico-mglass"></span>
-                    <input id="institutionSearch" type="text" placeholder="Search institutions">
+                    <input id="institutionSearch" type="text" placeholder="Search bank">
                 </div>
             </form>
         </div>
@@ -98,16 +98,16 @@
         });
         document.getElementById("institutionSearch").addEventListener("focus", function (e) {
             document.getElementById("institutionsContainer").innerHTML = "";
-
+            window.renderEmptySearch("Find your bank, credit union or superannuation fund");
         });
-        document.getElementById("institutionSearch").addEventListener("blur", function (e) {
+        /*document.getElementById("institutionSearch").addEventListener("blur", function (e) {
             var instCont = document.getElementById("institutionsContainer"),
                 term = e.target.value;
 
             if (term.length < 2) {
                 window.renderInstitutions(instCont, institutions, url);
             }
-        });
+        });*/
         /*document.getElementById("cancelBtn").addEventListener("click", function (e) {
             e.preventDefault();
 

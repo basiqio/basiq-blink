@@ -147,6 +147,16 @@ window.renderInstitution = function (institution) {
     window.institution = institution;
 };
 
+window.renderEmptySearch = function (text) {
+    console.log("invoked");
+    var instConst = document.getElementById("institutionsContainer");
+
+    instConst.innerHTML = "<div class=\"search-placeholder\">" +
+        "<img src=\"institution.svg\"/>" +
+        "<span>" + text + "</span>" +
+        "</div>";
+};
+
 window.sendEventNotification = function (event, payload) {
     var queryVars = parseQueryVariables(),
         iframe = queryVars["iframe"];
@@ -281,11 +291,6 @@ function institutionSearch(url, term) {
     var matched = [],
         instCont = document.getElementById("institutionsContainer");
 
-    if (term.length < 2 && term.length === 0) {
-        window.renderInstitutions(instCont, window.institutions, url);
-        return;
-    }
-
     if (term.length < 2) {
         return;
     }
@@ -303,10 +308,16 @@ function institutionSearch(url, term) {
         }
     }
 
+    if (matched.length === 0) {
+        return window.renderEmptySearch("Sorry no results found");
+    }
+
     window.renderInstitutions(instCont, matched, url, true);
 }
 
 function checkJobStatus(accessToken, jobData) {
+    document.getElementById("connectionLoader").classList.remove("result-error");
+
     API.checkJobStatus(accessToken, jobData.id).then(function (resp) {
         var steps = resp.steps;
 
@@ -322,7 +333,10 @@ function checkJobStatus(accessToken, jobData) {
                     document.getElementById("statusFooter").style.display = "block";
                     document.getElementById("retryBtn").style.display = "block";
                     document.getElementById("doneBtn").style.display = "none";
-                    document.getElementById("statusIcon").innerHTML = "<div class='rounded-cross'></div>";
+                    //document.getElementById("statusIcon").innerHTML = "<div class='rounded-cross'></div>";
+                    document.getElementById("connectionSpinner").style.opacity = "0";
+                    document.getElementById("connectionCross").style.display = "block";
+                    document.getElementById("connectionLoader").classList.add("result-error");
                     document.getElementById("statusMessage").innerHTML = steps[step].result.detail;
                     document.getElementById("headerTitle").innerHTML = "Unsuccessful";
 
@@ -339,7 +353,9 @@ function checkJobStatus(accessToken, jobData) {
                     document.getElementById("statusFooter").style.display = "block";
                     document.getElementById("retryBtn").style.display = "none";
                     document.getElementById("doneBtn").style.display = "block";
-                    document.getElementById("statusIcon").innerHTML = "<div class='rounded-check'></div>";
+                    //document.getElementById("statusIcon").innerHTML = "<div class='rounded-check'></div>";
+                    document.getElementById("connectionSpinner").style.opacity = "0";
+                    document.getElementById("connectionCheckmark").style.display = "block";
                     document.getElementById("statusMessage").innerHTML = "Your account has been successfully linked.";
                     document.getElementById("headerTitle").innerHTML = "Success";
 
