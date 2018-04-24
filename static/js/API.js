@@ -11,6 +11,56 @@ var colors = {
     "default": "#f5f5f5"
 };
 
+window.request = function(url, method, data, headers) {
+    return new Promise(function (resolve, reject) {
+        var xhttp = new XMLHttpRequest();
+
+        if (method.toUpperCase() === "POST") {
+            xhttp.open("POST", url, true);
+            xhttp.setRequestHeader("Content-type", "application/json");
+        } else {
+            xhttp.open("GET", url, true);
+        }
+
+        for (var header in headers) {
+            if (!headers.hasOwnProperty(header)) {
+                continue;
+            }
+            xhttp.setRequestHeader(header, headers[header]);
+        }
+
+        if (method.toUpperCase() === "POST") {
+            xhttp.send(JSON.stringify(data));
+        } else {
+            xhttp.send();
+        }
+
+        xhttp.addEventListener("load", function () {
+            resolve(parseResponse(xhttp));
+        });
+        xhttp.addEventListener("error", function (e) {
+            console.log(xhttp, e);
+            reject(parseResponse(xhttp));
+        });
+    });
+};
+
+function parseResponse(res) {
+    try {
+        return {
+            statusText: res.statusText,
+            statusCode: res.status,
+            body: JSON.parse(res.responseText)
+        };
+    } catch (err) {
+        return {
+            statusText: res.statusText,
+            statusCode: res.status,
+            body: res.responseText
+        };
+    }
+}
+
 window.API = {
     loadInstitutions: function (token) {
         return new Promise(function (resolve) {

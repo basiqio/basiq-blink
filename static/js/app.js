@@ -1,48 +1,16 @@
-/*global Promise*/
 /*global API*/
 /*global sendEventNotification*/
 /*global footer*/
 /*global proceedBtn*/
+/*global naiveFlexBoxSupport*/
+/*global parseQueryVariables*/
+/*exported institutionSearch*/
 /*exported showConsentScreen*/
 /*exported hideConsentScreen*/
 /*exported showLoadingScreen*/
 /*exported hideLoadingScreen*/
 /*exported checkJobStatus*/
 /*eslint no-console: "off"*/
-
-window.request = function(url, method, data, headers) {
-    return new Promise(function (resolve, reject) {
-        var xhttp = new XMLHttpRequest();
-
-        if (method.toUpperCase() === "POST") {
-            xhttp.open("POST", url, true);
-            xhttp.setRequestHeader("Content-type", "application/json");
-        } else {
-            xhttp.open("GET", url, true);
-        }
-
-        for (var header in headers) {
-            if (!headers.hasOwnProperty(header)) {
-                continue;
-            }
-            xhttp.setRequestHeader(header, headers[header]);
-        }
-
-        if (method.toUpperCase() === "POST") {
-            xhttp.send(JSON.stringify(data));
-        } else {
-            xhttp.send();
-        }
-
-        xhttp.addEventListener("load", function () {
-            resolve(parseResponse(xhttp));
-        });
-        xhttp.addEventListener("error", function (e) {
-            console.log(xhttp, e);
-            reject(parseResponse(xhttp));
-        });
-    });
-};
 
 window.renderInstitutions = function (container, institutions, url, search) {
     container.innerHTML = "";
@@ -137,57 +105,6 @@ window.renderInstitutions = function (container, institutions, url, search) {
     });
 };
 
-function imageLoaded(a, imgPlaceholder, search, searchHeight, liW) {
-    if (!search) {
-        if (this.width - this.height > this.height / 2) {
-            this.style.width = "99%";
-            this.style.marginTop = (liW / 2 - this.height) / 6 + "px";
-        } else {
-            this.style.height = "99%";
-        }
-    } else {
-        var target = this.parentElement;
-
-        target.style.lineHeight = (searchHeight) / 2 + "px";
-        if (this.width - this.height > this.height / 6) {
-            this.style.width = "20%";
-        } else {
-            this.style.height = searchHeight - 40 + "px";
-        }
-    }
-
-    a.removeChild(imgPlaceholder);
-}
-
-function linkClickHandler(institution, e, search) {
-    e.preventDefault();
-    resetSelection(search);
-
-    window.localStorage.setItem("selectedInstitution", JSON.stringify(institution));
-    window.localStorage.setItem("selectedInstitutionTime", Date.now());
-    footer.style.display = "block";
-    if (!search) {
-        this.style.border = "2px solid #4A90E2";
-    } else {
-        this.style.borderTop = "2px solid #4A90E2";
-        if (this.parentElement.nextSibling) {
-            this.parentElement.nextSibling.getElementsByTagName("a")[0].style.borderTop = "2px solid #4A90E2";
-        } else {
-            this.style.borderBottom = "2px solid #4A90E2";
-        }
-    }
-    if (this.classList.contains("active")) {
-        this.classList.remove("active");
-        footer.style.display = "none";
-        resetSelection(search);
-    } else {
-        this.classList.add("active");
-    }
-    proceedBtn.onclick = function () {
-        window.location.replace(this.href);
-    }.bind(this);
-}
-
 window.renderInstitution = function (institution) {
     document.getElementById("loading").style.display = "none";
     document.getElementById("content").style.display = "block";
@@ -274,20 +191,57 @@ window.checkAccessToken = function(token) {
 
 };
 
-function parseResponse(res) {
-    try {
-        return {
-            statusText: res.statusText,
-            statusCode: res.status,
-            body: JSON.parse(res.responseText)
-        };
-    } catch (err) {
-        return {
-            statusText: res.statusText,
-            statusCode: res.status,
-            body: res.responseText
-        };
+
+
+function imageLoaded(a, imgPlaceholder, search, searchHeight, liW) {
+    if (!search) {
+        if (this.width - this.height > this.height / 2) {
+            this.style.width = "99%";
+            this.style.marginTop = (liW / 2 - this.height) / 6 + "px";
+        } else {
+            this.style.height = "99%";
+        }
+    } else {
+        var target = this.parentElement;
+
+        target.style.lineHeight = (searchHeight) / 2 + "px";
+        if (this.width - this.height > this.height / 6) {
+            this.style.width = "20%";
+        } else {
+            this.style.height = searchHeight - 40 + "px";
+        }
     }
+
+    a.removeChild(imgPlaceholder);
+}
+
+function linkClickHandler(institution, e, search) {
+    e.preventDefault();
+    resetSelection(search);
+
+    window.localStorage.setItem("selectedInstitution", JSON.stringify(institution));
+    window.localStorage.setItem("selectedInstitutionTime", Date.now());
+    footer.style.display = "block";
+    if (!search) {
+        this.style.border = "2px solid #4A90E2";
+    } else {
+        this.style.borderTop = "2px solid #4A90E2";
+        if (this.parentElement.nextSibling) {
+            this.parentElement.nextSibling.getElementsByTagName("a")[0].style.borderTop = "2px solid #4A90E2";
+        } else {
+            this.style.borderBottom = "2px solid #4A90E2";
+        }
+    }
+    if (this.classList.contains("active")) {
+        this.classList.remove("active");
+        footer.style.display = "none";
+        resetSelection(search);
+    } else {
+        this.classList.add("active");
+    }
+    proceedBtn.onclick = function () {
+        window.location.replace(this.href);
+    }.bind(this);
 }
 
 function resetSelection(search) {
@@ -302,24 +256,6 @@ function resetSelection(search) {
             link.style.borderBottom = "none";
         }
     });
-}
-
-function parseQueryVariables() {
-    var queryString = window.location.search.substring(1),
-        query = {},
-        pairs = queryString.split("&");
-
-    for (var i = 0; i < pairs.length; i++) {
-        var pair = pairs[i].split("=");
-        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
-    }
-    return query;
-}
-
-function naiveFlexBoxSupport (d){
-    var f = "flex", e = d.createElement("b");
-    e.style.display = f;
-    return e.style.display === f;
 }
 
 function showLoadingScreen() {    
@@ -337,7 +273,7 @@ function hideLoadingScreen() {
     document.getElementById("credentialsForm").style.display = "block";
 }
 
-window.institutionSearch = function (url, term) {
+function institutionSearch(url, term) {
     if (!window.institutions) {
         return;
     }
@@ -368,7 +304,7 @@ window.institutionSearch = function (url, term) {
     }
 
     window.renderInstitutions(instCont, matched, url, true);
-};
+}
 
 function checkJobStatus(accessToken, jobData) {
     API.checkJobStatus(accessToken, jobData.id).then(function (resp) {
@@ -428,12 +364,3 @@ function checkJobStatus(accessToken, jobData) {
         }
     });
 }
-
-window.stringifyQueryParams = function(obj) {
-    var str = [];
-    for (var p in obj)
-        if (obj.hasOwnProperty(p)) {
-            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-        }
-    return str.join("&");
-};
