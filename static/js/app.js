@@ -47,132 +47,82 @@ window.request = function(url, method, data, headers) {
 window.renderInstitutions = function (container, institutions, url, search) {
     container.innerHTML = "";
 
-    var parentHeight = window.getComputedStyle(container.parentNode).getPropertyValue("height"),
+    var parentHeightPx = window.getComputedStyle(container.parentNode).getPropertyValue("height"),
+        parentHeight = parseFloat(parentHeightPx.substr(0, parentHeightPx.length - 2)),
         w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
         h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
         searchWidthPx = window.getComputedStyle(document.getElementById("institutionSearch")).getPropertyValue("width"),
-        searchWidth = searchWidthPx.substr(0, searchWidthPx.length - 2),
+        searchWidth = parseFloat(searchWidthPx.substr(0, searchWidthPx.length - 2)),
         liW =  searchWidth / 2 - (w / 10 / 5);
 
-    //document.getElementById("closeButton").style.right = (w - searchWidth) / 2 + "px";
+    container.style.height = parentHeight - 150 - 65 - 20 + "px";
 
     window.addEventListener("resize", function () {
         var parentHeight = window.getComputedStyle(container.parentNode).getPropertyValue("height");
-        container.style.height = parentHeight.substr(0, parentHeight.length - 2) - 150 - 65 - 20 + "px";
+        container.style.height = parentHeight - 150 - 65 - 20 + "px";
     });
 
-    container.style.height = parentHeight.substr(0, parentHeight.length - 2) - 150 - 65 - 20 + "px";
-
-    var links = [];
-
-    for (var institution in institutions) {
-        if (!institutions.hasOwnProperty(institution)) {
-            continue;
-        }
-
-        var instUrl = url.replace("{inst_id}", institutions[institution].id);
-        var div = document.createElement("div"),
+    institutions.forEach(function (institution) {
+        var instUrl = url.replace("{inst_id}", institution.id),
+            div = document.createElement("div"),
             a = document.createElement("a"),
+            img = document.createElement("img"),
             imgPlaceholder = document.createElement("div"),
             imgPlaceholderSpinner = document.createElement("div"),
-            img = document.createElement("img"),
             searchHeight = liW / (w/h > 0.8 ? 1.4 : 2.5);
 
+        resetSelection(search);
+
         a.appendChild(img);
+        a.setAttribute("href", instUrl);
         a.appendChild(imgPlaceholder);
+
+        a.onclick = function (e) {
+            linkClickHandler.bind(this, institution, e, search)();
+        };
+
         imgPlaceholder.classList.add("img-placeholder");
         imgPlaceholder.appendChild(imgPlaceholderSpinner);
         imgPlaceholderSpinner.className = "spinner img-placeholder-spinner";
-        a.setAttribute("href", instUrl);
-        links.push(a);
-
-        a.onclick = (function (index) {
-            return function(institution, e) {
-                e.preventDefault();
-                resetSelection(search, institutions);
-
-                window.localStorage.setItem("selectedInstitution", JSON.stringify(institution));
-                window.localStorage.setItem("selectedInstitutionTime", Date.now());
-                footer.style.display = "block";
-                if (!search) {
-                    this.style.border = "2px solid #4A90E2";
-                } else {
-                    this.style.borderTop = "2px solid #4A90E2";
-                    if (this.parentElement.nextSibling) {
-                        this.parentElement.nextSibling.getElementsByTagName("a")[0].style.borderTop = "2px solid #4A90E2";
-                    } else {
-                        this.style.borderBottom = "2px solid #4A90E2";
-                    }
-                }
-                if (this.classList.contains("active")) {
-                    this.classList.remove("active");
-                    footer.style.display = "none";
-                    resetSelection(search);
-                } else {
-                    this.classList.add("active");
-                }
-                proceedBtn.onclick = function () {
-                    window.location.replace(this.href);
-                }.bind(this);
-            }.bind(this, institutions[index]);
-        }.bind(a))(institution);
+        imgPlaceholderSpinner.style.marginTop = liW/4 - 50 + "px";
 
         div.appendChild(a);
         div.className = "bank-link";
         div.style.width = liW + "px";
         div.style.height = liW/2 + "px";
 
-        imgPlaceholderSpinner.style.marginTop = liW/4 - 50 + "px";
-
-        if (institutions[institution].logo.links.square) {
-            img.setAttribute("src", institutions[institution].logo.links.square);
+        if (institution.logo.links.square) {
+            img.setAttribute("src", institution.logo.links.square);
         } else {
-            img.setAttribute("src", institutions[institution].logo.links.self);
+            img.setAttribute("src", institution.logo.links.self);
         }
 
-        img.setAttribute("alt", institutions[institution].name);
-        img.setAttribute("title", institutions[institution].name);
-
-        img.onload = (function (a, imgPlaceholder, searchHeight) {
-            return function () {
-                a.removeChild(imgPlaceholder);
-                if (!search) {
-                    if (this.width - this.height > this.height / 2) {
-                        this.style.width = "99%";
-                        this.style.marginTop = (liW / 2 - this.height) / 6 + "px";
-                    } else {
-                        this.style.height = "99%";
-                    }
-                } else {
-                    var target = this.parentElement;
-
-                    target.style.lineHeight = (searchHeight) / 2 + "px";
-                    if (this.width - this.height > this.height / 6) {
-                        this.style.width = "20%";
-                    } else {
-                        this.style.height = searchHeight - 40 + "px";
-                    }
-                }
-            };
-        })(a, imgPlaceholder, searchHeight);
-
+        img.setAttribute("alt", institution.name);
+        img.setAttribute("title", institution.name);
+        img.onload = function () {
+            imageLoaded.bind(this, a, imgPlaceholder, search, searchHeight, liW)();
+        };
         img.onerror = function () {
             this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
         };
 
         if (search) {
-            resetSelection(search);
+            var h3 = document.createElement("h3");
+            h3.className = "bank-link-search-header";
+            h3.innerHTML = institution.name;
+
+            a.className = "bank-link-nav-search";
+            a.appendChild(h3);
+
             div.className = "bank-link-search";
             div.style.width = searchWidth;
             div.style.marginLeft = (w - searchWidth) / 2;
             div.style.height = searchHeight + "px";
-            imgPlaceholderSpinner.style.marginTop = searchHeight/2-50 + "px";
-            imgPlaceholder.classList.add("img-placeholder-search");
-            var h3 = document.createElement("h3");
-            h3.className = "bank-link-search-header";
 
             img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
-            a.className = "bank-link-nav-search";
+
+            imgPlaceholderSpinner.style.marginTop = searchHeight/2-50 + "px";
+            imgPlaceholder.classList.add("img-placeholder-search");
 
             if (naiveFlexBoxSupport(document)) {
                 a.style.display = "flex";
@@ -181,14 +131,62 @@ window.renderInstitutions = function (container, institutions, url, search) {
                 a.style.display = "inline-block";
                 a.style.verticalAlign = "middle";
             }
-
-            h3.innerHTML = institutions[institution].name;
-            a.appendChild(h3);
         }
 
         container.appendChild(div);
-    }
+    });
 };
+
+function imageLoaded(a, imgPlaceholder, search, searchHeight, liW) {
+    if (!search) {
+        if (this.width - this.height > this.height / 2) {
+            this.style.width = "99%";
+            this.style.marginTop = (liW / 2 - this.height) / 6 + "px";
+        } else {
+            this.style.height = "99%";
+        }
+    } else {
+        var target = this.parentElement;
+
+        target.style.lineHeight = (searchHeight) / 2 + "px";
+        if (this.width - this.height > this.height / 6) {
+            this.style.width = "20%";
+        } else {
+            this.style.height = searchHeight - 40 + "px";
+        }
+    }
+
+    a.removeChild(imgPlaceholder);
+}
+
+function linkClickHandler(institution, e, search) {
+    e.preventDefault();
+    resetSelection(search);
+
+    window.localStorage.setItem("selectedInstitution", JSON.stringify(institution));
+    window.localStorage.setItem("selectedInstitutionTime", Date.now());
+    footer.style.display = "block";
+    if (!search) {
+        this.style.border = "2px solid #4A90E2";
+    } else {
+        this.style.borderTop = "2px solid #4A90E2";
+        if (this.parentElement.nextSibling) {
+            this.parentElement.nextSibling.getElementsByTagName("a")[0].style.borderTop = "2px solid #4A90E2";
+        } else {
+            this.style.borderBottom = "2px solid #4A90E2";
+        }
+    }
+    if (this.classList.contains("active")) {
+        this.classList.remove("active");
+        footer.style.display = "none";
+        resetSelection(search);
+    } else {
+        this.classList.add("active");
+    }
+    proceedBtn.onclick = function () {
+        window.location.replace(this.href);
+    }.bind(this);
+}
 
 window.renderInstitution = function (institution) {
     document.getElementById("loading").style.display = "none";
@@ -339,63 +337,37 @@ function hideLoadingScreen() {
     document.getElementById("credentialsForm").style.display = "block";
 }
 
-window.institutionSearch = function (url, e) {
-    e.preventDefault();
-
-    var target, proceed = false;
-
-    if (e.target.nodeName.toLowerCase() === "input") {
-        target = e.target;
-    } else {
-        proceed = true;
-        target = document.getElementById("institutionSearch");
-    }
-
-    var searchTerm = target.value.trim(),
-        searchParser = function (term) {
-            if (!window.institutions) {
-                return;
-            }
-
-            var matched = [],
-                instCont = document.getElementById("institutionsContainer");
-
-            if (term.length < 2) {
-                window.renderInstitutions(instCont, window.institutions, url);
-                return;
-            }
-
-            for (var x = 0; x < window.institutions.length; x++) {
-                var institution = window.institutions[x];
-
-                if (institution.shortName.toLowerCase().indexOf(term.toLowerCase()) > -1) {
-                    matched.push(institution);
-                    continue;
-                }
-
-                if (institution.name.toLowerCase().indexOf(term.toLowerCase()) > -1) {
-                    matched.push(institution);
-                }
-            }
-
-            window.renderInstitutions(instCont, matched, url, true);
-        };
-
-    if (!proceed) {
-        setTimeout(function () {
-            var searchTermNew = target.value.trim();
-
-            if (searchTermNew !== searchTerm) {
-                return;
-            }
-
-            searchParser(searchTerm);
-        }, 700);
-
+window.institutionSearch = function (url, term) {
+    if (!window.institutions) {
         return;
     }
 
-    searchParser(searchTerm);
+    var matched = [],
+        instCont = document.getElementById("institutionsContainer");
+
+    if (term.length < 2 && term.length === 0) {
+        window.renderInstitutions(instCont, window.institutions, url);
+        return;
+    }
+
+    if (term.length < 2) {
+        return;
+    }
+
+    for (var x = 0; x < window.institutions.length; x++) {
+        var institution = window.institutions[x];
+
+        if (institution.shortName.toLowerCase().indexOf(term.toLowerCase()) > -1) {
+            matched.push(institution);
+            continue;
+        }
+
+        if (institution.name.toLowerCase().indexOf(term.toLowerCase()) > -1) {
+            matched.push(institution);
+        }
+    }
+
+    window.renderInstitutions(instCont, matched, url, true);
 };
 
 function checkJobStatus(accessToken, jobData) {

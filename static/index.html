@@ -85,8 +85,16 @@
             });
         }
 
-        document.getElementById("institutionSearchForm").addEventListener("submit", institutionSearch.bind(undefined, url))
-        document.getElementById("institutionSearch").addEventListener("input", institutionSearch.bind(undefined, url))
+        document.getElementById("institutionSearchForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            var term = document.getElementById("institutionSearch").value;
+            institutionSearch(url, term);
+        });
+        document.getElementById("institutionSearch").addEventListener("input", function (e) {
+            var term = e.target.value.trim();
+
+            institutionSearch(url, term);
+        });
         document.getElementById("institutionSearch").addEventListener("focus", function (e) {
             document.getElementById("institutionsContainer").innerHTML = "";
         });
