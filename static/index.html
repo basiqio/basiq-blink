@@ -19,9 +19,9 @@
                 </div>
             </form>
         </div>
-        <div id="institutionsContainer">
+        <ul id="institutionsContainer">
             <!--<li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>-->
-        </div>
+        </ul>
         <div id="footer" class="footer">
             <!--<button id="cancelBtn" class="button footer-button">Cancel</button>-->
             <button id="proceedBtn" class="button footer-button">Next</button>
@@ -38,7 +38,6 @@
         iFrame = !!queryVars["iframe"] && queryVars["iframe"] === "true",
         userId = queryVars["user_id"],
         accessToken = queryVars["access_token"],
-        showClose = !!queryVars["show_close"] && queryVars["show_close"] === "true",
         serviceTypes = queryVars["service_types"],
         countries = queryVars["countries"],
         errorContainer = document.getElementById("errorContainer"),

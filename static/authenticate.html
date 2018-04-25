@@ -100,7 +100,6 @@
         institutionId = queryVars.institution_id,
         userId = queryVars.user_id,
         accessToken = queryVars.access_token,
-        showClose = queryVars["show_close"] && queryVars["show_close"] === "true",
         form = document.getElementById("credentialsForm"),
         errorContainer = document.getElementById("errorContainer"),
         error = checkAccessToken(accessToken);

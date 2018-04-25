@@ -14,94 +14,29 @@
 window.renderInstitutions = function (container, institutions, url, search) {
     container.innerHTML = "";
 
-    var parentHeightPx = window.getComputedStyle(container.parentNode).getPropertyValue("height"),
+    var margins = 10,
+        parentHeightPx = window.getComputedStyle(container.parentNode).getPropertyValue("height"),
         parentHeight = parseFloat(parentHeightPx.substr(0, parentHeightPx.length - 2)),
         w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
         h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
         searchWidthPx = window.getComputedStyle(document.getElementById("institutionSearch")).getPropertyValue("width"),
         searchWidth = parseFloat(searchWidthPx.substr(0, searchWidthPx.length - 2)),
-        liW =  searchWidth / 2 - (w / 10 / 5);
+        liW = (searchWidth/2) - (margins/2);
 
-    container.style.height = parentHeight - 150 - 65 - 20 + "px";
+    container.style.height = parentHeight - 110 - 65 - 20 + "px";
 
     window.addEventListener("resize", function () {
         var parentHeight = window.getComputedStyle(container.parentNode).getPropertyValue("height");
-        container.style.height = parentHeight - 150 - 65 - 20 + "px";
+        container.style.height = parentHeight - 110 - 65 - 20 + "px";
     });
 
-    institutions.forEach(function (institution) {
-        var instUrl = url.replace("{inst_id}", institution.id),
-            div = document.createElement("div"),
-            a = document.createElement("a"),
-            img = document.createElement("img"),
-            imgPlaceholder = document.createElement("div"),
-            imgPlaceholderSpinner = document.createElement("div"),
-            searchHeight = liW / (w/h > 0.8 ? 1.4 : 2.5);
-
-        resetSelection(search);
-
-        a.appendChild(img);
-        a.setAttribute("href", instUrl);
-        a.appendChild(imgPlaceholder);
-
-        a.onclick = function (e) {
-            linkClickHandler.bind(this, institution, e, search)();
-        };
-
-        imgPlaceholder.classList.add("img-placeholder");
-        imgPlaceholder.appendChild(imgPlaceholderSpinner);
-        imgPlaceholderSpinner.className = "spinner img-placeholder-spinner";
-        imgPlaceholderSpinner.style.marginTop = liW/4 - 50 + "px";
-
-        div.appendChild(a);
-        div.className = "bank-link";
-        div.style.width = liW + "px";
-        div.style.height = liW/2 + "px";
-
-        if (institution.logo.links.square) {
-            img.setAttribute("src", institution.logo.links.square);
-        } else {
-            img.setAttribute("src", institution.logo.links.self);
-        }
-
-        img.setAttribute("alt", institution.name);
-        img.setAttribute("title", institution.name);
-        img.onload = function () {
-            imageLoaded.bind(this, a, imgPlaceholder, search, searchHeight, liW)();
-        };
-        img.onerror = function () {
-            this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
-        };
-
-        if (search) {
-            var h3 = document.createElement("h3");
-            h3.className = "bank-link-search-header";
-            h3.innerHTML = institution.name;
-
-            a.className = "bank-link-nav-search";
-            a.appendChild(h3);
-
-            div.className = "bank-link-search";
-            div.style.width = searchWidth;
-            div.style.marginLeft = (w - searchWidth) / 2;
-            div.style.height = searchHeight + "px";
-
-            img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
-
-            imgPlaceholderSpinner.style.marginTop = searchHeight/2-50 + "px";
-            imgPlaceholder.classList.add("img-placeholder-search");
-
-            if (naiveFlexBoxSupport(document)) {
-                a.style.display = "flex";
-                a.style.alignItems = "center";
-            } else {
-                a.style.display = "inline-block";
-                a.style.verticalAlign = "middle";
-            }
-        }
-
-        container.appendChild(div);
-    });
+    if (search) {
+        container.classList.add("container-search");
+        renderSearchedInstitutions(container, institutions, url, searchWidth, liW, w, h);
+    } else {
+        container.classList.remove("container-search");
+        renderAllInstitutions(container, institutions, url, liW, w, h);
+    }
 };
 
 window.renderInstitution = function (institution) {
@@ -200,7 +135,150 @@ window.checkAccessToken = function(token) {
 
 };
 
+function renderAllInstitutions(container, institutions, url, liW, w, h) {
+    var newUl = true, ul;
 
+    institutions.forEach(function (institution) {
+        var instUrl = url.replace("{inst_id}", institution.id),
+            a = document.createElement("a"),
+            img = document.createElement("img"),
+            imgPlaceholder = document.createElement("div"),
+            imgPlaceholderSpinner = document.createElement("div"),
+            li = document.createElement("li"),
+            searchHeight = liW / (w/h > 0.8 ? 1.4 : 2.5);
+
+        resetSelection(false);
+
+        if (newUl) {
+            ul = document.createElement("ul");
+            li.style.marginRight = "5px";
+            container.appendChild(ul);
+        } else {
+            li.style.marginLeft = "5px";
+        }
+
+        newUl = !newUl;
+
+        ul.appendChild(li);
+        ul.classList.add("bank-row");
+        li.appendChild(a);
+
+        a.appendChild(img);
+        a.setAttribute("href", instUrl);
+        a.appendChild(imgPlaceholder);
+
+        a.onclick = function (e) {
+            linkClickHandler.bind(this, institution, e, false)();
+        };
+
+        imgPlaceholder.classList.add("img-placeholder");
+        imgPlaceholder.appendChild(imgPlaceholderSpinner);
+        imgPlaceholderSpinner.className = "spinner img-placeholder-spinner";
+        imgPlaceholderSpinner.style.marginTop = liW/4 - 50 + "px";
+
+        li.appendChild(a);
+        li.className = "bank-link";
+        li.style.width = liW + "px";
+        li.style.height = liW/2 + "px";
+
+        if (institution.logo.links.square) {
+            img.setAttribute("src", institution.logo.links.square);
+        } else {
+            img.setAttribute("src", institution.logo.links.self);
+        }
+
+        img.setAttribute("alt", institution.name);
+        img.setAttribute("title", institution.name);
+        img.onload = function () {
+            imageLoaded.bind(this, a, imgPlaceholder, false, searchHeight, liW)();
+        };
+        img.onerror = function () {
+            this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
+        };
+    });
+}
+
+function renderSearchedInstitutions(container, institutions, url, searchWidth, liW, w, h) {
+    console.log(institutions);
+
+    institutions.forEach(function (institution) {
+        var instUrl = url.replace("{inst_id}", institution.id),
+            div = document.createElement("div"),
+            a = document.createElement("a"),
+            img = document.createElement("img"),
+            imgPlaceholder = document.createElement("div"),
+            imgPlaceholderSpinner = document.createElement("div"),
+            li = document.createElement("li"),
+            searchHeight = liW / (w/h > 0.8 ? 1.4 : 2.5);
+
+        resetSelection(true);
+
+        li.appendChild(a);
+
+        div.appendChild(img);
+        div.style.width = "25%";
+
+        a.appendChild(div);
+        a.setAttribute("href", instUrl);
+        a.appendChild(imgPlaceholder);
+
+        a.onclick = function (e) {
+            linkClickHandler.bind(this, institution, e, true)();
+        };
+
+        imgPlaceholder.classList.add("img-placeholder");
+        imgPlaceholder.appendChild(imgPlaceholderSpinner);
+        imgPlaceholderSpinner.className = "spinner img-placeholder-spinner";
+        imgPlaceholderSpinner.style.marginTop = liW/4 - 50 + "px";
+
+        li.appendChild(a);
+        li.className = "bank-link";
+        li.style.width = liW + "px";
+        li.style.height = liW/2 + "px";
+
+        container.appendChild(li);
+
+        if (institution.logo.links.square) {
+            img.setAttribute("src", institution.logo.links.square);
+        } else {
+            img.setAttribute("src", institution.logo.links.self);
+        }
+
+        img.setAttribute("alt", institution.name);
+        img.setAttribute("title", institution.name);
+        img.onload = function () {
+            imageLoaded.bind(this, a, imgPlaceholder, true, searchHeight, liW)();
+        };
+        img.onerror = function () {
+            this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
+        };
+
+        var h3 = document.createElement("h3");
+        h3.className = "bank-link-search-header";
+        h3.innerHTML = institution.name.length > 18 ? institution.name.substr(0, 16).trim() + "..." : institution.name;
+
+        a.title = institution.name;
+        a.className = "bank-link-nav-search";
+        a.appendChild(h3);
+
+        li.className = "bank-link-search";
+        li.style.width = searchWidth;
+        li.style.height = searchHeight + "px";
+
+        img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
+
+        imgPlaceholderSpinner.style.marginTop = searchHeight/2-50 + "px";
+        imgPlaceholder.classList.add("img-placeholder-search");
+
+        if (naiveFlexBoxSupport(document)) {
+            a.style.display = "flex";
+            a.style.alignItems = "center";
+        } else {
+            a.style.display = "inline-block";
+            a.style.verticalAlign = "middle";
+        }
+    });
+}
 
 function imageLoaded(a, imgPlaceholder, search, searchHeight, liW) {
     if (!search) {
@@ -215,9 +293,9 @@ function imageLoaded(a, imgPlaceholder, search, searchHeight, liW) {
 
         target.style.lineHeight = (searchHeight) / 2 + "px";
         if (this.width - this.height > this.height / 6) {
-            this.style.width = "20%";
+            this.style.width = "100%";
         } else {
-            this.style.height = searchHeight - 40 + "px";
+            this.style.height = searchHeight - 15 + "px";
         }
     }
 
@@ -337,7 +415,6 @@ function checkJobStatus(accessToken, jobData) {
                         document.getElementById("retryBtn").classList.add("footer-button-active");
                     }, 100);
 
-                    //document.getElementById("statusIcon").innerHTML = "<div class='rounded-cross'></div>";
                     document.getElementById("connectionSpinner").style.opacity = "0";
                     document.getElementById("connectionCross").style.display = "block";
                     document.getElementById("connectionLoader").classList.add("result-error");
