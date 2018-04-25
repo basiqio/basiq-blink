@@ -70,6 +70,9 @@
 <script>
     document.getElementById("loading").style.display = "block";
     document.getElementById("content").style.display = "none";
+    setTimeout(function () {
+        document.getElementById("submitBtn").classList.add("footer-button-active");
+    });
     document.getElementById("securityInputContainer").style.display = "none";
     document.getElementById("backButton").style.display = "block";
 

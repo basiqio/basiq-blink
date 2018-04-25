@@ -1,6 +1,5 @@
 /*global API*/
 /*global sendEventNotification*/
-/*global footer*/
 /*global proceedBtn*/
 /*global naiveFlexBoxSupport*/
 /*global parseQueryVariables*/
@@ -231,7 +230,7 @@ function linkClickHandler(institution, e, search) {
 
     window.localStorage.setItem("selectedInstitution", JSON.stringify(institution));
     window.localStorage.setItem("selectedInstitutionTime", Date.now());
-    footer.style.display = "block";
+    proceedBtn.classList.add("footer-button-active");
     if (!search) {
         this.style.border = "2px solid #4A90E2";
     } else {
@@ -244,7 +243,7 @@ function linkClickHandler(institution, e, search) {
     }
     if (this.classList.contains("active")) {
         this.classList.remove("active");
-        footer.style.display = "none";
+        proceedBtn.classList.remove("footer-button-active");
         resetSelection(search);
     } else {
         this.classList.add("active");
@@ -330,9 +329,14 @@ function checkJobStatus(accessToken, jobData) {
                 case "failed":
                     document.getElementById("backButton").style.display = "none";
                     document.getElementById("statusTitle").innerHTML = "";
-                    document.getElementById("statusFooter").style.display = "block";
-                    document.getElementById("retryBtn").style.display = "block";
+
                     document.getElementById("doneBtn").style.display = "none";
+                    document.getElementById("retryBtn").style.display = "block";
+                    setTimeout(function () {
+                        document.getElementById("doneBtn").classList.remove("footer-button-active");
+                        document.getElementById("retryBtn").classList.add("footer-button-active");
+                    }, 100);
+
                     //document.getElementById("statusIcon").innerHTML = "<div class='rounded-cross'></div>";
                     document.getElementById("connectionSpinner").style.opacity = "0";
                     document.getElementById("connectionCross").style.display = "block";
@@ -350,9 +354,14 @@ function checkJobStatus(accessToken, jobData) {
                 case "success":
                     document.getElementById("backButton").style.display = "none";
                     document.getElementById("statusTitle").innerHTML = "";
-                    document.getElementById("statusFooter").style.display = "block";
-                    document.getElementById("retryBtn").style.display = "none";
+
                     document.getElementById("doneBtn").style.display = "block";
+                    document.getElementById("retryBtn").style.display = "none";
+                    setTimeout(function () {
+                        document.getElementById("retryBtn").classList.remove("footer-button-active");
+                        document.getElementById("doneBtn").classList.add("footer-button-active");
+                    }, 100);
+
                     //document.getElementById("statusIcon").innerHTML = "<div class='rounded-check'></div>";
                     document.getElementById("connectionSpinner").style.opacity = "0";
                     document.getElementById("connectionCheckmark").style.display = "block";
