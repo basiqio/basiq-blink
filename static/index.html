@@ -44,7 +44,7 @@
         errorContainer = document.getElementById("errorContainer"),
         proceedBtn = document.getElementById("proceedBtn"),
         footer = document.getElementById("footer"),
-        url = "/authenticate.html?show_close="+showClose+"&user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken,
+        url = "/authenticate.html?user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken,
         error = checkAccessToken(accessToken);
 
     if (error) {
@@ -59,15 +59,6 @@
         countries = countries.split(",").filter(Boolean);
         serviceTypes = serviceTypes ? serviceTypes.split(",").filter(Boolean) : null;
         */
-        if (showClose) {
-            document.getElementById("closeButton").style.display = "block";
-            document.getElementById("closeButton").addEventListener("click", function (e) {
-                e.preventDefault();
-
-                sendEventNotification("cancellation");
-            });
-        }
-
         if (iFrame) {
             url += "&iframe=true";
         }
@@ -99,19 +90,19 @@
             document.getElementById("institutionsContainer").innerHTML = "";
             window.renderEmptySearch("Find your bank, credit union or superannuation fund");
         });
-        /*document.getElementById("institutionSearch").addEventListener("blur", function (e) {
+        document.getElementById("closeButton").addEventListener("click", function (e) {
+            e.preventDefault();
+
+            sendEventNotification("cancellation");
+        });
+        document.getElementById("institutionSearch").addEventListener("blur", function (e) {
             var instCont = document.getElementById("institutionsContainer"),
                 term = e.target.value;
 
             if (term.length < 2) {
                 window.renderInstitutions(instCont, institutions, url);
             }
-        });*/
-        /*document.getElementById("cancelBtn").addEventListener("click", function (e) {
-            e.preventDefault();
-
-            sendEventNotification("cancellation");
-        });*/
+        });
 
         setTimeout(function () {
             sendEventNotification("handshake", {"success": true});

@@ -50,7 +50,27 @@
         </div>
         <div class="tag-line">
             <div class="tag-line-icon">
-                <img src="fortress.svg" alt="We secure your information">
+                <svg viewBox="0 0 40 51" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+                    <desc>Fortress.</desc>
+                    <defs></defs>
+                    <g class="fortress" id="fortress" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <polyline id="Path-2" stroke="#989898" points="15.1278238 45.4063067 0.994962221 45.4063067 0.994962221 36.5691888 5.00931945 32.0380849 5.00931945 13.9948533 2.00831457 10.0185719 2.00831457 1 7.00827656 1 7.00827656 5.0193807 11.5248266 5.0193807 11.5248266 1 17.4916611 1 17.4916611 5.0193807 22.0069807 5.0193807 22.0069807 1 27.017014 1 27.017014 10.0185719 24 13.9948533 24 22.0072684"></polyline>
+                        <path d="M1.5,36.3422869 L5.5,36.3422869" id="Line-2" stroke="#989898" stroke-linecap="square"></path>
+                        <path d="M8.49751444,36.3422869 L13.502349,36.3422869" id="Line-2" stroke="#989898" stroke-linecap="square"></path>
+                        <path d="M5.5,32.0733167 L13.5113706,32.0733167" id="Line-2" stroke="#989898" stroke-linecap="square"></path>
+                        <path d="M2.58800358,10.3519212 L17.5007352,10.3519212" id="Line-2" stroke="#989898" stroke-linecap="square"></path>
+                        <path d="M5.5,14.317551 L23.5009246,14.317551" id="Line-2" stroke="#989898" stroke-linecap="square"></path>
+                        <path d="M20.498146,10.3519212 L26.4127316,10.3519212" id="Line-2" stroke="#989898" stroke-linecap="square"></path>
+                        <g id="Group-2" transform="translate(15.000000, 22.000000)" stroke="#40BBBD">
+                            <path d="M0.475176217,6.05088863 C0.475176217,15.0565221 0.475176217,19.5593388 0.475176217,19.5593388 C0.475176217,24.7722985 9.09085729,28.2156647 12.0085563,28.1938942 C17.7915849,28.1507438 23.5419364,24.7174985 23.5419364,19.387225 C23.5419364,15.8337093 23.5419364,11.3882639 23.5419364,6.05088863 L12.0085563,0.815007598 L0.475176217,6.05088863 Z" id="Path-3"></path>
+                            <g id="Group" transform="translate(7.000000, 9.000000)">
+                                <path d="M2.44384766,5.42965492 L7.44384766,5.42965492" id="Line-2" stroke-linecap="square"></path>
+                                <path d="M0.728145814,10.9888191 L9.29624543,10.9888191 L9.29624543,5.42899351 L7.92635053,5.42899351 L7.92635053,1.57555204 C6.97477969,0.525184015 6.00339472,5.68434189e-14 5.01219562,5.68434189e-14 C4.02099652,5.68434189e-14 3.02821261,0.525184015 2.0338439,1.57555204 L2.0338439,5.42899351 L0.728145814,5.42899351 L0.728145814,10.9888191 Z" id="Path-4"></path>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
             </div>
             <div class="tag-line-description">
                 <h4>Bank level security</h4>
@@ -89,15 +109,6 @@
         document.getElementById("loading").style.display = "none";
         window.errorContainer.innerHTML = error;
     } else {
-        if (showClose) {
-            document.getElementById("closeButton").style.display = "block";
-            document.getElementById("closeButton").addEventListener("click", function (e) {
-                e.preventDefault();
-
-                sendEventNotification("cancellation");
-            });
-        }
-
         if (!institutionId) {
             throw new Error("No institution id provided");
         }
@@ -148,6 +159,11 @@
         document.getElementById("retryBtn").addEventListener("click", function(e) {
             e.preventDefault();
             window.location.reload();
+        });
+        document.getElementById("closeButton").addEventListener("click", function (e) {
+            e.preventDefault();
+
+            sendEventNotification("cancellation");
         });
 
     //setTimeout(showConsentScreen, 1500)
