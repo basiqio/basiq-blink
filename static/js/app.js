@@ -100,7 +100,12 @@
             }
             searching = true;
             showElement("hideSearchButton");
-            renderEmptySearch("Find your bank, credit union or superannuation fund");
+            var term = document.getElementById("institutionSearch").value;
+            if (term.length > 0) {
+                institutionSearch(url, term);
+            } else {
+                renderEmptySearch("Find your bank, credit union or superannuation fund");
+            }
         });
         document.getElementById("hideSearchButton").addEventListener("click", function (e) {
             e.preventDefault();
