@@ -1,196 +1,77 @@
 <html>
 <head>
     <title>Bank Connect</title>
-    <script src="/js/app.js"></script>
-    <script src="/js/helpers.js"></script>
-    <script src="/js/polyfills/promise-polyfill.min.js"></script>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div id="content">
-        <div id="header">
-            <h2 id="headerTitle">Select your bank</h2>
-            <a href="#" id="closeButton"></a>
-            <a href="#" class="back-arrow hidden" id="hideSearchButton"></a>
-            <a href="#" class="back-arrow hidden" id="backButton"></a>
-            <form id="institutionSearchForm" class="search-form hidden">
-                <div class="institution-search input-container-right">
-                    <span class="ico-mglass"></span>
-                    <input id="institutionSearch" type="text" placeholder="Search bank">
-                </div>
-            </form>
-        </div>
-        <div id="loading" class="loader-container initial-loader hidden">
-            <div id="initialSpinner" class="spinner"></div>
-            <svg id="loadingCross" class="checkmark hidden" xmlns="http://www.w3.org/2000/svg" viewBox="5 0 40 52">
-                <path class="checkmark__cross" d="M 15,20 L 35,40 M 35,20 L 15,40" />
-            </svg>
-        </div>
-        <div id="errorContainer"></div>
-        <ul id="institutionsContainer" class="hidden">
-            <!--<li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>-->
-        </ul>
-        <div id="authenticationContainer" class="hidden">
-            <form id="credentialsForm" class="credentials-form" action="">
-                <div class="bank-logo-container">
-                    <img id="bankLogo" alt="">
-                </div>
-                <div class="input-container-right">
-                    <span class="ico-lock"></span>
-                    <input id="usernameInput" title="Username" type="text"/>
-                </div>
-                <div class="input-container-right">
-                    <span class="ico-lock"></span>
-                    <input id="passwordInput" title="Password" type="password"/>
-                </div>
-                <div id="securityInputContainer" class="input-container-right hidden">
-                    <span class="ico-lock"></span>
-                    <input id="securityInput" title="Security code" type="password"/>
-                </div>
-            </form>
-        </div>
-        <div id="statusContainer" class="status-container hidden">
-            <div id="statusIcon">
-                <div id="connectionLoader" class="loader-container">
-                    <div id="connectionSpinner" class="spinner"></div>
-                    <svg id="connectionCheckmark" class="checkmark hidden" xmlns="http://www.w3.org/2000/svg" viewBox="5 0 40 36">
-                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                    </svg>
-                    <svg id="connectionCross" class="checkmark hidden" xmlns="http://www.w3.org/2000/svg" viewBox="5 0 40 52">
-                        <path class="checkmark__cross" d="M 15,20 L 35,40 M 35,20 L 15,40" />
-                    </svg>
-                </div>
+<div id="content">
+    <div id="header">
+        <h2 id="headerTitle">Select your bank</h2>
+        <a href="#" id="closeButton"></a>
+        <a href="#" class="back-arrow hidden" id="hideSearchButton"></a>
+        <a href="#" class="back-arrow hidden" id="backButton"></a>
+        <form id="institutionSearchForm" class="search-form hidden">
+            <div class="institution-search input-container-right">
+                <span class="ico-mglass"></span>
+                <input id="institutionSearch" type="text" placeholder="Search bank">
             </div>
-            <div id="statusMessage">Logging on securely</div>
-        </div>
-        <div id="footer" class="footer">
-            <button id="doneButton" class="button footer-button hidden">Done</button>
-            <button id="retryButton" class="button footer-button error-button hidden">Try again</button>
-            <button id="submitButton" class="button footer-button hidden">Connect</button>
-            <button id="proceedButton" class="button footer-button">Next</button>
-        </div>
+        </form>
     </div>
-
+    <div id="loading" class="loader-container initial-loader hidden">
+        <div id="initialSpinner" class="spinner"></div>
+        <svg id="loadingCross" class="checkmark hidden" xmlns="http://www.w3.org/2000/svg" viewBox="5 0 40 52">
+            <path class="checkmark__cross" d="M 15,20 L 35,40 M 35,20 L 15,40"/>
+        </svg>
+    </div>
+    <div id="errorContainer" class="hidden"></div>
+    <ul id="institutionsContainer" class="hidden">
+        <!--<li><a id="trigger" href="/authenticate?user_id=9743e438-02eb-41f0-858e-b41290032a03&institution_id={inst_id}&access_token={token}">Quantas</a></li>-->
+    </ul>
+    <div id="authenticationContainer" class="hidden">
+        <form id="credentialsForm" class="credentials-form" action="">
+            <div class="bank-logo-container">
+                <img id="bankLogo" alt="">
+            </div>
+            <div class="input-container-right">
+                <span class="ico-lock"></span>
+                <input id="usernameInput" title="Username" type="text"/>
+            </div>
+            <div class="input-container-right">
+                <span class="ico-lock"></span>
+                <input id="passwordInput" title="Password" type="password"/>
+            </div>
+            <div id="securityInputContainer" class="input-container-right hidden">
+                <span class="ico-lock"></span>
+                <input id="securityInput" title="Security code" type="password"/>
+            </div>
+        </form>
+    </div>
+    <div id="statusContainer" class="status-container hidden">
+        <div id="statusIcon">
+            <div id="connectionLoader" class="loader-container">
+                <div id="connectionSpinner" class="spinner"></div>
+                <svg id="connectionCheckmark" class="checkmark hidden" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="5 0 40 36">
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+                <svg id="connectionCross" class="checkmark hidden" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="5 0 40 52">
+                    <path class="checkmark__cross" d="M 15,20 L 35,40 M 35,20 L 15,40"/>
+                </svg>
+            </div>
+        </div>
+        <div id="statusMessage">Logging on securely</div>
+    </div>
+    <div id="footer" class="footer">
+        <button id="doneButton" class="button footer-button hidden">Done</button>
+        <button id="retryButton" class="button footer-button error-button hidden">Try again</button>
+        <button id="submitButton" class="button footer-button hidden">Connect</button>
+        <button id="proceedButton" class="button footer-button">Next</button>
+    </div>
+</div>
+<script src="/js/polyfills/promise-polyfill.min.js"></script>
 <script src="/js/API.js"></script>
-<script>
-    showElement("loading");
-    hideElement("institutionSearchForm");
-    hideElement("institutionsContainer");
-
-    var queryVars = parseQueryVariables(),
-        iFrame = !!queryVars["iframe"] && queryVars["iframe"] === "true",
-        userId = queryVars["user_id"],
-        accessToken = queryVars["access_token"],
-        serviceTypes = queryVars["service_types"],
-        countries = queryVars["countries"],
-        errorContainer = document.getElementById("errorContainer"),
-        proceedButton = document.getElementById("proceedButton"),
-        footer = document.getElementById("footer"),
-        instCont = document.getElementById("institutionsContainer"),
-        url = "/authenticate.html?user_id="+userId+"&institution_id={inst_id}&access_token="+accessToken,
-        searching = false,
-        error = checkAccessToken(accessToken);
-
-    if (error) {
-        hideElement("loading");
-        window.renderError(error);
-    } else {
-        /*if (!countries) {
-            document.getElementById("loading").style.display = "none";
-            window.errorContainer.innerHTML = "No countries parameter provided";
-        }
-
-        countries = countries.split(",").filter(Boolean);
-        serviceTypes = serviceTypes ? serviceTypes.split(",").filter(Boolean) : null;
-        */
-        if (iFrame) {
-            url += "&iframe=true";
-        }
-
-        if (!userId) {
-            window.renderError("User ID is not valid");
-        } else {
-            API.loadInstitutions(accessToken).then(function (institutions) {
-                window.preloadImages(institutions).then(function () {
-                    hideElement("loading");
-                    showElement("institutionSearchForm");
-                    showElement("institutionsContainer");
-                    window.renderInstitutions(instCont, institutions, url);
-                });
-            });
-        }
-
-        var timer = null;
-        instCont.addEventListener("scroll", function (e) {
-            if(timer !== null) {
-                clearTimeout(timer);
-                instCont.classList.add("scrolling");
-            }
-            timer = setTimeout(function() {
-                instCont.classList.remove("scrolling");
-            }, 150);
-        });
-
-        document.getElementById("closeButton").addEventListener("click", function (e) {
-            e.preventDefault();
-
-            sendEventNotification("cancellation");
-        });
-
-        document.getElementById("institutionSearchForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-            var term = document.getElementById("institutionSearch").value;
-            institutionSearch(url, term);
-        });
-        document.getElementById("institutionSearch").addEventListener("input", function (e) {
-            var term = e.target.value.trim();
-
-            institutionSearch(url, term);
-        });
-        document.getElementById("institutionSearch").addEventListener("focus", function (e) {
-            if (searching) {
-                return;
-            }
-            searching = true;
-            showElement("hideSearchButton");
-            window.renderEmptySearch("Find your bank, credit union or superannuation fund");
-        });
-        document.getElementById("hideSearchButton").addEventListener("click", function (e) {
-            e.preventDefault();
-            searching = false;
-            resetSelection();
-            document.getElementById("institutionSearch").value = "";
-            hideElement("hideSearchButton");
-            window.renderInstitutions(instCont, institutions, url);
-        });
-
-        document.getElementById("backButton").addEventListener("click", function (e) {
-            e.preventDefault();
-            hideAllButtons();
-            hideElement("authenticationContainer");
-            hideElement("backButton");
-            showElement("institutionSearchForm");
-            showElement("institutionsContainer");
-            document.getElementById("headerTitle").innerHTML = "Select your bank";
-            window.renderInstitutions(instCont, institutions, url);
-            resetSelection();
-        });
-
-        document.getElementById("retryButton").addEventListener("click", function(e) {
-            e.preventDefault();
-            hideLoadingScreen();
-            showElement("backButton");
-        });
-        document.getElementById("doneButton").addEventListener("click", function (e) {
-            e.preventDefault();
-
-            sendEventNotification("completion");
-        });
-
-        setTimeout(function () {
-            sendEventNotification("handshake", {"success": true});
-        }, 1000)
-    }
-</script>
+<script src="/js/helpers.js"></script>
+<script src="/js/app.js"></script>
 </body>
 </html>

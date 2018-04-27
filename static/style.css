@@ -107,9 +107,11 @@ input, button, a {
 
 #errorContainer {
     color: #cc1e1e;
-    margin: 10% 6%;
+    width: 80%;
+    margin: auto;
+    text-align: center;
     font-size: 17px;
-    display: none;
+    padding-top: 22px;
 }
 
 #header {
@@ -741,6 +743,10 @@ a#closeButton:hover {
 
 #connectionCross, #loadingCross {
     height: 70px;
+}
+
+#loadingCross {
+    margin: auto auto auto 12px;
 }
 
 @keyframes stroke {

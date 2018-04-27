@@ -1,5 +1,4 @@
 /*global Promise*/
-/*global sendEventNotification*/
 /*eslint no-console: "off"*/
 
 var colors = {
@@ -63,7 +62,7 @@ function parseResponse(res) {
 
 window.API = {
     loadInstitutions: function (token) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             if (window.localStorage && window.JSON) {
                 var cachedToken = localStorage.getItem("cachedToken"),
                     cachedInstitutions = localStorage.getItem("cachedInstitutions"),
@@ -75,7 +74,6 @@ window.API = {
                     && (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
                 ) {
                     var institutions = JSON.parse(cachedInstitutions);
-                    window.institutions = institutions;
                     resolve(institutions);
                     return;
                 }
@@ -93,7 +91,6 @@ window.API = {
                 var institutions = resp.data.map(function (inst) {
                     return Object.assign({}, inst, {colors: {primary: colors[inst.shortName] || colors["default"]}});
                 });
-                window.institutions = institutions;
 
                 if (window.localStorage && window.JSON) {
                     localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
@@ -103,52 +100,12 @@ window.API = {
 
                 resolve(institutions);
             }).catch(function (err) {
-                window.renderError(err.body && err.body.data && err.body.data[0]
-                    ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail
-                    : "Unknown error", "Error initializing");
+                reject(err.body && err.body.data
+                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+                    "Unknown error"
+                );
 
                 console.error(JSON.stringify(err));
-            });
-        });
-    },
-    loadInstitution: function(id, token) {
-        if (!id) {
-            return console.log("No id provided");
-        }
-        return new Promise(function (resolve) {
-            if (window.localStorage) {
-                var cachedToken = localStorage.getItem("cachedToken"),
-                    selectedInstitution = window.localStorage.getItem("selectedInstitution") && JSON.parse(window.localStorage.getItem("selectedInstitution")),
-                    selectedInstitutionTime = window.localStorage.getItem("selectedInstitutionTime");
-
-                if (cachedToken === token && selectedInstitution && selectedInstitution.id === id && (Date.now() - parseInt(selectedInstitutionTime)) < 1000 * 60 * 5) {
-                    return resolve(selectedInstitution);
-                }
-            }
-
-            window.request("https://au-api.basiq.io/institutions/" + id, "GET", {}, {
-                "Authorization": "Bearer " + token
-            }).then(function (resp) {
-                if (resp.statusCode > 299) {
-                    throw resp;
-                }
-
-                return resp.body;
-            }).then(function (resp) {
-                resp.colors = {primary: colors[resp.shortName] || colors["default"]};
-
-                if (window.localStorage) {
-                    window.localStorage.setItem("selectedInstitution", JSON.stringify(resp));
-                    window.localStorage.setItem("selectedInstitutionTime", Date.now());
-                }
-
-                resolve(resp);
-            }).catch(function (err) {
-                window.renderError(err.body && err.body.data && err.body.data[0]
-                    ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail
-                    : "Unknown error");
-
-                console.error(err);
             });
         });
     },
@@ -173,7 +130,7 @@ window.API = {
             payload["securityCode"] = securityCode;
         }
 
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             window.request("https://au-api.basiq.io/users/" + userId + "/connections", "POST", payload, {
                 "Authorization": "Bearer " + token
             }).then(function (resp) {
@@ -183,25 +140,13 @@ window.API = {
 
                 return resp.body;
             }).then(function (resp) {
-                sendEventNotification("job", {
-                    success: true,
-                    data: {
-                        id: resp.id
-                    }
-                });
-
                 resolve(resp);
             }).catch(function (err) {
-                window.hideLoadingScreen();
+                reject(err.body && err.body.data
+                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+                    "Unknown error"
+                );
 
-                sendEventNotification("job", {
-                    success: false,
-                    data: err
-                });
-
-                window.renderError(err.body && err.body.errorMessage
-                    ? "Error: " + err.body.errorMessage
-                    : "Unknown error");
                 console.error(err);
             });
         });
@@ -211,7 +156,7 @@ window.API = {
             throw new Error("Job id not provided: " + JSON.stringify(arguments));
         }
 
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             window.request("https://au-api.basiq.io/jobs/" + jobId, "GET", {}, {
                 "Authorization": "Bearer " + token
             }).then(function (resp) {
@@ -223,9 +168,11 @@ window.API = {
             }).then(function (resp) {
                 resolve(resp);
             }).catch(function (err) {
-                window.renderError(err.body && err.body.errorMessage
-                    ? "Error: " + err.body.errorMessage
-                    : "Unknown error");
+                reject(err.body && err.body.data
+                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+                    "Unknown error"
+                );
+
                 console.error(err);
             });
         });
