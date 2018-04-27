@@ -1,15 +1,56 @@
 /*global API*/
 /*global sendEventNotification*/
-/*global proceedBtn*/
+/*global proceedButton*/
+/*global Promise*/
 /*global naiveFlexBoxSupport*/
 /*global parseQueryVariables*/
+/*global showElement*/
+/*global hideElement*/
+/*global hideAllButtons*/
+/*global setActiveButton*/
+/*global accessToken*/
+/*global userId*/
+/*global searching*/
 /*exported institutionSearch*/
 /*exported showConsentScreen*/
 /*exported hideConsentScreen*/
 /*exported showLoadingScreen*/
 /*exported hideLoadingScreen*/
 /*exported checkJobStatus*/
+/*exported renderError*/
 /*eslint no-console: "off"*/
+
+
+window.renderedAll = false;
+
+window.preloadImages = function (institutions) {
+    var loadedImages = 0;
+    return new Promise(function (resolve) {
+        institutions.forEach(function (institution) {
+            var img = document.createElement("img");
+
+            if (institution.logo.links.square) {
+                img.setAttribute("src", institution.logo.links.square);
+            } else {
+                img.setAttribute("src", institution.logo.links.self);
+            }
+            img.setAttribute("alt", institution.name);
+            img.setAttribute("title", institution.name);
+            img.onload = function () {
+                loadedImages++;
+                if (loadedImages === institutions.length) {
+                    resolve(true);
+                }
+            };
+            img.onerror = function () {
+                loadedImages++;
+                if (loadedImages === institutions.length) {
+                    resolve(true);
+                }
+            };
+        });
+    });
+};
 
 window.renderInstitutions = function (container, institutions, url, search) {
     container.innerHTML = "";
@@ -36,12 +77,21 @@ window.renderInstitutions = function (container, institutions, url, search) {
     } else {
         container.classList.remove("container-search");
         renderAllInstitutions(container, institutions, url, liW, w, h);
+        window.renderedAll = true;
     }
 };
 
 window.renderInstitution = function (institution) {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("content").style.display = "block";
+    document.getElementById("institutionsContainer").innerHTML = "";
+    showElement("authenticationContainer");
+    showElement("backButton");
+    hideElement("institutionsContainer");
+    hideElement("institutionSearchForm");
+
+    setActiveButton("submitButton");
+
+    document.getElementById("headerTitle").innerHTML = "Login";
+
     if (institution.loginIdCaption) {
         //document.getElementById("usernameInputLabel").innerHTML = institution.loginIdCaption + ":";
         document.getElementById("usernameInput").setAttribute("placeholder", institution.loginIdCaption);
@@ -51,8 +101,11 @@ window.renderInstitution = function (institution) {
         document.getElementById("passwordInput").setAttribute("placeholder", institution.passwordCaption);
     }
     if (institution.securityCodeCaption) {
-        document.getElementById("securityInputContainer").style.display = "block";
+        showElement("securityInputContainer");
         document.getElementById("securityInput").setAttribute("placeholder", institution.securityCodeCaption);
+    } else {
+        hideElement("securityInputContainer");
+        document.getElementById("securityInput").value = "";
     }
 
     var logo = document.getElementById("bankLogo");
@@ -64,9 +117,11 @@ window.renderInstitution = function (institution) {
     }
 
     logo.onload = function () {
-        if (this.width > this.height) {
+        this.removeAttribute("style");
+        if (this.width === this.height) {
+            return this.style.width = "30%";
+        } else if (this.width > this.height) {
             return this.style.width = "70%";
-
         }
 
         this.style.height = "30%";
@@ -78,11 +133,55 @@ window.renderInstitution = function (institution) {
         };
     }
 
+    var formHandler = function (e) {
+        e.preventDefault();
+        hideElement("backButton");
+
+        var username = document.getElementById("usernameInput").value.trim(),
+            password = document.getElementById("passwordInput").value.trim(),
+            security = document.getElementById("securityInput").value.trim();
+
+        if (!username) {
+            document.getElementById("errorContainer").innerHTML = "No username provided";
+            return;
+        }
+
+        if (!password) {
+            document.getElementById("errorContainer").innerHTML = "No password provided";
+            return;
+        }
+
+        API.createUserConnection(
+            accessToken,
+            userId,
+            institution.id,
+            username,
+            password,
+            security
+        ).then(function (jobData) {
+            setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
+        }).catch(function(err) {
+            document.getElementById("errorContainer").innerHTML = err.message;
+        });
+
+        showLoadingScreen();
+    };
+
+    document.getElementById("credentialsForm").addEventListener("submit", formHandler);
+    document.getElementById("submitButton").addEventListener("click", formHandler);
+
+    var removeListeners = function () {
+        document.getElementById("credentialsForm").removeEventListener("submit", formHandler);
+        document.getElementById("submitButton").removeEventListener("click", formHandler);
+        document.getElementById("backButton").removeEventListener("click", removeListeners);
+    };
+
+    document.getElementById("backButton").addEventListener("click", removeListeners);
+
     window.institution = institution;
 };
 
 window.renderEmptySearch = function (text) {
-    console.log("invoked");
     var instConst = document.getElementById("institutionsContainer");
 
     instConst.innerHTML = "<div class=\"search-placeholder\">" +
@@ -114,18 +213,18 @@ window.sendEventNotification = function (event, payload) {
 
 window.checkAccessToken = function(token) {
     if (!token) {
-        return "No token provided"; 
+        return "Token is not valid";
     }
 
     var sections = token.split(".").filter(Boolean);
     if (sections.length < 3) {
-        return "Invalid token provided";
+        return "Token is not valid";
     }
 
     try {
         var claims = JSON.parse(atob(sections[1]));
         if (!claims.scope || claims.scope.toUpperCase() !== "CLIENT_ACCESS") {
-            return "Invalid token scope provided";
+            return "Scope is not valid";
         }
     } catch (err) {
         return err.message;
@@ -142,12 +241,10 @@ function renderAllInstitutions(container, institutions, url, liW, w, h) {
         var instUrl = url.replace("{inst_id}", institution.id),
             a = document.createElement("a"),
             img = document.createElement("img"),
-            imgPlaceholder = document.createElement("div"),
-            imgPlaceholderSpinner = document.createElement("div"),
             li = document.createElement("li"),
             searchHeight = liW / (w/h > 0.8 ? 1.4 : 2.5);
 
-        resetSelection(false);
+        resetSelection();
 
         if (newUl) {
             ul = document.createElement("ul");
@@ -165,53 +262,43 @@ function renderAllInstitutions(container, institutions, url, liW, w, h) {
 
         a.appendChild(img);
         a.setAttribute("href", instUrl);
-        a.appendChild(imgPlaceholder);
 
         a.onclick = function (e) {
-            linkClickHandler.bind(this, institution, e, false)();
+            linkClickHandler.bind(this, institution, e)();
         };
-
-        imgPlaceholder.classList.add("img-placeholder");
-        imgPlaceholder.appendChild(imgPlaceholderSpinner);
-        imgPlaceholderSpinner.className = "spinner img-placeholder-spinner";
-        imgPlaceholderSpinner.style.marginTop = liW/4 - 50 + "px";
 
         li.appendChild(a);
         li.className = "bank-link";
         li.style.width = liW + "px";
         li.style.height = liW/2 + "px";
 
+        img.style.opacity = "0";
         if (institution.logo.links.square) {
             img.setAttribute("src", institution.logo.links.square);
         } else {
             img.setAttribute("src", institution.logo.links.self);
         }
-
         img.setAttribute("alt", institution.name);
         img.setAttribute("title", institution.name);
         img.onload = function () {
-            imageLoaded.bind(this, a, imgPlaceholder, false, searchHeight, liW)();
+            imageLoaded.bind(this, false, searchHeight)();
         };
         img.onerror = function () {
-            this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
+            //this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
         };
     });
 }
 
 function renderSearchedInstitutions(container, institutions, url, searchWidth, liW, w, h) {
-    console.log(institutions);
-
     institutions.forEach(function (institution) {
         var instUrl = url.replace("{inst_id}", institution.id),
             div = document.createElement("div"),
             a = document.createElement("a"),
             img = document.createElement("img"),
-            imgPlaceholder = document.createElement("div"),
-            imgPlaceholderSpinner = document.createElement("div"),
             li = document.createElement("li"),
             searchHeight = liW / (w/h > 0.8 ? 1.4 : 2.5);
 
-        resetSelection(true);
+        resetSelection();
 
         li.appendChild(a);
 
@@ -220,16 +307,10 @@ function renderSearchedInstitutions(container, institutions, url, searchWidth, l
 
         a.appendChild(div);
         a.setAttribute("href", instUrl);
-        a.appendChild(imgPlaceholder);
 
         a.onclick = function (e) {
-            linkClickHandler.bind(this, institution, e, true)();
+            linkClickHandler.bind(this, institution, e)();
         };
-
-        imgPlaceholder.classList.add("img-placeholder");
-        imgPlaceholder.appendChild(imgPlaceholderSpinner);
-        imgPlaceholderSpinner.className = "spinner img-placeholder-spinner";
-        imgPlaceholderSpinner.style.marginTop = liW/4 - 50 + "px";
 
         li.appendChild(a);
         li.className = "bank-link";
@@ -247,10 +328,10 @@ function renderSearchedInstitutions(container, institutions, url, searchWidth, l
         img.setAttribute("alt", institution.name);
         img.setAttribute("title", institution.name);
         img.onload = function () {
-            imageLoaded.bind(this, a, imgPlaceholder, true, searchHeight, liW)();
+            imageLoaded.bind(this, true, searchHeight)();
         };
         img.onerror = function () {
-            this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
+            //this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
         };
 
         var h3 = document.createElement("h3");
@@ -267,9 +348,6 @@ function renderSearchedInstitutions(container, institutions, url, searchWidth, l
 
         img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
 
-        imgPlaceholderSpinner.style.marginTop = searchHeight/2-50 + "px";
-        imgPlaceholder.classList.add("img-placeholder-search");
-
         if (naiveFlexBoxSupport(document)) {
             a.style.display = "flex";
             a.style.alignItems = "center";
@@ -280,13 +358,24 @@ function renderSearchedInstitutions(container, institutions, url, searchWidth, l
     });
 }
 
-function imageLoaded(a, imgPlaceholder, search, searchHeight, liW) {
+function renderError(message, title) {
+    if (!title) {
+        title = "Error";
+    }
+    showElement("errorContainer");
+    document.getElementById("headerTitle").innerHTML = title;
+    window.errorContainer.innerHTML = message;
+    document.getElementById("loading").classList.add("result-error");
+    document.getElementById("initialSpinner").style.opacity = "0";
+    showElement("loadingCross");
+}
+
+function imageLoaded(search, searchHeight) {
     if (!search) {
         if (this.width - this.height > this.height / 2) {
-            this.style.width = "99%";
-            this.style.marginTop = (liW / 2 - this.height) / 6 + "px";
+            this.style.width = "72%";
         } else {
-            this.style.height = "99%";
+            this.style.height = "95%";
         }
     } else {
         var target = this.parentElement;
@@ -299,65 +388,59 @@ function imageLoaded(a, imgPlaceholder, search, searchHeight, liW) {
         }
     }
 
-    a.removeChild(imgPlaceholder);
+    this.style.opacity = "1";
 }
 
-function linkClickHandler(institution, e, search) {
+function linkClickHandler(institution, e) {
     e.preventDefault();
-    resetSelection(search);
+    resetSelection();
 
-    window.localStorage.setItem("selectedInstitution", JSON.stringify(institution));
-    window.localStorage.setItem("selectedInstitutionTime", Date.now());
-    proceedBtn.classList.add("footer-button-active");
-    if (!search) {
-        this.style.border = "2px solid #4A90E2";
-    } else {
-        this.style.borderTop = "2px solid #4A90E2";
-        if (this.parentElement.nextSibling) {
-            this.parentElement.nextSibling.getElementsByTagName("a")[0].style.borderTop = "2px solid #4A90E2";
-        } else {
-            this.style.borderBottom = "2px solid #4A90E2";
-        }
-    }
+    setActiveButton("proceedButton");
+    hideElement("hideSearchButton");
+
     if (this.classList.contains("active")) {
         this.classList.remove("active");
-        proceedBtn.classList.remove("footer-button-active");
-        resetSelection(search);
+        resetSelection();
     } else {
         this.classList.add("active");
     }
-    proceedBtn.onclick = function () {
-        window.location.replace(this.href);
+    proceedButton.onclick = function () {
+        if (searching) {
+            searching = false;
+        }
+        window.renderInstitution(institution);
     }.bind(this);
 }
 
-function resetSelection(search) {
+function resetSelection() {
     var links = document.getElementById("institutionsContainer").getElementsByTagName("a");
 
     [].forEach.call(links, function (link) {
         link.classList.remove("active");
-        if (!search) {
-            link.style.border = "2px solid #EDEDED";
-        } else {
-            link.style.borderTop = "2px solid #E1E1E1";
-            link.style.borderBottom = "none";
-        }
     });
 }
 
-function showLoadingScreen() {    
-    document.getElementById("headerTitle").innerHTML = "Connecting to " + window.institution.name;
-    document.getElementById("statusContainer").style.display = "block";
+function showLoadingScreen() {
+    hideAllButtons();
+    showElement("statusContainer");
+    hideElement("credentialsForm");
+    hideElement("backButton");
+    document.getElementById("headerTitle").innerHTML = "Connecting...";
     document.getElementById("statusMessage").innerHTML = "Logging on securely";
     document.getElementById("statusMessage").className = "";
     document.getElementById("statusMessage").classList.add("result-text-default");
-    document.getElementById("credentialsForm").style.display = "none";
 }
 
 function hideLoadingScreen() {
     document.getElementById("headerTitle").innerHTML = "Enter your credentials";
-    document.getElementById("statusContainer").style.display = "none";
-    document.getElementById("credentialsForm").style.display = "block";
+    document.getElementById("connectionSpinner").style.opacity = "1";
+    document.getElementById("connectionLoader").classList.remove("result-error");
+    hideElement("statusContainer");
+    hideElement("connectionCross");
+    hideElement("connectionCheckmark");
+    setActiveButton("submitButton");
+    showElement("backButton");
+    showElement("credentialsForm");
 }
 
 function institutionSearch(url, term) {
@@ -369,6 +452,7 @@ function institutionSearch(url, term) {
         instCont = document.getElementById("institutionsContainer");
 
     if (term.length < 2) {
+        //return window.renderEmptySearch("");
         return;
     }
 
@@ -405,48 +489,40 @@ function checkJobStatus(accessToken, jobData) {
             if (steps[step].title === "verify-credentials") {
                 switch (steps[step].status) {
                 case "failed":
-                    document.getElementById("backButton").style.display = "none";
-                    document.getElementById("statusTitle").innerHTML = "";
+                    hideElement("backButton");
 
-                    document.getElementById("doneBtn").style.display = "none";
-                    document.getElementById("retryBtn").style.display = "block";
-                    setTimeout(function () {
-                        document.getElementById("doneBtn").classList.remove("footer-button-active");
-                        document.getElementById("retryBtn").classList.add("footer-button-active");
-                    }, 100);
+                    setActiveButton("retryButton");
 
+                    showElement("connectionCross");
                     document.getElementById("connectionSpinner").style.opacity = "0";
-                    document.getElementById("connectionCross").style.display = "block";
                     document.getElementById("connectionLoader").classList.add("result-error");
-                    document.getElementById("statusMessage").innerHTML = steps[step].result.detail;
                     document.getElementById("headerTitle").innerHTML = "Unsuccessful";
 
-                    document.getElementById("statusMessage").className = "";
-                    document.getElementById("statusMessage").classList.add("result-text-error");
+                    setTimeout(function () {
+                        document.getElementById("statusMessage").className = "";
+                        document.getElementById("statusMessage").classList.add("result-text-error");
+                        document.getElementById("statusMessage").innerHTML = "The credentials you provided were incorrect.";
+                    }, 1100);
 
                     return sendEventNotification("connection", {
                         success: false,
                         data: steps[step].result
                     });
                 case "success":
-                    document.getElementById("backButton").style.display = "none";
-                    document.getElementById("statusTitle").innerHTML = "";
+                    hideElement("backButton");
 
-                    document.getElementById("doneBtn").style.display = "block";
-                    document.getElementById("retryBtn").style.display = "none";
-                    setTimeout(function () {
-                        document.getElementById("retryBtn").classList.remove("footer-button-active");
-                        document.getElementById("doneBtn").classList.add("footer-button-active");
-                    }, 100);
+                    setActiveButton("doneButton");
 
-                    //document.getElementById("statusIcon").innerHTML = "<div class='rounded-check'></div>";
+                    showElement("connectionCheckmark");
                     document.getElementById("connectionSpinner").style.opacity = "0";
-                    document.getElementById("connectionCheckmark").style.display = "block";
-                    document.getElementById("statusMessage").innerHTML = "Your account has been successfully linked.";
                     document.getElementById("headerTitle").innerHTML = "Success";
 
-                    document.getElementById("statusMessage").className = "";
-                    document.getElementById("statusMessage").classList.add("result-text-success");
+
+                    setTimeout(function () {
+                        document.getElementById("statusMessage").className = "";
+                        document.getElementById("statusMessage").classList.add("result-text-success");
+                        document.getElementById("statusMessage").innerHTML = "Your account has been successfully linked.";
+                    }, 1100);
 
                     var url = steps[step].result.url,
                         connectionId = url.substr(url.lastIndexOf("/") + 1);

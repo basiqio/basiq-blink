@@ -18,7 +18,7 @@ body {
 a {
     display: block;
     padding: 9px 10px 5px 10px;
-    border: 1px solid #E7E7E7;
+    border: 1px solid #EDEDED;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     text-decoration: none;
@@ -35,7 +35,7 @@ h2 {
     margin: 5% 3% 3% 3%;
     font-size: 15px;
     padding-bottom: 15px;
-    color: #000000;
+    color: #444444;
 }
 
 h3 {
@@ -51,8 +51,8 @@ input {
     margin: 10px 0;
     padding: 8px 13px;
     font-size: 13px;
-    border-radius: 14px;
-    border: 2px solid #EDEDED;
+    border-radius: 9px;
+    border: 1px solid #EDEDED;
     width: 100%;
     height: 35px;
     color: #000000;
@@ -60,7 +60,7 @@ input {
 
 input:focus {
     outline: none;
-    border: 1px solid #3498db;
+    border: 1px solid #A0A0A0;
 }
 
 input::placeholder {
@@ -71,11 +71,26 @@ input, button, a {
     font-family: Lucida Grande, sans-serif;
 }
 
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
 #institutionsContainer {
     text-align: center;
     margin-top: 13px;
-    padding: 0 20px 70px 20px;
+    padding: 2px 20px 70px 20px;
     overflow-y: scroll;
+    -webkit-transition: border 1s;
+    -moz-transition: border 1s;
+    -ms-transition: border 1s;
+    -o-transition: border 1s;
+    transition: border 1s;
+    border-top: 1px solid #fafafa;
+}
+
+#institutionsContainer.scrolling {
+    border-top: 1px solid #EDEDED;
 }
 
 .container-search {
@@ -93,7 +108,8 @@ input, button, a {
 #errorContainer {
     color: #cc1e1e;
     margin: 10% 6%;
-    font-size: 14pt;
+    font-size: 17px;
+    display: none;
 }
 
 #header {
@@ -124,6 +140,7 @@ input, button, a {
     transition-duration: 200ms;
     transition-property: box-shadow;
     transition-timing-function: ease-in-out;
+    font-weight: normal;
     width: 100%;
     margin-top: 20px;
 }
@@ -148,6 +165,10 @@ button.button-primary {
 
 .input-container-right input {
     padding-right: 46px;
+}
+
+#usernameInput, #passwordInput, #securityInput {
+    height: 48px;
 }
 
 .ico-mglass {
@@ -180,8 +201,8 @@ button.button-primary {
     background: #c6c6c6;
     border-radius: 3px;
     width: 12px;
-    height: 11px;
-    top: 26px;
+    height: 10px;
+    top: 31px;
     right: 14px;
 }
   
@@ -199,10 +220,6 @@ button.button-primary {
 
 .search-form {
 
-}
-
-#securityInputContainer {
-    display: none;
 }
 
 .img-placeholder {
@@ -224,7 +241,13 @@ button.button-primary {
 }
 
 .bank-link a:hover:not(.active) {
-    border: 2px solid #d4d4d4 !important;
+    -webkit-box-shadow: 0px 0px 0px 1px #d4d4d4 !important;
+    -moz-box-shadow: 0px 0px 0px 1px #d4d4d4 !important;
+    box-shadow: 0px 0px 0px 1px #d4d4d4 !important;
+}
+
+.bank-link-search a.active {
+    color: #4A90E2;
 }
 
 .bank-link:after {
@@ -234,13 +257,25 @@ button.button-primary {
 }
 
 .bank-link a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
     background: #FFFFFF;
-    border:2px solid #EDEDED;
+    -webkit-box-shadow: 0px 0px 0px 1px #EDEDED;
+    -moz-box-shadow: 0px 0px 0px 1px #EDEDED;
+    box-shadow: 0px 0px 0px 1px #EDEDED;
+    padding: 4px 10px;
+}
+
+.bank-link a.active {
+    -webkit-box-shadow: 0px 0px 0px 2px #4A90E2;
+    -moz-box-shadow: 0px 0px 0px 2px #4A90E2;
+    box-shadow: 0px 0px 0px 2px #4A90E2;
 }
 
 .bank-link img {
@@ -310,6 +345,7 @@ button.button-primary {
 .search-placeholder span {
     display: block;
     margin-top: 20px;
+    font-size: 13px;
 }
 
 #consentForm {
@@ -357,7 +393,6 @@ button.button-primary {
     margin: 0;
     width: 90%;
     padding: 5%;
-    display: none;
     transition: 2s all;
     text-align: center;
 }
@@ -373,6 +408,10 @@ button.button-primary {
 
 .status-animate-inactive {
     display: none;
+}
+
+#statusMessage {
+    margin-top: 21px;
 }
 
 .loading-pulse {
@@ -394,8 +433,12 @@ button.button-primary {
     background: #fff;
 }
 
-#bankLogo {
-    margin-bottom: 15px;
+.bank-logo-container {
+    height: 21%;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .rounded-check {
@@ -470,7 +513,7 @@ button.button-primary {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .tag-line {
@@ -488,12 +531,12 @@ button.button-primary {
     display: inline-block;
     width: 60%;
     text-align: left;
-    margin-left: 20px;
+    margin-left: 10px;
     font-size: 12px;
 }
 
 .tag-line-description h4 {
-    margin-bottom: 13px;
+    margin-bottom: 9px;
     font-size: 13px;
 }
 
@@ -501,7 +544,7 @@ button.button-primary {
     margin-top: 3px;
 }
 
-a#backButton {
+a.back-arrow {
     position: fixed;
     top: 19px;
     z-index: 102;
@@ -517,7 +560,7 @@ a#backButton {
     -webkit-transform: rotate(135deg);
 }
 
-a#backButton:after,a#backButton:before {
+a.back-arrow:after,a.back-arrow:before {
     content: "";
     position: absolute;
     background: #fafafa;
@@ -528,7 +571,7 @@ a#backButton:after,a#backButton:before {
     transform: rotate(45deg);
 }
 
-a#backButton:before {
+a.back-arrow:before {
     top: -11px;
     left: 10px;
 }
@@ -594,11 +637,15 @@ a#closeButton:hover {
     padding: 0;
     margin: 0;
     height: 0;
-    transition: 0.7s all;
+    transition: 0.6s all;
 }
 
 .footer-button-active {
     height: 48px;
+}
+
+.footer-button-active:hover {
+    height: 51px;
 }
 
 .half-button {
@@ -626,7 +673,7 @@ a#closeButton:hover {
     height: 80px;
     border-radius: 180px;
     background: #4A90E2;
-    transition: all 1s;
+    transition: all 2s;
 }
 
 @keyframes spinner {
@@ -655,7 +702,11 @@ a#closeButton:hover {
     border-radius: 50%;
     border: 2px solid #fafafa;
     border-top-color: #5b90dc;
-    animation: spinner .4s linear infinite;
+    animation: spinner 1.0s linear infinite;
+}
+
+.initial-loader {
+    margin-top: 35%;
 }
 
 .checkmark {
@@ -668,14 +719,13 @@ a#closeButton:hover {
     margin: 10% auto;
     box-shadow: inset 0px 0px 0px #7ac142;
     animation: scale .3s ease-in-out .9s both;
-    display: none;
 }
 
 .checkmark__check, .checkmark__cross {
     transform-origin: 50% 50%;
     stroke-dasharray: 48;
     stroke-dashoffset: 48;
-    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
 }
 
 .fortress {
@@ -685,7 +735,11 @@ a#closeButton:hover {
     animation: stroke 1.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
 }
 
-#connectionCross {
+#connectionCross, #connectionCheckmark {
+    margin-top: 0;
+}
+
+#connectionCross, #loadingCross {
     height: 70px;
 }
 

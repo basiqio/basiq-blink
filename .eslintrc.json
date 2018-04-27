@@ -21,6 +21,7 @@
             "error",
             "always"
         ],
+        "no-global-assign": "warn",
         "no-console": "warn"
     }
 }

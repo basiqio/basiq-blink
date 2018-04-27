@@ -103,11 +103,9 @@ window.API = {
 
                 resolve(institutions);
             }).catch(function (err) {
-                document.getElementById("loading").style.display = "none";
-                
-                window.errorContainer.innerHTML = err.body && err.body.data && err.body.data[0]
+                window.renderError(err.body && err.body.data && err.body.data[0]
                     ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail
-                    : "Unknown error";
+                    : "Unknown error", "Error initializing");
 
                 console.error(JSON.stringify(err));
             });
@@ -146,11 +144,9 @@ window.API = {
 
                 resolve(resp);
             }).catch(function (err) {
-                document.getElementById("loading").style.display = "none";
-
-                window.errorContainer.innerHTML = err.body && err.body.data && err.body.data[0]
+                window.renderError(err.body && err.body.data && err.body.data[0]
                     ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail
-                    : "Unknown error";
+                    : "Unknown error");
 
                 console.error(err);
             });
@@ -196,13 +192,16 @@ window.API = {
 
                 resolve(resp);
             }).catch(function (err) {
-                document.getElementById("loading").style.display = "none";
-
                 window.hideLoadingScreen();
 
-                window.errorContainer.innerHTML = err.body && err.body.errorMessage
+                sendEventNotification("job", {
+                    success: false,
+                    data: err
+                });
+
+                window.renderError(err.body && err.body.errorMessage
                     ? "Error: " + err.body.errorMessage
-                    : "Unknown error";
+                    : "Unknown error");
                 console.error(err);
             });
         });
@@ -224,11 +223,9 @@ window.API = {
             }).then(function (resp) {
                 resolve(resp);
             }).catch(function (err) {
-                document.getElementById("loading").style.display = "none";
-
-                window.errorContainer.innerHTML = err.body && err.body.errorMessage
+                window.renderError(err.body && err.body.errorMessage
                     ? "Error: " + err.body.errorMessage
-                    : "Unknown error";
+                    : "Unknown error");
                 console.error(err);
             });
         });

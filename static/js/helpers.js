@@ -1,6 +1,7 @@
 /*exported parseQueryVariables*/
 /*exported naiveFlexBoxSupport*/
 /*exported stringifyQueryParams*/
+/*exported setActiveButton*/
 
 function parseQueryVariables() {
     var queryString = window.location.search.substring(1),
@@ -27,4 +28,48 @@ function stringifyQueryParams(obj) {
             str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
         }
     return str.join("&");
+}
+
+function showElement(elementId) {
+    var element = document.getElementById(elementId);
+    if (!element) {
+        throw new Error("Element: " + elementId + " not found.");
+    }
+    element.classList.remove("hidden");
+}
+
+function hideElement(elementId) {
+    var element = document.getElementById(elementId);
+    if (!element) {
+        throw new Error("Element: " + elementId + " not found.");
+    }
+    element.classList.add("hidden");
+}
+
+function setActiveButton(elementId) {
+    var element = document.getElementById(elementId);
+    if (!element) {
+        throw new Error("Element: " + elementId + " not found.");
+    }
+
+    if (element.classList.contains("footer-button-active")) {
+        return;
+    }
+
+    hideAllButtons();
+    showElement(elementId);
+
+    setTimeout(function () {
+        element.classList.add("footer-button-active");
+    }, 100);
+}
+
+function hideAllButtons() {
+    var footer = document.getElementById("footer"),
+        buttons = footer.getElementsByTagName("button");
+
+    [].forEach.call(buttons, function (button) {
+        button.classList.remove("footer-button-active");
+        hideElement(button.id);
+    });
 }

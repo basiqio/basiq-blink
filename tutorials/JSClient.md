@@ -1,6 +1,6 @@
 # Basiq Blink JSClient Example
 
-[**JSClient example repository**](https://github.com/basiqio/basiq-android-blink-demo)
+[**JSClient example repository**](https://github.com/basiqio/basiq-blink-js-component)
 
 ## Introduction
 
@@ -15,7 +15,7 @@ Include the ```basiq.client.min.js``` into your webpage.
 
 To instantiate the Basiq client object you need to have access_token and user_id available.
 
-### Start
+### Usage
 
 Create a new Basiq instance:
 
@@ -24,12 +24,6 @@ var basiq = new Basiq({
     userId,
     accessToken
 });
-```
-
-To attach the client to the *message* event of the window perform the ```init()``` method of the object.
-
-```
-basiq.init();
 ```
 
 Now you are ready to display the web application. You can do that by invoking the ```render()``` method.
@@ -47,19 +41,43 @@ You can listen and react to all events emitted by the web app by using the ```ad
 Multiple listeners per event are supported. The basic events you should always react to
  are *connection* and *cancellation*.
 
+Function signature for event callbacks is ```(payload, event)```
+
 ```js
 basiq.addListener("connection", function (payload) {
     console.log("Connection:", payload);
     basic.destroy();
 });
 
-basiq.addListener("cancellation", function (payload) {
+basiq.addListener("completion", function () {
+    basic.destroy();
+});
+
+basiq.addListener("cancellation", function () {
     basic.hide();
 });
 ```
 
+You can also pass in an array of events with the callback.
+
+```
+basiq.addListener(["completion", "cancellation"], function () {
+    basic.destroy();
+});
+```
+
+### Available events
+
+Event | When is it triggered | Callback data
+--- | --- | ---
+```handshake``` | When a handshake is established | {success: true}
+```job``` | When a job is created | {success: [bool], data: { id: [string]}}
+```connection``` | When a connection is created | {success: [bool], data: { id: [string]}}
+```cancellation``` | When a user has closed the modal form  | null
+```completion``` | When a user has completed the process by clicking on "Done" | null
+
 The callbacks receive the event payload which can be used to track user's progress and
-react to user's actions. The final event is the connection, which indicates the user
+react to user's actions. The most important event is the ```connection```, which indicates the user
 has completed the connection process and which returns the connection id, which can be
 used to fetch user's bank data.
 
@@ -78,7 +96,7 @@ The following are other custom client implementations:
 
 * [Android](android.com)
 * [iOS](ios.com)
-* [Using the JS control](jscontrol.com)
+* [Using the JS control](https://github.com/basiqio/basiq-blink-js-component)
 
 We also provide example server implementations:
 
