@@ -31,7 +31,7 @@ var basiq = new Basiq({
 Now you are ready to display the web application. You can do that by invoking the ```render()``` method.
 The most common use case will be opening the modal window
 
-```
+```js
 document.getElementById("connectYourAcc").onclick = function () {
     basiq.render();
 };
@@ -62,7 +62,7 @@ basiq.addListener("cancellation", function () {
 
 You can also pass in an array of events with the callback.
 
-```
+```js
 basiq.addListener(["completion", "cancellation"], function () {
     basic.destroy();
 });

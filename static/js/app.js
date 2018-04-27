@@ -25,6 +25,7 @@
         iFrame = !!queryVars["iframe"] && queryVars["iframe"] === "true",
         userId = queryVars["user_id"],
         accessToken = queryVars["access_token"],
+        demo = !!queryVars["demo"] && queryVars["demo"] === "true",
         //serviceTypes = queryVars["service_types"],
         //countries = queryVars["countries"],
         errorContainer = document.getElementById("errorContainer"),
@@ -260,41 +261,54 @@
                 security = document.getElementById("securityInput").value.trim();
 
             if (!username) {
-                document.getElementById("errorContainer").innerHTML = "No username provided";
+                //document.getElementById("errorContainer").innerHTML = "No username provided";
                 return;
             }
 
             if (!password) {
-                document.getElementById("errorContainer").innerHTML = "No password provided";
+                //document.getElementById("errorContainer").innerHTML = "No password provided";
                 return;
             }
 
             hideLoadingScreen();
 
-            API.createUserConnection(
-                accessToken,
-                userId,
-                institution.id,
-                username,
-                password,
-                security
-            ).then(function (jobData) {
+            if (demo) {
                 sendEventNotification("job", {
                     success: true,
                     data: {
-                        id: jobData.id
+                        id: "fake-job-id"
                     }
                 });
 
-                setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
-            }).catch(function (err) {
-                sendEventNotification("job", {
-                    success: false,
-                    data: err
-                });
+                setTimeout(function () {
+                    credentialsDemoCheck(username, password);
+                }, 2100);
+            } else {
+                API.createUserConnection(
+                    accessToken,
+                    userId,
+                    institution.id,
+                    username,
+                    password,
+                    security
+                ).then(function (jobData) {
+                    sendEventNotification("job", {
+                        success: true,
+                        data: {
+                            id: jobData.id
+                        }
+                    });
 
-                renderError(err.message);
-            });
+                    setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
+                }).catch(function (err) {
+                    sendEventNotification("job", {
+                        success: false,
+                        data: err
+                    });
+
+                    renderError(err.message);
+                });
+            }
 
             showLoadingScreen();
         };
@@ -621,50 +635,9 @@
                 if (steps[step].title === "verify-credentials") {
                     switch (steps[step].status) {
                         case "failed":
-                            hideElement("backButton");
-
-                            setActiveButton("retryButton");
-
-                            showElement("connectionCross");
-                            document.getElementById("connectionSpinner").style.opacity = "0";
-                            document.getElementById("connectionLoader").classList.add("result-error");
-                            document.getElementById("headerTitle").innerHTML = "Unsuccessful";
-
-                            setTimeout(function () {
-                                document.getElementById("statusMessage").className = "";
-                                document.getElementById("statusMessage").classList.add("result-text-error");
-                                document.getElementById("statusMessage").innerHTML = "The credentials you provided were incorrect.";
-                            }, 1100);
-
-                            return sendEventNotification("connection", {
-                                success: false,
-                                data: steps[step].result
-                            });
+                            return connectionResultFailure(steps[step]);
                         case "success":
-                            hideElement("backButton");
-
-                            setActiveButton("doneButton");
-
-                            showElement("connectionCheckmark");
-                            document.getElementById("connectionSpinner").style.opacity = "0";
-                            document.getElementById("headerTitle").innerHTML = "Success";
-
-
-                            setTimeout(function () {
-                                document.getElementById("statusMessage").className = "";
-                                document.getElementById("statusMessage").classList.add("result-text-success");
-                                document.getElementById("statusMessage").innerHTML = "Your account has been successfully linked.";
-                            }, 1100);
-
-                            var url = steps[step].result.url,
-                                connectionId = url.substr(url.lastIndexOf("/") + 1);
-
-                            return sendEventNotification("connection", {
-                                success: true,
-                                data: {
-                                    id: connectionId
-                                }
-                            });
+                            return connectionResultSuccess(steps[step]);
                         case "pending":
                         case "in-progress":
                             setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 1000);
@@ -674,6 +647,83 @@
             }
         }).catch(function (err) {
             renderError(err.message);
+        });
+    }
+
+    function credentialsDemoCheck(username, password) {
+        if (username === "username_valid" && password === "password_valid") {
+            return connectionResultSuccess(null, true);
+        } else {
+            return connectionResultFailure(null, true);
+        }
+    }
+
+    function connectionResultSuccess(step, demo) {
+        hideElement("backButton");
+
+        setActiveButton("doneButton");
+
+        showElement("connectionCheckmark");
+        document.getElementById("connectionSpinner").style.opacity = "0";
+        document.getElementById("headerTitle").innerHTML = "Success";
+
+
+        setTimeout(function () {
+            document.getElementById("statusMessage").className = "";
+            document.getElementById("statusMessage").classList.add("result-text-success");
+            document.getElementById("statusMessage").innerHTML = "Your account has been successfully linked.";
+        }, 1100);
+
+        if (demo) {
+            return sendEventNotification("connection", {
+                success: true,
+                data: {
+                    id: "fake-connection-id"
+                }
+            });
+        }
+
+        var url = step.result.url,
+            connectionId = url.substr(url.lastIndexOf("/") + 1);
+
+        return sendEventNotification("connection", {
+            success: true,
+            data: {
+                id: connectionId
+            }
+        });
+    }
+
+    function connectionResultFailure(step, demo) {
+        hideElement("backButton");
+
+        setActiveButton("retryButton");
+
+        showElement("connectionCross");
+        document.getElementById("connectionSpinner").style.opacity = "0";
+        document.getElementById("connectionLoader").classList.add("result-error");
+        document.getElementById("headerTitle").innerHTML = "Unsuccessful";
+
+        setTimeout(function () {
+            document.getElementById("statusMessage").className = "";
+            document.getElementById("statusMessage").classList.add("result-text-error");
+            document.getElementById("statusMessage").innerHTML = "The credentials you provided were incorrect.";
+        }, 1100);
+
+        if (demo) {
+            return sendEventNotification("connection", {
+                success: true,
+                data: {
+                    code: "invalid-credentials",
+                    title: "Cannot login to target institution, check credentials.",
+                    detail: "Cannot login to target institution using supplied credentials. Please check credentials and try again."
+                }
+            });
+        }
+
+        return sendEventNotification("connection", {
+            success: false,
+            data: step.result
         });
     }
 })(this);
