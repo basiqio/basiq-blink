@@ -176,5 +176,31 @@ window.API = {
                 console.error(err);
             });
         });
+    },
+    getUser: function (token, userId) {
+        if (!userId) {
+            throw new Error("User id not provided: " + JSON.stringify(arguments));
+        }
+
+        return new Promise(function (resolve, reject) {
+            window.request("https://au-api.basiq.io/users/" + userId, "GET", {}, {
+                "Authorization": "Bearer " + token
+            }).then(function (resp) {
+                if (resp.statusCode > 299) {
+                    throw resp;
+                }
+
+                return resp.body;
+            }).then(function (resp) {
+                resolve(resp);
+            }).catch(function (err) {
+                reject(err.body && err.body.data
+                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+                    "Unknown error"
+                );
+
+                console.error(err);
+            });
+        });
     }
 };

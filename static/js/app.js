@@ -35,48 +35,39 @@
         searching = false,
         error = checkAccessToken(accessToken);
 
+
+    if (iFrame) {
+        url += "&iframe=true";
+    }
+
     if (error) {
         hideElement("loading");
         renderError(error);
     } else {
-        /*if (!countries) {
-         document.getElementById("loading").style.display = "none";
-         window.errorContainer.innerHTML = "No countries parameter provided";
-         }
+        checkUserID(userId).then(function () {
+            return API.loadInstitutions(accessToken);
+        }).then(function (loadedInstitutions) {
+            institutions = loadedInstitutions;
 
-         countries = countries.split(",").filter(Boolean);
-         serviceTypes = serviceTypes ? serviceTypes.split(",").filter(Boolean) : null;
-         */
-        if (iFrame) {
-            url += "&iframe=true";
-        }
+            return preloadImages(institutions);
+        }).then(function () {
+            hideElement("loading");
+            showElement("institutionSearchForm");
+            showElement("institutionsContainer");
+            renderInstitutions(instCont, institutions, url);
 
-        if (!userId) {
-            renderError("User ID is not valid");
-        } else {
-            API.loadInstitutions(accessToken).then(function (loadedInstitutions) {
-                institutions = loadedInstitutions;
-
-                preloadImages(institutions).then(function () {
-                    hideElement("loading");
-                    showElement("institutionSearchForm");
-                    showElement("institutionsContainer");
-                    renderInstitutions(instCont, institutions, url);
-                });
-            }).catch(function (err) {
-                renderError(err);
+            var timer = null;
+            instCont.addEventListener("scroll", function () {
+                if (timer !== null) {
+                    clearTimeout(timer);
+                    instCont.classList.add("scrolling");
+                }
+                timer = setTimeout(function () {
+                    instCont.classList.remove("scrolling");
+                }, 150);
             });
-        }
-
-        var timer = null;
-        instCont.addEventListener("scroll", function () {
-            if (timer !== null) {
-                clearTimeout(timer);
-                instCont.classList.add("scrolling");
-            }
-            timer = setTimeout(function () {
-                instCont.classList.remove("scrolling");
-            }, 150);
+        }).catch(function (err) {
+            renderError(err);
         });
 
         document.getElementById("closeButton").addEventListener("click", function (e) {
@@ -378,6 +369,20 @@
 
         return null;
 
+    }
+
+    function checkUserID(userId) {
+        return new Promise(function (res, rej) {
+            if (!userId) {
+                rej("User ID is not valid");
+            }
+
+            API.getUser(accessToken, userId).then(function () {
+                res(true);
+            }).catch(function (e) {
+                rej(e);
+            });
+        });
     }
 
     function renderAllInstitutions(container, institutions, url, liW, w, h) {
