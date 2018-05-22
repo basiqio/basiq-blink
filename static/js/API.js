@@ -61,16 +61,14 @@ function parseResponse(res) {
 }
 
 window.API = {
-    loadInstitutions: function (token) {
+    loadInstitutions: function () {
         return new Promise(function (resolve, reject) {
             if (window.localStorage && window.JSON) {
-                var cachedToken = localStorage.getItem("cachedToken"),
-                    cachedInstitutions = localStorage.getItem("cachedInstitutions"),
+                var cachedInstitutions = localStorage.getItem("cachedInstitutions"),
                     cacheTime = localStorage.getItem("cacheTime");
 
                 // Cache should expire after one hour
-                if (cachedToken === token
-                    && cachedInstitutions
+                if (cachedInstitutions
                     && (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
                 ) {
                     var institutions = JSON.parse(cachedInstitutions);
@@ -79,9 +77,7 @@ window.API = {
                 }
             }
 
-            window.request("https://au-api.basiq.io/institutions", "GET", {}, {
-                "Authorization": "Bearer " + token
-            }).then(function (resp) {
+            window.request("https://au-api.basiq.io/public/institutions", "GET", {}, {}).then(function (resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
@@ -95,7 +91,6 @@ window.API = {
                 if (window.localStorage && window.JSON) {
                     localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
                     localStorage.setItem("cacheTime", Date.now());
-                    localStorage.setItem("cachedToken", token);
                 }
 
                 resolve(institutions);

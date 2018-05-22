@@ -33,7 +33,7 @@
         instCont = document.getElementById("institutionsContainer"),
         url = "/authenticate.html?user_id=" + userId + "&institution_id={inst_id}&access_token=" + accessToken,
         searching = false,
-        error = checkAccessToken(accessToken);
+        error = checkAccessToken(accessToken, demo);
 
 
     if (iFrame) {
@@ -44,8 +44,8 @@
         hideElement("loading");
         renderError(error);
     } else {
-        checkUserID(userId).then(function () {
-            return API.loadInstitutions(accessToken);
+        checkUserID(userId, demo).then(function () {
+            return API.loadInstitutions();
         }).then(function (loadedInstitutions) {
             institutions = loadedInstitutions;
 
@@ -348,7 +348,11 @@
         }
     }
 
-    function checkAccessToken(token) {
+    function checkAccessToken(token, demo) {
+        if (demo === true) {
+            return null;
+        }
+
         if (!token) {
             return "Token is not valid";
         }
@@ -371,10 +375,13 @@
 
     }
 
-    function checkUserID(userId) {
+    function checkUserID(userId, demo) {
+        if (demo === true) {
+            return Promise.resolve(true);
+        }
         return new Promise(function (res, rej) {
             if (!userId) {
-                rej("User ID is not valid");
+                return rej("User ID is not valid");
             }
 
             API.getUser(accessToken, userId).then(function () {
