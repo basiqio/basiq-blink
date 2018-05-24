@@ -20,5 +20,8 @@
         ],
         "no-global-assign": "warn",
         "no-console": "warn"
+    },
+    "globals": {
+        "require": true
     }
 }
