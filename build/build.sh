@@ -11,3 +11,4 @@ cp static/index.html dist
 cp static/institution.svg dist
 cp static/style.css dist
 cp static/js/helpers.js dist
+cp static/js/API.js dist
