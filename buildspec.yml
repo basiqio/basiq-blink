@@ -10,4 +10,4 @@ phases:
   build:
     commands:
       - export BasiqBlinkBucketName=`node build/readBuildConf.js`
-      - aws s3 sync dist s3://$BasiqBlinkBucketName
+      - aws s3 sync dist s3://$BasiqBlinkBucketName --acl public-read
