@@ -11,7 +11,3 @@ phases:
     commands:
       - export BasiqBlinkBucketName=`node build/readBuildConf.js`
       - aws s3 sync dist s3://$BasiqBlinkBucketName
-artifacts:
-  files:
-    - 'dist/*'
-  discard-paths: no
