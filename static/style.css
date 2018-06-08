@@ -169,7 +169,7 @@ button.button-primary {
     padding-right: 46px;
 }
 
-#usernameInput, #passwordInput, #securityInput {
+#usernameInput, #passwordInput, #securityInput, #secondaryLoginId {
     height: 48px;
 }
 

@@ -104,7 +104,7 @@ window.API = {
             });
         });
     },
-    createUserConnection: function (token, userId, institutionId, loginId, password, securityCode) {
+    createUserConnection: function (token, userId, institution, loginId, password, securityCode, secondaryLoginId) {
         if (!loginId || !password) {
             throw new Error("No user id or password provided: " + JSON.stringify(arguments));
         }
@@ -112,17 +112,21 @@ window.API = {
         loginId = loginId.trim();
         password = password.trim();
         securityCode = securityCode.trim();
+        secondaryLoginId = secondaryLoginId.trim();
 
         var payload = {
             loginId: loginId,
             password: password,
             institution: {
-                id: institutionId
+                id: institution.id
             }
         };
 
-        if (securityCode.length > 0) {
+        if (securityCode.length > 0 && institution.securityCodeCaption) {
             payload["securityCode"] = securityCode;
+        }
+        if (secondaryLoginId.length > 0 && institution.secondaryLoginIdCaption) {
+            payload["secondaryLoginId"] = secondaryLoginId;
         }
 
         return new Promise(function (resolve, reject) {

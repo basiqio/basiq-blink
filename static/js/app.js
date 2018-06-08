@@ -217,6 +217,13 @@
             hideElement("securityInputContainer");
             document.getElementById("securityInput").value = "";
         }
+        if (institution.secondaryLoginIdCaption) {
+            showElement("secondaryLoginIdContainer");
+            document.getElementById("secondaryLoginId").setAttribute("placeholder", institution.secondaryLoginIdCaption);
+        } else {
+            hideElement("secondaryLoginIdContainer");
+            document.getElementById("secondaryLoginId").value = "";
+        }
 
         var logo = document.getElementById("bankLogo");
 
@@ -249,7 +256,8 @@
 
             var username = document.getElementById("usernameInput").value.trim(),
                 password = document.getElementById("passwordInput").value.trim(),
-                security = document.getElementById("securityInput").value.trim();
+                security = document.getElementById("securityInput").value.trim(),
+                secondaryLoginId = document.getElementById("secondaryLoginId").value.trim();
 
             if (!username) {
                 //document.getElementById("errorContainer").innerHTML = "No username provided";
@@ -278,10 +286,11 @@
                 API.createUserConnection(
                     accessToken,
                     userId,
-                    institution.id,
+                    institution,
                     username,
                     password,
-                    security
+                    security,
+                    secondaryLoginId
                 ).then(function (jobData) {
                     sendEventNotification("job", {
                         success: true,
