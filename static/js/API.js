@@ -150,6 +150,52 @@ window.API = {
             });
         });
     },
+    updateUserConnection: function (token, userId, connectionId, institution, loginId, password, securityCode, secondaryLoginId) {
+        if (!loginId || !password) {
+            throw new Error("No user id or password provided: " + JSON.stringify(arguments));
+        }
+
+        loginId = loginId.trim();
+        password = password.trim();
+        securityCode = securityCode.trim();
+        secondaryLoginId = secondaryLoginId.trim();
+
+        var payload = {
+            loginId: loginId,
+            password: password,
+            institution: {
+                id: institution.id
+            }
+        };
+
+        if (securityCode.length > 0 && institution.securityCodeCaption) {
+            payload["securityCode"] = securityCode;
+        }
+        if (secondaryLoginId.length > 0 && institution.secondaryLoginIdCaption) {
+            payload["secondaryLoginId"] = secondaryLoginId;
+        }
+
+        return new Promise(function (resolve, reject) {
+            window.request("https://au-api.basiq.io/users/" + userId + "/connections/" + connectionId, "POST", payload, {
+                "Authorization": "Bearer " + token
+            }).then(function (resp) {
+                if (resp.statusCode > 299) {
+                    throw resp;
+                }
+
+                return resp.body;
+            }).then(function (resp) {
+                resolve(resp);
+            }).catch(function (err) {
+                reject(err.body && err.body.data
+                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+                    "Unknown error"
+                );
+
+                console.error(err);
+            });
+        });
+    },
     checkJobStatus: function (token, jobId) {
         if (!jobId) {
             throw new Error("Job id not provided: " + JSON.stringify(arguments));
@@ -201,5 +247,107 @@ window.API = {
                 console.error(err);
             });
         });
+    },
+    getConnection: function (token, userId, connectionId) {
+        if (!userId) {
+            throw new Error("User id not provided: " + JSON.stringify(arguments));
+        }
+        if (!connectionId) {
+            throw new Error("Connection id not provided: " + JSON.stringify(arguments));
+        }
+
+        return new Promise(function (resolve, reject) {
+            window.request("https://au-api.basiq.io/users/" + userId + "/connections/" + connectionId, "GET", {}, {
+                "Authorization": "Bearer " + token
+            }).then(function (resp) {
+                if (resp.statusCode > 299) {
+                    throw resp;
+                }
+
+                return resp.body;
+            }).then(function (resp) {
+                resolve(resp);
+            }).catch(function (err) {
+                reject(err.body && err.body.data
+                       && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+                       "Unknown error"
+                      );
+
+                console.error(err);
+            });
+        });
+    },
+    getInstitution: function(token, institutionId) {
+        return new Promise(function (resolve, reject) {
+            if (window.localStorage && window.JSON) {
+                var cachedInstitutions = window.localStorage.getItem("cachedInstitutions"),
+                    cacheTime = window.localStorage.getItem("cacheTime");
+
+                // Cache should expire after one hour
+                if (cachedInstitutions
+                    && (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
+                ) {
+                    var institution = JSON.parse(cachedInstitutions).filter(function(i) {
+                        return i.id === institutionId;
+                    })[0];
+                    resolve(institution);
+                    return;
+                }
+            }
+
+            window.request("https://au-api.basiq.io/public/institutions", "GET", {}, {}).then(function (resp) {
+                if (resp.statusCode > 299) {
+                    throw resp;
+                }
+
+                return resp.body;
+            }).then(function (resp) {
+                var institutions = resp.data.map(function (inst) {
+                    return Object.assign({}, inst, {colors: {primary: colors[inst.shortName] || colors["default"]}});
+                });
+
+                if (window.localStorage && window.JSON) {
+                    window.localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
+                    window.localStorage.setItem("cacheTime", Date.now());
+                }
+
+                var institution = institutions.filter(function(i) {
+                    return i.id === institutionId; 
+                })[0];
+                resolve(institution);
+            }).catch(function (err) {
+                reject(err.body && err.body.data
+                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+                    "Unknown error"
+                );
+
+                console.error(JSON.stringify(err));
+            });
+        });
+        /*if (!institutionId) {
+          throw new Error("Institution id not provided: " + JSON.stringify(arguments));
+          }
+
+          return new Promise(function (resolve, reject) {
+          window.request("https://au-api.basiq.io/institutions/" + institutionId, "GET", {}, {
+          "Authorization": "Bearer " + token
+          }).then(function (resp) {
+          if (resp.statusCode > 299) {
+          throw resp;
+          }
+
+          return resp.body;
+          }).then(function (resp) {
+          resolve(resp);
+          }).catch(function (err) {
+          reject(err.body && err.body.data
+          && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+          "Unknown error"
+          );
+
+          console.error(err);
+          });
+          });*/
+        
     }
 };

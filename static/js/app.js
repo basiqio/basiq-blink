@@ -24,6 +24,7 @@
         queryVars = parseQueryVariables(),
         iFrame = !!queryVars["iframe"] && queryVars["iframe"] === "true",
         userId = queryVars["user_id"],
+        connectionId = queryVars["connection_id"],
         accessToken = queryVars["access_token"],
         demo = !!queryVars["demo"] && queryVars["demo"] === "true",
         //serviceTypes = queryVars["service_types"],
@@ -44,7 +45,11 @@
         hideElement("loading");
         renderError(error);
     } else {
-        checkUserID(userId, demo).then(function () {
+        if (connectionId) {
+            return updateConnection(connectionId);
+        }
+
+        checkUserID(userId, demo).then(function () {        
             return API.loadInstitutions();
         }).then(function (loadedInstitutions) {
             institutions = loadedInstitutions;
@@ -134,6 +139,22 @@
         setTimeout(function () {
             sendEventNotification("handshake", {"success": true});
         }, 1000);
+    }
+
+    function updateConnection(connectionId) {
+        hideElement("header");
+        checkUserID(userId, demo).then(function () {        
+            return checkConnectionID(userId, connectionId, demo);
+        }).then(function(resp) {
+            return API.getInstitution(accessToken, resp.institutionId);
+        }).then(function(resp) {
+            hideElement("loading");
+            showElement("header");
+            renderInstitution(resp);
+            hideElement("backButton");
+        }).catch(function(err) {
+            renderError(err);
+        });
     }
 
     function preloadImages(institutions) {
@@ -283,15 +304,7 @@
                     credentialsDemoCheck(username, password);
                 }, 2100);
             } else {
-                API.createUserConnection(
-                    accessToken,
-                    userId,
-                    institution,
-                    username,
-                    password,
-                    security,
-                    secondaryLoginId
-                ).then(function (jobData) {
+                createOrUpdate(institution, username, password, security, secondaryLoginId).then(function (jobData) {
                     sendEventNotification("job", {
                         success: true,
                         data: {
@@ -325,6 +338,23 @@
         document.getElementById("backButton").addEventListener("click", removeListeners);
 
         window.institution = institution;
+    }
+
+    function createOrUpdate(institution, username, password, security, secondaryLoginId) {
+        if (connectionId) {
+            return API.updateUserConnection(
+                accessToken, userId, connectionId, institution, username, password, security, secondaryLoginId
+            );
+        }
+        return API.createUserConnection(
+            accessToken,
+            userId,
+            institution,
+            username,
+            password,
+            security,
+            secondaryLoginId
+        );
     }
 
     function renderEmptySearch(text) {
@@ -400,6 +430,27 @@
             });
         });
     }
+
+    function checkConnectionID(userId, connectionId, demo) {
+        if (demo === true) {
+            return Promise.resolve(true);
+        }
+        return new Promise(function (res, rej) {
+            if (!userId) {
+                return rej("User ID is not valid");
+            }
+            if (!connectionId) {
+                return rej("Connection ID is not valid");
+            }
+
+            API.getConnection(accessToken, userId, connectionId).then(function (resp) {
+                    res({institutionId: resp.institution.id, connectionId: resp.id});
+            }).catch(function (e) {
+                rej(e);
+            });
+        });
+    }
+    
 
     function renderAllInstitutions(container, institutions, url, liW, w, h) {
         var newUl = true, ul;
