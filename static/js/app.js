@@ -558,7 +558,7 @@
 
             var h3 = document.createElement("h3");
             h3.className = "bank-link-search-header";
-            h3.innerHTML = institution.name.length > 18 ? institution.name.substr(0, 16).trim() + "..." : institution.name;
+            h3.innerHTML = institution.name.length > 18 ? (institution.shortName > 18 ?  institution.name.substr(0, 16).trim() + "..." : institution.shortName ) : institution.name;
 
             a.title = institution.name;
             a.className = "bank-link-nav-search";
