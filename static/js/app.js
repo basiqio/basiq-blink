@@ -46,6 +46,10 @@
         renderError(error);
     } else {
         if (connectionId) {
+            if (demo === true) {
+                renderError("Demo is not supported for update connection use-case.");
+                return;
+            }
             return updateConnection(connectionId);
         }
 
