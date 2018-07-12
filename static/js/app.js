@@ -454,6 +454,31 @@
             });
         });
     }
+
+    function resolveSearchedInstName(institution) {
+        var result = "";
+        function getCountry(country) {
+            var countries = [
+                {
+                    longName: "Australia",
+                    shortName: "AU"
+                },
+                {
+                    longName: "New Zealand",
+                    shortName: "NZ"
+                }
+            ];
+            for(var i=0; i<countries.length; i++) if (countries[i].longName === country) return countries[i];
+        }
+        var serviceTypes = ["Personal Banking", "Business Banking"];
+        var country = getCountry(institution.country);
+        result = institution.name.length > 18 ? (institution.shortName > 18 ?  institution.name.substr(0, 16).trim() + "..." : institution.shortName ) : institution.name;
+        // Add suffix if country is not Australia
+        if (country.longName !== "Australia" && institution.shortName.indexOf("("+country.shortName+")") === -1) result += (" (" + country.shortName + ")");
+        // Add suffix if service type is not personal
+        if (institution.serviceType !== serviceTypes[0]) result += (" (" + institution.serviceType + ")");
+        return result;
+    }
     
 
     function renderAllInstitutions(container, institutions, url, liW, w, h) {
@@ -558,7 +583,7 @@
 
             var h3 = document.createElement("h3");
             h3.className = "bank-link-search-header";
-            h3.innerHTML = institution.name.length > 18 ? (institution.shortName > 18 ?  institution.name.substr(0, 16).trim() + "..." : institution.shortName ) : institution.name;
+            h3.innerHTML = resolveSearchedInstName(institution);
 
             a.title = institution.name;
             a.className = "bank-link-nav-search";
@@ -666,17 +691,12 @@
     }
 
     function institutionSearch(url, term) {
-        if (!institutions) {
+        if (!institutions || term.length < 2) {
             return;
         }
 
         var matched = [],
             instCont = document.getElementById("institutionsContainer");
-
-        if (term.length < 2) {
-            //return window.renderEmptySearch("");
-            return;
-        }
 
         for (var x = 0; x < institutions.length; x++) {
             var institution = institutions[x];
