@@ -84,7 +84,7 @@ in the JSON. We can extract connectionId from such response, and continue to use
 
 ## Application
 
-You can examine the entire application and see how it all connects [here](https://github.com/basiqio/basiq-android-blink-demo/tree/master/app/src/main/java/com/example/nlukic/webviewtest).
+You can examine the entire application and see how it all connects [here](https://github.com/basiqio/basiq-ios-blink-demo/tree/master/demo).
 
 ## Other implementations
 
