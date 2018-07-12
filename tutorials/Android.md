@@ -64,7 +64,7 @@ You can examine the entire application and see how it all connects [here](https:
 
 The following are other custom client implementations:
 
-* [iOS](https://github.com/basiqio/basiq-blink/edit/master/tutorials/iOS.md)
+* [iOS](https://github.com/basiqio/basiq-blink/blob/master/tutorials/iOS.md)
 * [Custom Web iFrame](iframe.com)
 * [Using the JS control](jscontrol.com)
 
