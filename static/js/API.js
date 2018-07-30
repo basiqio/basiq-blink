@@ -10,7 +10,7 @@ var colors = {
     "default": "#f5f5f5"
 };
 
-window.request = function(url, method, data, headers) {
+window.request = function (url, method, data, headers) {
     return new Promise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
 
@@ -77,7 +77,7 @@ window.API = {
                 }
             }
 
-            window.request("https://au-api.basiq.io/public/institutions", "GET", {}, {}).then(function (resp) {
+            window.request("https://au-api.basiq.io/public/institutions?filter=institution.authorization.eq('user')", "GET", {}, {}).then(function (resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
@@ -85,7 +85,7 @@ window.API = {
                 return resp.body;
             }).then(function (resp) {
                 var institutions = resp.data.map(function (inst) {
-                    return Object.assign({}, inst, {colors: {primary: colors[inst.shortName] || colors["default"]}});
+                    return Object.assign({}, inst, { colors: { primary: colors[inst.shortName] || colors["default"] } });
                 });
 
                 if (window.localStorage && window.JSON) {
@@ -269,15 +269,15 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data
-                       && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
-                       "Unknown error"
-                      );
+                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+                    "Unknown error"
+                );
 
                 console.error(err);
             });
         });
     },
-    getInstitution: function(token, institutionId) {
+    getInstitution: function (token, institutionId) {
         return new Promise(function (resolve, reject) {
             if (window.localStorage && window.JSON) {
                 var cachedInstitutions = window.localStorage.getItem("cachedInstitutions"),
@@ -287,7 +287,7 @@ window.API = {
                 if (cachedInstitutions
                     && (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
                 ) {
-                    var institution = JSON.parse(cachedInstitutions).filter(function(i) {
+                    var institution = JSON.parse(cachedInstitutions).filter(function (i) {
                         return i.id === institutionId;
                     })[0];
                     resolve(institution);
@@ -303,7 +303,7 @@ window.API = {
                 return resp.body;
             }).then(function (resp) {
                 var institutions = resp.data.map(function (inst) {
-                    return Object.assign({}, inst, {colors: {primary: colors[inst.shortName] || colors["default"]}});
+                    return Object.assign({}, inst, { colors: { primary: colors[inst.shortName] || colors["default"] } });
                 });
 
                 if (window.localStorage && window.JSON) {
@@ -311,8 +311,8 @@ window.API = {
                     window.localStorage.setItem("cacheTime", Date.now());
                 }
 
-                var institution = institutions.filter(function(i) {
-                    return i.id === institutionId; 
+                var institution = institutions.filter(function (i) {
+                    return i.id === institutionId;
                 })[0];
                 resolve(institution);
             }).catch(function (err) {
@@ -348,6 +348,6 @@ window.API = {
           console.error(err);
           });
           });*/
-        
+
     }
 };
