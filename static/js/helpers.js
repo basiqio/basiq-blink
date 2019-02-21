@@ -27,7 +27,7 @@ function getState(queryVars) {
       "/authenticate.html?user_id=" +
       queryVars["user_id"] +
       "&institution_id={inst_id}&access_token=" +
-      qeryVars["access_token"];
+      queryVars["access_token"];
 
   if (iFrame) {
     url += "&iframe=true";
