@@ -2,7 +2,7 @@ window.pages["pdfOverview"] = function (container, files) {
     hideElement("backButton");
     updateTitle("File overview");
 
-    setActiveButton("Finish", function() {
+    setActiveButton2("Finish", function() {
         var url = "http://basiq-web-portal.s3-website-ap-southeast-2.amazonaws.com/?token=" + window.globalState.accessToken +  "&userId=" + window.globalState.userId + "&jobs=";
 
         window.jobs.forEach(function (link) {
@@ -13,7 +13,7 @@ window.pages["pdfOverview"] = function (container, files) {
 
         window.parent.location.href = url;
     });
-    setActiveButton("Add more", function() {
+    setActiveButton2("Add more", function() {
         transitionToPage("institutionSelection", "pdf");
     });
 

@@ -67,7 +67,7 @@ window.pages["institution"] = {
 
         form.addEventListener("submit", window.pages["institution"].formHandler);
 
-        setActiveButton("Submit", window.pages["institution"].formHandler);
+        setActiveButton2("Submit", window.pages["institution"].formHandler);
     },
     formHandler: function (institution, e) {
         e.preventDefault();

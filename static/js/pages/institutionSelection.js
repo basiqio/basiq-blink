@@ -302,7 +302,7 @@ function linkClickHandler(container, institution, type, searching, e) {
         console.error(e);
     });
 
-    setActiveButton("Proceed", function () {
+    setActiveButton2("Proceed", function () {
         hideElement("hideSearchButton");
         proceedHandler(type, institution);
     });

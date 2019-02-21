@@ -88,7 +88,7 @@ window.pages["pdfUpload"] = function (container, institution) {
 
     pdfDropzone.on("addedfile", function() {
         hideAllButtons();
-        setActiveButton("Proceed", function () {
+        setActiveButton2("Proceed", function () {
             
             window.filesToUpload = window.filesToUpload.concat(pdfDropzone.files.map(function (file) {file.institution = institution; return file;}));
             pdfDropzone.processQueue();
