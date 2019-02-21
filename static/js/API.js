@@ -1,22 +1,15 @@
 /*global Promise*/
 /*eslint no-console: "off"*/
 
-var colors = {
-    "Basiq Test Bank": "#024767",
-    "Hooli Bank": "#024767",
-    "Bendigo Bank": "#990133",
-    "ING Direct": "#ff6002",
-    "Macquarie Bank": "#010101",
-    "default": "#f5f5f5"
-};
-
-window.request = function (url, method, data, headers) {
+window.request = function (url, method, data, headers, multipart) {
     return new Promise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
 
         if (method.toUpperCase() === "POST") {
             xhttp.open("POST", url, true);
-            xhttp.setRequestHeader("Content-type", "application/json");
+            if (!multipart) {
+                xhttp.setRequestHeader("Content-type", "application/json");
+            }
         } else {
             xhttp.open("GET", url, true);
         }
@@ -29,13 +22,21 @@ window.request = function (url, method, data, headers) {
         }
 
         if (method.toUpperCase() === "POST") {
-            xhttp.send(JSON.stringify(data));
+            if (!multipart) {
+                xhttp.send(JSON.stringify(data));
+            } else {
+                xhttp.send(data);
+            }
         } else {
             xhttp.send();
         }
 
         xhttp.addEventListener("load", function () {
-            resolve(parseResponse(xhttp));
+            if (xhttp.getResponseHeader("Content-Type") === "application/json") {
+                resolve(parseResponse(xhttp));
+            } else {
+                resolve(xhttp.response);
+            }
         });
         xhttp.addEventListener("error", function (e) {
             console.log(xhttp, e);
@@ -84,11 +85,22 @@ window.API = {
 
                 return resp.body;
             }).then(function (resp) {
-                var institutions = resp.data.map(function (inst) {
-                    return Object.assign({}, inst, { colors: { primary: colors[inst.shortName] || colors["default"] } });
-                });
+                var groups = resp.data.reduce(function (acc, v) {
+                    if (!acc[v.serviceType]) {
+                        acc[v.serviceType] = [];
+                    }
+                    
+                    acc[v.serviceType].push(v);
+                    return acc;
+                }, {});
+                
+                var institutions = [];
+                
+                for (var st in groups) {
+                    institutions = institutions.concat(groups[st].sort(function(a,b) {return a.tier > b.tier;}));
+                }
 
-                if (window.localStorage && window.JSON) {
+               if (window.localStorage && window.JSON) {
                     localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
                     localStorage.setItem("cacheTime", Date.now());
                 }
@@ -109,11 +121,6 @@ window.API = {
             throw new Error("No user id or password provided: " + JSON.stringify(arguments));
         }
 
-        loginId = loginId.trim();
-        password = password.trim();
-        securityCode = securityCode.trim();
-        secondaryLoginId = secondaryLoginId.trim();
-
         var payload = {
             loginId: loginId,
             password: password,
@@ -122,10 +129,10 @@ window.API = {
             }
         };
 
-        if (securityCode.length > 0 && institution.securityCodeCaption) {
+        if (securityCode && institution.securityCodeCaption) {
             payload["securityCode"] = securityCode;
         }
-        if (secondaryLoginId.length > 0 && institution.secondaryLoginIdCaption) {
+        if (secondaryLoginId && institution.secondaryLoginIdCaption) {
             payload["secondaryLoginId"] = secondaryLoginId;
         }
 
@@ -295,23 +302,19 @@ window.API = {
                 }
             }
 
-            window.request("https://au-api.basiq.io/public/institutions", "GET", {}, {}).then(function (resp) {
+            window.request("https://au-api.basiq.io/public/institutions", "GET").then(function (resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
 
                 return resp.body;
             }).then(function (resp) {
-                var institutions = resp.data.map(function (inst) {
-                    return Object.assign({}, inst, { colors: { primary: colors[inst.shortName] || colors["default"] } });
-                });
-
                 if (window.localStorage && window.JSON) {
-                    window.localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
+                    window.localStorage.setItem("cachedInstitutions", JSON.stringify(resp.data));
                     window.localStorage.setItem("cacheTime", Date.now());
                 }
 
-                var institution = institutions.filter(function (i) {
+                var institution = resp.data.filter(function (i) {
                     return i.id === institutionId;
                 })[0];
                 resolve(institution);
@@ -324,30 +327,21 @@ window.API = {
                 console.error(JSON.stringify(err));
             });
         });
-        /*if (!institutionId) {
-          throw new Error("Institution id not provided: " + JSON.stringify(arguments));
-          }
+    },
+    uploadStatements: function(token, userId, formData) {
+        return new Promise(function (resolve, reject) {
+            window.request("https://au-api.basiq.io/users/" + userId + "/statements", "POST", formData, { "Authorization": "Bearer " + token }, true).then(function (resp) {
+                if (resp.statusCode > 299) {
+                    throw resp;
+                }
 
-          return new Promise(function (resolve, reject) {
-          window.request("https://au-api.basiq.io/institutions/" + institutionId, "GET", {}, {
-          "Authorization": "Bearer " + token
-          }).then(function (resp) {
-          if (resp.statusCode > 299) {
-          throw resp;
-          }
-
-          return resp.body;
-          }).then(function (resp) {
-          resolve(resp);
-          }).catch(function (err) {
-          reject(err.body && err.body.data
-          && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
-          "Unknown error"
-          );
-
-          console.error(err);
-          });
-          });*/
-
-    }
+                return resp.body;
+            }).then(function (resp) {
+                resolve(resp);
+            }).catch(function (err) {
+                reject(err.body && err.body.data && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail : "Unknown error" );
+                console.error(err);
+            });
+        });
+}
 };
