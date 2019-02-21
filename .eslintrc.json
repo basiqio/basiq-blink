@@ -19,7 +19,8 @@
             "always"
         ],
         "no-global-assign": "warn",
-        "no-console": "warn"
+        "no-console": ["warn", {"allow": ["error"]}],
+        "no-undef": "warn"		
     },
     "globals": {
         "require": true
