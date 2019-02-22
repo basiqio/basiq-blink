@@ -1,0 +1,34 @@
+<html>
+<head>
+    <title>Bank Connect</title>
+    <link type="text/css" rel="stylesheet" href="style.css">
+    <link type="text/css" rel="preload" href="dropzone.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="dropzone.css"></noscript>
+</head>
+<body>
+<div id="content">
+    <div id="header">
+        <h2 id="headerTitle"></h2>
+        <a href="#" id="closeButton"></a>
+        <a href="#" class="back-arrow hidden" id="hideSearchButton"></a>
+        <a href="#" class="back-arrow hidden" id="backButton"></a>
+        <form id="institutionSearchForm" class="search-form hidden">
+            <div class="institution-search input-container-right">
+                <span class="ico-mglass"></span>
+                <input id="institutionSearch" type="text" placeholder="Search bank">
+            </div>
+        </form>
+    </div>
+    <div id="contentContainer"></div>
+    <div id="footer" class="footer">
+    </div>
+</div>
+<script src="js/polyfills/promise-polyfill.min.js"></script>
+<script src="js/API.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/dropzone.js"></script>
+<script src="js/pages/loading.js"></script>
+<script src="js/pages/initialChoice.js"></script>
+<script src="js/app2.js"></script>
+</body>
+</html>

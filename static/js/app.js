@@ -365,7 +365,7 @@
         var instConst = document.getElementById("institutionsContainer");
 
         instConst.innerHTML = "<div class=\"search-placeholder\">" +
-            "<img src=\"institution.svg\"/>" +
+            "<img src=\"images/institution.svg\"/>" +
             "<span>" + text + "</span>" +
             "</div>";
     }

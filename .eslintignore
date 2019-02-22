@@ -1,1 +1,5 @@
 static/js/polyfills/*
+static/js/dropzone.js
+static/js/dropzone.min.js
+build/readBuildConf.js
+dist/
