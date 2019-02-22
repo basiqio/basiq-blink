@@ -1,9 +1,9 @@
-window.pages["pdfOverview"] = function (container, files, jobId) {
+window.pages["pdfOverview"] = function (container, files) {
     hideElement("backButton");
     updateTitle("File overview");
 
     setActiveButton2("Finish", function() {
-      sendEventNotification("job", { success: true, data: { id: jobId }});
+      sendEventNotification("completion");
     });
     setActiveButton2("Add more", function() {
         transitionToPage("institutionSelection", "pdf");

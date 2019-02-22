@@ -76,16 +76,15 @@ window.pages["pdfUpload"] = function (container, institution) {
 
     window.jobs = window.jobs || [];
 
-    var jobId = "";
     pdfDropzone.on("success", function (_, response) {
-        jobId = response.id;
+        sendEventNotification("job", { success: true, data: { id: response.id }});
         if (response.links && response.links.self) {
             window.jobs.push(response.links.self);
         }
     });
 
     pdfDropzone.on("queuecomplete", function () {
-        transitionToPage("pdfOverview", window.filesToUpload, jobId);
+        transitionToPage("pdfOverview", window.filesToUpload);
     });
 
     pdfDropzone.on("addedfile", function() {
