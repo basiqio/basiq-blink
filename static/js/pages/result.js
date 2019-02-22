@@ -41,7 +41,7 @@ function connectionCreationLoading(iconContainer) {
 }
 
 
-function connectionResultSuccess(iconContainer, step) {
+function connectionResultSuccess(iconContainer, institution, step) {
     iconContainer.innerHTML = "<svg id=\"connectionCheckmark\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\""+
          "viewBox=\"5 0 40 36\">"+
         "<path class=\"checkmark__check\" fill=\"none\" d=\"M14.1 27.2l7.1 7.2 16.7-16.8\"/>"+
