@@ -78,7 +78,7 @@ window.pages["pdfUpload"] = function (container, institution) {
 
     var jobId = "";
     pdfDropzone.on("success", function (_, response) {
-        jobId = response.data.id;
+        jobId = response.id;
         if (response.links && response.links.self) {
             window.jobs.push(response.links.self);
         }
