@@ -302,6 +302,8 @@ function linkClickHandler(container, institution, type, searching, e) {
         console.error(e);
     });
 
+    document.getElementById("footer").innerHTML = "";
+    
     setActiveButton2("Proceed", function () {
         hideElement("hideSearchButton");
         proceedHandler(type, institution);
