@@ -6,7 +6,7 @@
   "pre-commit": "lint",
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^4.16.0",
+    "eslint": "^5.14.1",
     "pre-commit": "^1.2.2"
   },
   "scripts": {
