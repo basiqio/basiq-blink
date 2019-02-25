@@ -103,27 +103,28 @@ function institutionSearch(institutions, url, term, type) {
         return;
     }
 
-    var matched = [],
+    var matchedLong = [],
+        matchedShort = [],
         institutionsContainer = document.getElementById("institutionsContainer");
 
     for (var x = 0; x < institutions.length; x++) {
         var institution = institutions[x];
 
         if (institution.shortName.toLowerCase().indexOf(term.toLowerCase()) > -1) {
-            matched.push(institution);
+            matchedShort.push(institution);
             continue;
         }
 
         if (institution.name.toLowerCase().indexOf(term.toLowerCase()) > -1) {
-            matched.push(institution);
+            matchedLong.push(institution);
         }
     }
 
-    if (matched.length === 0) {
+    if (matchedShort.length + matchedLong.length === 0) {
         return renderEmptySearch("Sorry no results found");
     }
 
-    renderInstitutions(institutionsContainer, type, matched, url, true);
+    renderInstitutions(institutionsContainer, type, matchedShort.concat(matchedLong), url, true);
 }
 
 function renderEmptySearch(text) {
@@ -158,7 +159,8 @@ function renderSearchedInstitutions(container, type, institutions, url, searchWi
         a.setAttribute("href", instUrl);
 
         a.onclick = function (e) {
-            linkClickHandler.call(this, container, institution, type, true, e);
+            e.preventDefault();
+            selectInstitution(type, institution);
         };
 
         li.appendChild(a);
@@ -237,7 +239,8 @@ function renderAllInstitutions(container, type, institutions, url, liW) {
         a.setAttribute("href", instUrl);
 
         a.onclick = function (e) {
-            linkClickHandler.call(this, container, institution, type, false, e);
+            e.preventDefault();
+            selectInstitution(type, institution);
         };
 
         li.appendChild(a);
@@ -288,36 +291,7 @@ function resolveSearchedInstName(institution) {
     return result;
 }
 
-function linkClickHandler(container, institution, type, searching, e) {
-    e.preventDefault();
-
-    if (institution && e.detail === 0) {
-        return proceedHandler(type, institution);
-    }
-
-    resetSelection();
-    hideAllButtons();
-    
-    preloadImage(institution.logo.links.full || institution.logo.links.self).catch(function (e) {
-        console.error(e);
-    });
-
-    document.getElementById("footer").innerHTML = "";
-    
-    setActiveButton2("Proceed", function () {
-        hideElement("hideSearchButton");
-        proceedHandler(type, institution);
-    });
-
-    if (this.classList.contains("active")) {
-        this.classList.remove("active");
-        resetSelection();
-    } else {
-        this.classList.add("active");
-    }
-}
-
-function proceedHandler(type, institution) {
+function selectInstitution(type, institution) {
     switch (type) {
         case "pdf":
             transitionToPage("pdfUpload", institution);

@@ -279,6 +279,9 @@ function hideElement(elementId) {
   if (!element) {
     return console.error("Element: " + elementId + " not found.");
   }
+  if(element.nodeName === "FORM"){
+    element.reset();
+  }
   element.classList.add("hidden");
 }
 

@@ -5,6 +5,7 @@ window.pages["institution"] = {
     render: function (container, institution) {
         showElement("backButton");
         hideElement("institutionSearchForm");
+        hideElement("hideSearchButton");
         updateTitle("Login");
 
         document.getElementById("backButton").onclick = function (e) {
