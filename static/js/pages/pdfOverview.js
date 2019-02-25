@@ -2,11 +2,8 @@ window.pages["pdfOverview"] = function (container, files) {
     hideElement("backButton");
     updateTitle("File overview");
 
-    setActiveButton2("Finish", function() {
-      sendEventNotification("completion");
-    });
-    setActiveButton2("Add more", function() {
-        transitionToPage("institutionSelection", "pdf");
+    setActiveButton2("Finish", function () {
+        sendEventNotification("completion");
     });
 
     var overviewContainer = document.createElement("div");
