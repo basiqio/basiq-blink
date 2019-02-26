@@ -1,6 +1,6 @@
-/*global showElement updateTitle hideElement transitionToPage resetSelection hideAllButtons sendEventNotification setActiveButton2 Dropzone*/
+/*global showElement updateTitle hideElement transitionToPage resetSelection hideAllButtons sendEventNotification setActiveButton2 readConfig Dropzone*/
 
-var host = "https://au-api.basiq.io";
+var host = readConfig("basiq-api-host");
 
 window.pages["pdfUpload"] = function (container, institution) {
     showElement("backButton");

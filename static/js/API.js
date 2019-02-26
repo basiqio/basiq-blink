@@ -1,7 +1,7 @@
-/*global Promise*/
+/*global Promise readConfig*/
 /*eslint no-console: "off"*/
 
-var host = "https://au-api.basiq.io";
+var host = readConfig("basiq-api-host");
 
 window.request = function (url, method, data, headers, multipart) {
     return new Promise(function (resolve, reject) {
