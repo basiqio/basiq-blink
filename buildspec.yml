@@ -6,8 +6,9 @@ phases:
       - pip install --upgrade --user awscli
       - npm install
       - chmod u+x ./build/read-environment.sh
-      - chmod u+x ./build/build.sh && sh build/build.sh
+      - chmod u+x ./build/build.sh
+      - chmod u+x ./build/deploy.sh
   build:
     commands:
-      - export Bucket=`aws cloudformation list-exports --output text --query "Exports[?(Name=='basiq-blink-s3-bucket')].Value"`
-      - aws s3 sync dist s3://$Bucket --acl public-read
+      sh build/build.sh
+      sh build/deploy.sh

@@ -1,16 +1,34 @@
 # Blink drop in control
 
+## Development
 
-## Installing
-To run the package you should have a local server installed
-
-```$ npm -g install static-server```
+Basiq Blink uses linting as pre commit hook. Run 
 
 ```$ npm install```
 
-## Running
+to install required dependencies.
 
-While in the static directory just run static server to serve the files
+## Build
+
+To build package run
+
+```$ npm run build```
+
+Build process fetches configuration from configured AWS environment.
+
+## Deployment
+
+To deploy to bucket in configured AWS environment run
+
+```$ npm run deploy```
+
+## Running locally
+
+To run the package locally install local server:
+
+```$ npm -g install static-server```
+
+While in the dist directory run static server to serve the files
 
 ```$ static-server```
 

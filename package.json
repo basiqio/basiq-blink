@@ -10,9 +10,10 @@
     "pre-commit": "^1.2.2"
   },
   "scripts": {
-    "start": "static-server static/",
-    "deploy": "aws s3 sync static s3://basiq-blink --acl public-read",
-    "lint": "./node_modules/.bin/eslint .",
+    "start": "static-server dist/",
+    "build": "build/build.sh",
+    "deploy": "build/deploy.sh",
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Basiq",
