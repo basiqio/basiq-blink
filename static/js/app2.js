@@ -1,13 +1,13 @@
 /* global 
-parseQueryVariables 
-hideElement
-showElement
-loadScript
-sendEventNotification
-transitionToPage
-getState
-API 
-:true */
+   parseQueryVariables 
+   hideElement
+   showElement
+   loadScript
+   sendEventNotification
+   transitionToPage
+   getState
+   API 
+   :true */
 
 (function(window) {
   document.getElementById("closeButton").addEventListener("click", function(e) {
@@ -86,6 +86,8 @@ API
       });
   }
 
+  loadScript("config.js");
+  loadScript("js/utils.js");
   loadScript("js/pages/pdfUpload.js");
   loadScript("js/pages/institutionSelection.js");
   loadScript("js/pages/institution.js");

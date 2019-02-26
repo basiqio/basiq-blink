@@ -1,4 +1,4 @@
-/*global showElement hideElement updateTitle transitionToPage hideAllButtons setActiveButton2 preloadImage */
+/*global showElement hideElement updateTitle transitionToPage */
 
 window.pages["institutionSelection"] = {
     setup: function (type) {
