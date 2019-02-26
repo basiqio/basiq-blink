@@ -1,6 +1,8 @@
 /*global Promise*/
 /*eslint no-console: "off"*/
 
+var host = "https://au-api.basiq.io";
+
 window.request = function (url, method, data, headers, multipart) {
     return new Promise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
@@ -78,7 +80,7 @@ window.API = {
                 }
             }
 
-            window.request("https://au-api.basiq.io/public/institutions?filter=institution.authorization.eq('user')", "GET", {}, {}).then(function (resp) {
+            window.request(host + "/public/institutions?filter=institution.authorization.eq('user')", "GET", {}, {}).then(function (resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
@@ -137,7 +139,7 @@ window.API = {
         }
 
         return new Promise(function (resolve, reject) {
-            window.request("https://au-api.basiq.io/users/" + userId + "/connections", "POST", payload, {
+            window.request(host + "/users/" + userId + "/connections", "POST", payload, {
                 "Authorization": "Bearer " + token
             }).then(function (resp) {
                 if (resp.statusCode > 299) {
@@ -183,7 +185,7 @@ window.API = {
         }
 
         return new Promise(function (resolve, reject) {
-            window.request("https://au-api.basiq.io/users/" + userId + "/connections/" + connectionId, "POST", payload, {
+            window.request(host + "/users/" + userId + "/connections/" + connectionId, "POST", payload, {
                 "Authorization": "Bearer " + token
             }).then(function (resp) {
                 if (resp.statusCode > 299) {
@@ -209,7 +211,7 @@ window.API = {
         }
 
         return new Promise(function (resolve, reject) {
-            window.request("https://au-api.basiq.io/jobs/" + jobId, "GET", {}, {
+            window.request(host + "/jobs/" + jobId, "GET", {}, {
                 "Authorization": "Bearer " + token
             }).then(function (resp) {
                 if (resp.statusCode > 299) {
@@ -235,7 +237,7 @@ window.API = {
         }
 
         return new Promise(function (resolve, reject) {
-            window.request("https://au-api.basiq.io/users/" + userId, "GET", {}, {
+            window.request(host + "/users/" + userId, "GET", {}, {
                 "Authorization": "Bearer " + token
             }).then(function (resp) {
                 if (resp.statusCode > 299) {
@@ -264,7 +266,7 @@ window.API = {
         }
 
         return new Promise(function (resolve, reject) {
-            window.request("https://au-api.basiq.io/users/" + userId + "/connections/" + connectionId, "GET", {}, {
+            window.request(host + "/users/" + userId + "/connections/" + connectionId, "GET", {}, {
                 "Authorization": "Bearer " + token
             }).then(function (resp) {
                 if (resp.statusCode > 299) {
@@ -302,7 +304,7 @@ window.API = {
                 }
             }
 
-            window.request("https://au-api.basiq.io/public/institutions", "GET").then(function (resp) {
+            window.request(host + "/public/institutions", "GET").then(function (resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
@@ -327,21 +329,5 @@ window.API = {
                 console.error(JSON.stringify(err));
             });
         });
-    },
-    uploadStatements: function(token, userId, formData) {
-        return new Promise(function (resolve, reject) {
-            window.request("https://au-api.basiq.io/users/" + userId + "/statements", "POST", formData, { "Authorization": "Bearer " + token }, true).then(function (resp) {
-                if (resp.statusCode > 299) {
-                    throw resp;
-                }
-
-                return resp.body;
-            }).then(function (resp) {
-                resolve(resp);
-            }).catch(function (err) {
-                reject(err.body && err.body.data && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail : "Unknown error" );
-                console.error(err);
-            });
-        });
-}
+    }
 };
