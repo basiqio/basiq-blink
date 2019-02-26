@@ -1,3 +1,5 @@
+/*global showElement hideElement updateTitle transitionToPage hideAllButtons setActiveButton2 preloadImage */
+
 window.pages["institutionSelection"] = {
     setup: function (type) {
         window.pages["institutionSelection"].hideSearchHandler = window.pages["institutionSelection"].hideSearchHandler.bind(null, type);

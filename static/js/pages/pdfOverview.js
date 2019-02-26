@@ -1,3 +1,6 @@
+/*global hideElement updateTitle setActiveButton2 sendEventNotification */
+
+
 window.pages["pdfOverview"] = function (container, files) {
     hideElement("backButton");
     updateTitle("File overview");

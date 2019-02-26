@@ -1,3 +1,5 @@
+/*global showElement hideElement updateTitle transitionToPage resetSelection setActiveButton2 sendEventNotification */
+
 window.pages["institution"] = {
     setup: function(institution) {
         window.pages["institution"].formHandler = window.pages["institution"].formHandler.bind(window.pages["institution"], institution);

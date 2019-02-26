@@ -1,4 +1,4 @@
-/*global Dropzone*/
+/*global showElement updateTitle hideElement transitionToPage resetSelection hideAllButtons sendEventNotification setActiveButton2 Dropzone*/
 
 var host = "https://au-api.basiq.io";
 

@@ -1,3 +1,5 @@
+/*global hideElement updateTitle updateStatusMessage setActiveButton2 sendEventNotification transitionToPage sendEventNotification */
+
 window.pages["result"] = function (container, style, institution, step, message) {
     hideElement("backButton");
 
