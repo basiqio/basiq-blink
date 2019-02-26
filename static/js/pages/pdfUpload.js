@@ -1,5 +1,7 @@
 /*global Dropzone*/
 
+var host = "https://au-api.basiq.io";
+
 window.pages["pdfUpload"] = function (container, institution) {
     showElement("backButton");
     updateTitle("Upload your bank statements");
@@ -47,7 +49,7 @@ window.pages["pdfUpload"] = function (container, institution) {
     previewsContainer.className = "dropzone-previews";
 
     var pdfDropzone = new Dropzone(dropzoneContainer, {
-        url: "https://au-api.basiq.io/users/" + window.globalState.userId + "/statements",
+        url: host + "/users/" + window.globalState.userId + "/statements",
         previewsContainer: previewsContainer,
         parallelUploads: 3,
         previewTemplate: "<div class=\"dz-preview dz-file-preview\">\n" + 
@@ -104,34 +106,3 @@ window.pages["pdfUpload"] = function (container, institution) {
 
     return pageContainer;
 };
-
-// function manualUpload(files, institution) {
-//     var form = document.createElement("form");
-//     form.enctype = "multipart/form-data";
-
-//     var data = new FormData(form),
-//         url = "https://au-api.basiq.io/users/" + window.globalState.userId + "/statements";
-
-//     for (var file in files) {
-//         data.append("statement", files[file]);
-//     }
-
-//     data.append("institutionId", institution.id);
-
-//     var xhr = new XMLHttpRequest();
-//     // Add any event handlers here...
-//     xhr.open("POST", url, true);
-//     xhr.setRequestHeader("Authorization", "Bearer " + window.globalState.accessToken);
-//     xhr.send(data);
-
-//     xhr.addEventListener("progress", function(e) {
-//         if (e.lengthComputable) {
-//             var percentComplete = e.loaded / e.total * 100;
-//             console.log("UPLOADED:", percentComplete);
-//             // ...
-//           }
-//     });
-//     xhr.addEventListener("load", function() {
-//         transitionToPage("pdfOverview", window.filesToUpload);
-//     });
-// }
