@@ -1,3 +1,8 @@
+/* global
+console
+API
+Promise
+ */
 /*exported parseQueryVariables*/
 /*exported naiveFlexBoxSupport*/
 /*exported stringifyQueryParams*/
@@ -47,7 +52,6 @@ var currentPage,
   loadedPages = [];
 
 function transitionToPage(pageId) {
-  var start = window.performance.now();
   var container = document.getElementById("contentContainer");
 
   container.innerHTML = "";
@@ -101,7 +105,6 @@ function transitionToPage(pageId) {
       }
       container.appendChild(result);
   }
-  console.log("Execution for " + pageId, window.performance.now() - start);
 }
 
 function sendEventNotification(event, payload) {

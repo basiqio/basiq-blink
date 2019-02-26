@@ -1,3 +1,5 @@
+/*global updateTitle */
+
 window.pages["loading"] = function (_, error, title) {
     var loadingContainer = document.createElement("div");
 

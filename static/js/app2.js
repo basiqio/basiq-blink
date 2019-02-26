@@ -1,5 +1,13 @@
-/*global parseQueryVariables*/
-/*global getState*/
+/* global 
+parseQueryVariables 
+hideElement
+showElement
+loadScript
+sendEventNotification
+transitionToPage
+getState
+API 
+:true */
 
 (function(window) {
   document.getElementById("closeButton").addEventListener("click", function(e) {
