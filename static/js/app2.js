@@ -86,8 +86,6 @@
       });
   }
 
-  loadScript("config.js");
-  loadScript("js/utils.js");
   loadScript("js/pages/pdfUpload.js");
   loadScript("js/pages/institutionSelection.js");
   loadScript("js/pages/institution.js");
