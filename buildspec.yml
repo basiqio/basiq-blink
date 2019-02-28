@@ -10,5 +10,5 @@ phases:
       - chmod u+x ./build/deploy.sh
   build:
     commands:
-      sh ./build/build.sh
-      sh ./build/deploy.sh
+      - sh ./build/build.sh
+      - sh ./build/deploy.sh
