@@ -49,9 +49,7 @@ function connectionResultSuccess(iconContainer, institution, step) {
         "<path class=\"checkmark__check\" fill=\"none\" d=\"M14.1 27.2l7.1 7.2 16.7-16.8\"/>"+
     "</svg>";
 
-    setActiveButton2("Done", function (e) {
-        e.preventDefault();
-
+    setActiveButton2("Done", function () {
         sendEventNotification("completion");
     });
 
@@ -88,8 +86,7 @@ function connectionResultFailure(iconContainer, institution, step, error) {
         "<path class=\"checkmark__cross\" d=\"M 15,20 L 35,40 M 35,20 L 15,40\"/>"+
     "</svg>";
 
-    setActiveButton2("Try again", function (e) {
-        e.preventDefault();
+    setActiveButton2("Try again", function () {
         transitionToPage("institution", institution);
     }, true);
 
