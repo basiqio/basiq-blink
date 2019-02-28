@@ -87,7 +87,6 @@ function transitionToPage(pageId) {
     if (currentPage.setup) {
       currentPage.setup.apply(currentPage, args);
     }
-
     loadedPages.push(pageId);
   }
 
@@ -320,7 +319,7 @@ function setActiveButton2(label, clickHandler, error) {
   }
 
   if (clickHandler !== undefined) {
-    element.onclick = clickHandler;
+    element.onclick = function(e) { e.preventDefault(); clickHandler(element);};
   }
 
   setTimeout(function() {

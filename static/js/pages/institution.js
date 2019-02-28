@@ -1,9 +1,6 @@
 /*global showElement hideElement updateTitle transitionToPage resetSelection setActiveButton2 sendEventNotification */
 
 window.pages["institution"] = {
-    setup: function(institution) {
-        window.pages["institution"].formHandler = window.pages["institution"].formHandler.bind(window.pages["institution"], institution);
-    },
     render: function (container, institution) {
         showElement("backButton");
         hideElement("institutionSearchForm");
@@ -60,21 +57,24 @@ window.pages["institution"] = {
 
             this.style.height = "30%";
         };
-
-        form.addEventListener("keypress", function (e) { // Accept enter for submit
+        form.addEventListener("keypress", function (e) { 
+            // Accept enter for submit
             var code = (e.keyCode ? e.keyCode : e.which);
-            if (code === 13) {
-                window.pages["institution"].formHandler(e);
+            if (code === 13) { 
+                window.pages["institution"].formHandler(institution);
             }
         });
 
-        form.addEventListener("submit", window.pages["institution"].formHandler);
+        form.addEventListener("submit", function(e){
+            e.preventDefault();
+            window.pages["institution"].formHandler(institution);
+        });
 
-        setActiveButton2("Submit", window.pages["institution"].formHandler);
+        setActiveButton2("Submit", function(){
+            window.pages["institution"].formHandler(institution);
+        });
     },
-    formHandler: function (institution, e) {
-        e.preventDefault();
-
+    formHandler: function (institution) {
         var username = document.getElementById("usernameInput") ? document.getElementById("usernameInput").value.trim() : undefined,
             password = document.getElementById("passwordInput") ? document.getElementById("passwordInput").value.trim() : undefined,
             security = document.getElementById("securityInput") ? document.getElementById("securityInput").value.trim() : undefined,

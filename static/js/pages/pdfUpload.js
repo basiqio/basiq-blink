@@ -1,4 +1,4 @@
-/*global showElement updateTitle hideElement transitionToPage resetSelection hideAllButtons sendEventNotification setActiveButton2 readConfig Dropzone*/
+/*global showElement updateTitle hideElement transitionToPage resetSelection sendEventNotification setActiveButton2 readConfig Dropzone*/
 
 var host = readConfig("basiq-api-host");
 
@@ -90,9 +90,9 @@ window.pages["pdfUpload"] = function (container, institution) {
     });
 
     pdfDropzone.on("addedfile", function() {
-        hideAllButtons();
-        setActiveButton2("Proceed", function () {
-            
+        document.getElementById("footer").innerHTML = "";
+        setActiveButton2("Proceed", function (button) {
+            button.disabled = true;
             window.filesToUpload = window.filesToUpload.concat(pdfDropzone.files.map(function (file) {file.institution = institution; return file;}));
             pdfDropzone.processQueue();
             
