@@ -18,14 +18,15 @@
 
   window.globalState = getState(parseQueryVariables());
 
-  var error = window.checkAccessToken(
+  var result = window.checkAccessToken(
     window.globalState.accessToken,
     window.globalState.demo
   );
 
-  if (error) {
-    transitionToPage("loading", error);
+  if (result.error) {
+    transitionToPage("loading", result.error);
   } else {
+
     transitionToPage("loading");
 
     if (window.globalState.connectionId) {
@@ -48,7 +49,11 @@
         window.globalState.institutions = loadedInstitutions;
 
         window.preloadImages(loadedInstitutions, 16);
-        transitionToPage("initialChoice");
+        if (result.pdf) {
+          transitionToPage("initialChoice");
+        } else {
+          transitionToPage("institutionSelection", "online");
+        }
       })
       .catch(function(err) {
         transitionToPage("loading", err);

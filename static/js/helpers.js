@@ -194,24 +194,24 @@ function checkAccessToken(token, demo) {
   }
 
   if (!token) {
-    return "Token is not valid";
+    return {error: "Token is not valid"};
   }
 
   var sections = token.split(".").filter(Boolean);
   if (sections.length < 3) {
-    return "Token is not valid";
+    return {error:"Token is not valid"};
   }
 
   try {
     var claims = JSON.parse(atob(sections[1]));
+    console.log(claims);
     if (!claims.scope || claims.scope.toUpperCase() !== "CLIENT_ACCESS") {
-      return "Scope is not valid";
+      return {error:"Scope is not valid"};
     }
+    return {pdf: !!claims.connect_statements && claims.connect_statements === true};
   } catch (err) {
-    return err.message;
+    return {error: err.message};
   }
-
-  return null;
 }
 
 function checkUserID(userId, demo) {
