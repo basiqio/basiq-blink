@@ -204,7 +204,6 @@ function checkAccessToken(token, demo) {
 
   try {
     var claims = JSON.parse(atob(sections[1]));
-    console.log(claims);
     if (!claims.scope || claims.scope.toUpperCase() !== "CLIENT_ACCESS") {
       return {error:"Scope is not valid"};
     }

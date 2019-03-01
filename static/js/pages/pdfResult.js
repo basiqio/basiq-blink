@@ -56,7 +56,7 @@ function pdfConnectionResultSuccess(iconContainer, steps) {
     updateTitle("Success");
 
     setTimeout(function () {
-       updateStatusMessage("Statement parsing has been successful.", "success");
+       updateStatusMessage("Statement parsing has succeed.", "success");
     }, 1100);
 
     if (window.globalState.demo) {
@@ -100,7 +100,7 @@ function pdfConnectionResultFailure(iconContainer, steps, error) {
         if (error !== undefined) {
             updateStatusMessage(error, "failure");
         } else {
-            updateStatusMessage("Statement parsing failed.", "failure");
+            updateStatusMessage("Statement parsing has failed.", "failure");
         }
     }, 1100);
 

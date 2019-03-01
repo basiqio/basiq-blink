@@ -9,7 +9,7 @@ window.pages["pdfUpload"] = function (container, institution) {
 
     document.getElementById("backButton").onclick = function (e) {
         e.preventDefault();
-        transitionToPage("institutionSelection", "pdf");
+        transitionToPage("institutionSelection", "pdf", true);
         resetSelection();
     };
 
@@ -90,8 +90,8 @@ window.pages["pdfUpload"] = function (container, institution) {
         var promises = [];
         window.jobIds.forEach(function(jobId){
             promises.push(new Promise(function(resolve, reject){
-            function checkJobStatus() {
-                console.log(jobId);
+            function checkJobStatus(timeout) {
+                var now = new Date().getTime();
                 window.API.checkJobStatus(window.globalState.accessToken, jobId).then(function (resp) {
                     var steps = resp.steps;
                     for (var step in steps) {
@@ -106,7 +106,7 @@ window.pages["pdfUpload"] = function (container, institution) {
                                    return  resolve({status:"success", step: steps[step]});
                                 case "pending":
                                 case "in-progress":
-                                   return  setTimeout(checkJobStatus, 1000);
+                                    new Date().getTime() - now > timeout ? resolve({status: "failure", step:step[step]}) : setTimeout(checkJobStatus, 1000);
                             }
             
                         }
@@ -115,7 +115,7 @@ window.pages["pdfUpload"] = function (container, institution) {
                    reject(err.message);
                 });
             }
-            checkJobStatus();
+            checkJobStatus(180000);
             }));
         });
         transitionToPage("pdfResult", "loading", institution);
@@ -128,10 +128,8 @@ window.pages["pdfUpload"] = function (container, institution) {
                 }
                 steps.push(result.step);
             });
-            //TODO: change step passing, so we can support multiple connections 
             transitionToPage("pdfResult", status, institution, steps);
         }).catch(function(err){
-            console.log(err);
             transitionToPage("loading", err);
         });
     });
