@@ -90,12 +90,9 @@ window.API = {
             }).then(function (resp) {
                 resolve(resp);
             }).catch(function (err) {
-                reject(err.body && err.body.data
-                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
+                reject(err.body && err.body.data && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
                     "Unknown error"
                 );
-
-                console.error(err);
             });
         });
     },
