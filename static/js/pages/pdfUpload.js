@@ -6,10 +6,11 @@ window.pages["pdfUpload"] = function (container, institution) {
     showElement("backButton");
     updateTitle("Upload your bank statements");
     hideElement("institutionSearchForm");
+    hideElement("hideSearchButton");
 
     document.getElementById("backButton").onclick = function (e) {
         e.preventDefault();
-        transitionToPage("institutionSelection", "pdf", true);
+        transitionToPage("institutionSelection", "pdf");
         resetSelection();
     };
 
