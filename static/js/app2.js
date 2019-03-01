@@ -61,7 +61,7 @@
   }
 
   setTimeout(function() {
-    sendEventNotification("handshake", { success: !error });
+    sendEventNotification("handshake", { success: !result.error });
   }, 1000);
 
   function updateConnection(connectionId) {
@@ -91,6 +91,7 @@
       });
   }
 
+  loadScript("js/pages/pdfResult.js");
   loadScript("js/pages/pdfUpload.js");
   loadScript("js/pages/institutionSelection.js");
   loadScript("js/pages/institution.js");

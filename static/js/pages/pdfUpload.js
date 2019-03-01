@@ -77,8 +77,9 @@ window.pages["pdfUpload"] = function (container, institution) {
     });
 
     window.jobs = window.jobs || [];
-
+    window.jobIds = [];
     pdfDropzone.on("success", function (_, response) {
+        window.jobIds.push(response.id);
         sendEventNotification("job", { success: true, data: { id: response.id }});
         if (response.links && response.links.self) {
             window.jobs.push(response.links.self);
@@ -86,7 +87,53 @@ window.pages["pdfUpload"] = function (container, institution) {
     });
 
     pdfDropzone.on("queuecomplete", function () {
-        transitionToPage("pdfOverview", window.filesToUpload);
+        var promises = [];
+        window.jobIds.forEach(function(jobId){
+            promises.push(new Promise(function(resolve, reject){
+            function checkJobStatus() {
+                console.log(jobId);
+                window.API.checkJobStatus(window.globalState.accessToken, jobId).then(function (resp) {
+                    var steps = resp.steps;
+                    for (var step in steps) {
+                        if (!steps.hasOwnProperty(step)) {
+                            continue;
+                        }
+                        if (steps[step].title === "verify-credentials") {
+                            switch (steps[step].status) {
+                                case "failed":
+                                   return  resolve({status:"failure", step: steps[step]});
+                                case "success":
+                                   return  resolve({status:"success", step: steps[step]});
+                                case "pending":
+                                case "in-progress":
+                                   return  setTimeout(checkJobStatus, 1000);
+                            }
+            
+                        }
+                    }
+                }).catch(function (err) {
+                   reject(err.message);
+                });
+            }
+            checkJobStatus();
+            }));
+        });
+        transitionToPage("pdfResult", "loading", institution);
+        Promise.all(promises).then(function(results){
+            var status = "success";
+            var steps = [];
+            results.forEach(function(result){
+                if(result.status === "failure") {
+                    status = "failure";
+                }
+                steps.push(result.step);
+            });
+            //TODO: change step passing, so we can support multiple connections 
+            transitionToPage("pdfResult", status, institution, steps);
+        }).catch(function(err){
+            console.log(err);
+            transitionToPage("loading", err);
+        });
     });
 
     pdfDropzone.on("addedfile", function() {
@@ -106,3 +153,4 @@ window.pages["pdfUpload"] = function (container, institution) {
 
     return pageContainer;
 };
+
