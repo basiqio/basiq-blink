@@ -1,12 +1,11 @@
 /*global showElement hideElement updateTitle transitionToPage */
 
 window.pages["institutionSelection"] = {
-    setup: function (type) {
-        window.pages["institutionSelection"].hideSearchHandler = window.pages["institutionSelection"].hideSearchHandler.bind(null, type);
-        window.pages["institutionSelection"].searchHandler = window.pages["institutionSelection"].searchHandler.bind(null, type);
-        window.pages["institutionSelection"].searchFocusHandler = window.pages["institutionSelection"].searchFocusHandler.bind(null, type);
-    },
     render: function (container, type) {
+        window.pages["institutionSelection"].hideSearchHandler = hideSearchHandler.bind(null, type);
+        window.pages["institutionSelection"].searchHandler = searchHandler.bind(null, type);
+        window.pages["institutionSelection"].searchFocusHandler = searchFocusHandler.bind(null, type);
+
         var institutionsContainer = document.createElement("ul");
 
         institutionsContainer.id = "institutionsContainer";
@@ -46,25 +45,6 @@ window.pages["institutionSelection"] = {
 
         renderInstitutions(institutionsContainer, type, window.globalState.institutions, window.globalState.url);
     },
-    hideSearchHandler: function(type, e) {
-        e.preventDefault();
-        transitionToPage("institutionSelection", type);
-    },
-    searchFocusHandler: function(type) {
-        showElement("hideSearchButton");
-        var term = document.getElementById("institutionSearch").value;
-    
-        if (term.length > 0) {
-            institutionSearch(window.globalState.institutions, window.globalState.url, term, type);
-        } else {
-            renderEmptySearch("Find your bank, credit union or superannuation fund");
-        }
-    },
-    searchHandler: function(type, e) {
-        e.preventDefault();
-        var term = document.getElementById("institutionSearch").value;
-        institutionSearch(window.globalState.institutions, window.globalState.url, term, type);
-    },
     unload: function () {
         document.getElementById("hideSearchButton").removeEventListener("click", window.pages["institutionSelection"].hideSearchHandler);
         document.getElementById("institutionSearchForm").removeEventListener("submit", window.pages["institutionSelection"].searchHandler);
@@ -72,6 +52,27 @@ window.pages["institutionSelection"] = {
         document.getElementById("institutionSearch").removeEventListener("focus", window.pages["institutionSelection"].searchFocusHandler);
     }
 };
+
+function hideSearchHandler(type, e) {
+    e.preventDefault();
+    transitionToPage("institutionSelection", type);
+}
+
+function searchFocusHandler(type) {
+    showElement("hideSearchButton");
+    var term = document.getElementById("institutionSearch").value;
+
+    if (term.length > 0) {
+        institutionSearch(window.globalState.institutions, window.globalState.url, term, type);
+    } else {
+        renderEmptySearch("Find your bank, credit union or superannuation fund");
+    }
+}
+function searchHandler(type, e) {
+    e.preventDefault();
+    var term = document.getElementById("institutionSearch").value;
+    institutionSearch(window.globalState.institutions, window.globalState.url, term, type);
+}
 
 function renderInstitutions(container, type, institutions, url, search) {
     var margins = 10,

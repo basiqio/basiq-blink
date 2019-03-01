@@ -112,7 +112,7 @@ window.pages["institution"] = {
                     success: false,
                     data: err
                 });
-
+                
                 transitionToPage("result", "failure", institution, { result: err }, err);
             });
         }

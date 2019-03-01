@@ -94,7 +94,6 @@ function connectionResultFailure(iconContainer, institution, step, error) {
     updateTitle("Unsuccessful");
 
     setTimeout(function () {
-
         if (error !== undefined) {
             updateStatusMessage(error, "failure");
         } else {
