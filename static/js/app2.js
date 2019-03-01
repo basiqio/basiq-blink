@@ -50,8 +50,10 @@
 
         window.preloadImages(loadedInstitutions, 16);
         if (result.pdf) {
+          window.globalState.statements = true;
           transitionToPage("initialChoice");
         } else {
+          window.globalState.statements = false;
           transitionToPage("institutionSelection", "online");
         }
       })

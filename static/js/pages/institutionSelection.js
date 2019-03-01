@@ -12,15 +12,19 @@ window.pages["institutionSelection"] = {
         institutionsContainer.id = "institutionsContainer";
 
         showElement("institutionSearchForm");
-        showElement("backButton");
         hideElement("hideSearchButton");
         updateTitle("Select your bank");
-
-        document.getElementById("backButton").onclick = function (e) {
-            e.preventDefault();
-            resetSelection();
-            transitionToPage("initialChoice");
-        };
+        
+        if(window.globalState.statements){
+            showElement("backButton");
+            document.getElementById("backButton").onclick = function (e) {
+                e.preventDefault();
+                resetSelection();
+                transitionToPage("initialChoice");
+            };
+        }else {
+            hideElement("backButton");
+        }
 
         var timer = null;
         institutionsContainer.addEventListener("scroll", function () {
