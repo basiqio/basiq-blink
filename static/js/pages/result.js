@@ -95,7 +95,7 @@ function connectionResultFailure(iconContainer, institution, step, error) {
 
     setTimeout(function () {
         if (error !== undefined) {
-            updateStatusMessage(error, "failure");
+            updateStatusMessage(error.title + " " + (error.detail !== null ? error.detail : ""), "failure");
         } else {
             updateStatusMessage("The credentials you provided were incorrect.", "failure");
         }

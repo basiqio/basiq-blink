@@ -43,7 +43,7 @@
 
     if (error) {
         hideElement("loading");
-        renderError(error);
+        renderError(error.title + " " + (error.detail !== null ? error.detail : ""));
     } else {
         if (connectionId) {
             if (demo === true) {
@@ -76,7 +76,7 @@
                 }, 150);
             });
         }).catch(function (err) {
-            renderError(err);
+            renderError(err.title + " " + (err.detail !== null ? err.detail : ""));
         });
 
         document.getElementById("closeButton").addEventListener("click", function (e) {
@@ -157,7 +157,7 @@
             renderInstitution(resp);
             hideElement("backButton");
         }).catch(function(err) {
-            renderError(err);
+            renderError(err.title + " " + (err.detail !== null ? err.detail : ""));
         });
     }
 
@@ -318,12 +318,7 @@
 
                     setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
                 }).catch(function (err) {
-                    sendEventNotification("job", {
-                        success: false,
-                        data: err
-                    });
-
-                    renderError(err.message);
+                    jobNotAcceptable(err);
                 });
             }
 
@@ -787,6 +782,29 @@
             data: {
                 id: connectionId
             }
+        });
+    }
+
+    function jobNotAcceptable(err) {
+        hideElement("backButton");
+
+        setActiveButton("retryButton");
+
+        showElement("connectionCross");
+        document.getElementById("connectionSpinner").style.opacity = "0";
+        document.getElementById("connectionLoader").classList.add("result-error");
+        document.getElementById("headerTitle").innerHTML = "Unsuccessful";
+
+        setTimeout(function () {
+            document.getElementById("statusMessage").className = "";
+            document.getElementById("statusMessage").classList.add("result-text-error");
+            document.getElementById("statusMessage").innerHTML = err;
+        }, 1100);
+
+        
+        sendEventNotification("job", {
+            success: false,
+            data: err
         });
     }
 

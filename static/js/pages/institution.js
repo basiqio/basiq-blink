@@ -110,7 +110,7 @@ window.pages["institution"] = {
             }).catch(function (err) {
                 sendEventNotification("job", {
                     success: false,
-                    data: err
+                    data:   err
                 });
                 
                 transitionToPage("result", "failure", institution, { result: err }, err);
@@ -179,7 +179,7 @@ function checkJobStatus(accessToken, institution, jobData) {
             }
         }
     }).catch(function (err) {
-        transitionToPage("loading", err.message);
+        transitionToPage("loading", err);
     });
 }
 
