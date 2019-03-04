@@ -98,7 +98,7 @@ function pdfConnectionResultFailure(iconContainer, steps, error) {
     setTimeout(function () {
 
         if (error !== undefined) {
-            updateStatusMessage(error, "failure");
+            updateStatusMessage(error.title + " " + (error.detail !== null ? error.detail : ""), "failure");
         } else {
             updateStatusMessage("Statement parsing has failed.", "failure");
         }

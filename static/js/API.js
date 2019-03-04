@@ -49,9 +49,8 @@ window.API = {
 
                 resolve(institutions);
             }).catch(function (err) {
-                reject(err.body && err.body.data
-                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
-                    "Unknown error"
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
+                    {detail: "Unknown error"}
                 );
 
                 console.error(JSON.stringify(err));
@@ -85,13 +84,12 @@ window.API = {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
-
                 return resp.body;
             }).then(function (resp) {
                 resolve(resp);
             }).catch(function (err) {
-                reject(err.body && err.body.data && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
-                    "Unknown error"
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
+                    {detail: "Unknown error"}
                 );
             });
         });
@@ -133,9 +131,8 @@ window.API = {
             }).then(function (resp) {
                 resolve(resp);
             }).catch(function (err) {
-                reject(err.body && err.body.data
-                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
-                    "Unknown error"
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
+                    {detail: "Unknown error"}
                 );
 
                 console.error(err);
@@ -159,9 +156,8 @@ window.API = {
             }).then(function (resp) {
                 resolve(resp);
             }).catch(function (err) {
-                reject(err.body && err.body.data
-                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
-                    "Unknown error"
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
+                    {detail: "Unknown error"}
                 );
 
                 console.error(err);
@@ -185,9 +181,8 @@ window.API = {
             }).then(function (resp) {
                 resolve(resp);
             }).catch(function (err) {
-                reject(err.body && err.body.data
-                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
-                    "Unknown error"
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
+                    {detail: "Unknown error"}
                 );
 
                 console.error(err);
@@ -214,9 +209,8 @@ window.API = {
             }).then(function (resp) {
                 resolve(resp);
             }).catch(function (err) {
-                reject(err.body && err.body.data
-                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
-                    "Unknown error"
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
+                    {detail: "Unknown error"}
                 );
 
                 console.error(err);
@@ -258,9 +252,8 @@ window.API = {
                 })[0];
                 resolve(institution);
             }).catch(function (err) {
-                reject(err.body && err.body.data
-                    && err.body.data[0] ? "Error: " + err.body.data[0].title + ". " + err.body.data[0].detail :
-                    "Unknown error"
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
+                    {detail: "Unknown error"}
                 );
 
                 console.error(JSON.stringify(err));
