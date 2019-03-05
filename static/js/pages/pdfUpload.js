@@ -67,7 +67,7 @@ window.pages["pdfUpload"] = function (container, institution) {
                 console.error(response);
                 return "Unknown error while uploading file";
             }
-            return "Error: "  + response.data[0].title + " " + response.data[0].detail; 
+            return response.data[0].title + " " + response.data[0].detail; 
         },
         headers: {
             "Authorization": "Bearer " + window.globalState.accessToken

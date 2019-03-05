@@ -43,7 +43,7 @@
 
     if (error) {
         hideElement("loading");
-        renderError(error.title + " " + (error.detail !== null ? error.detail : ""));
+        renderError((error.title ? error.title : "") + " " + (error.detail ? error.detail : ""));
     } else {
         if (connectionId) {
             if (demo === true) {
@@ -76,7 +76,7 @@
                 }, 150);
             });
         }).catch(function (err) {
-            renderError(err.title + " " + (err.detail !== null ? err.detail : ""));
+            renderError((err.title ? err.title: "") + " " + (err.detail  ? err.detail : ""));
         });
 
         document.getElementById("closeButton").addEventListener("click", function (e) {
@@ -157,7 +157,7 @@
             renderInstitution(resp);
             hideElement("backButton");
         }).catch(function(err) {
-            renderError(err.title + " " + (err.detail !== null ? err.detail : ""));
+            renderError((err.title ? err.title: "") + " " + (err.detail  ? err.detail : ""));
         });
     }
 
@@ -275,6 +275,7 @@
             };
         }
 
+       
         var formHandler = function (e) {
             e.preventDefault();
             hideElement("backButton");
@@ -392,21 +393,21 @@
         }
 
         if (!token) {
-            return "Token is not valid";
+            return {title: "Token is not valid"};
         }
 
         var sections = token.split(".").filter(Boolean);
         if (sections.length < 3) {
-            return "Token is not valid";
+            return {title: "Token is not valid"};
         }
 
         try {
             var claims = JSON.parse(atob(sections[1]));
             if (!claims.scope || claims.scope.toUpperCase() !== "CLIENT_ACCESS") {
-                return "Scope is not valid";
+                return {title: "Scope is not valid"};
             }
         } catch (err) {
-            return err.message;
+            return {title: err.message};
         }
 
         return null;
@@ -419,7 +420,7 @@
         }
         return new Promise(function (res, rej) {
             if (!userId) {
-                return rej("User ID is not valid");
+                return rej({title:"User ID is not valid"});
             }
 
             API.getUser(accessToken, userId).then(function () {
@@ -737,7 +738,7 @@
                 }
             }
         }).catch(function (err) {
-            renderError(err.message);
+            renderError(err.detail);
         });
     }
 
@@ -798,7 +799,7 @@
         setTimeout(function () {
             document.getElementById("statusMessage").className = "";
             document.getElementById("statusMessage").classList.add("result-text-error");
-            document.getElementById("statusMessage").innerHTML = err;
+            document.getElementById("statusMessage").innerHTML = (err.title ? err.title: "") + " " + (err.detail  ? err.detail : "");
         }, 1100);
 
         
