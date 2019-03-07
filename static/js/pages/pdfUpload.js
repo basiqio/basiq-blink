@@ -1,4 +1,4 @@
-/*global showElement updateTitle hideElement transitionToPage resetSelection sendEventNotification setActiveButton2 readConfig Dropzone*/
+/*global showElement updateTitle hideElement transitionToPage resetSelection sendEventNotification setActiveButton2 readConfig Dropzone Promise*/
 
 var host = readConfig("basiq-api-host");
 
@@ -87,6 +87,11 @@ window.pages["pdfUpload"] = function (container, institution) {
         }
     });
 
+    pdfDropzone.on("error", function(_, error){
+        var err = error && error.data && error.data[0] ? error.data[0] : {detail: "Unknown error"};
+        transitionToPage("loading", err);
+    });
+
     pdfDropzone.on("queuecomplete", function () {
         var promises = [];
         window.jobIds.forEach(function(jobId){
@@ -119,20 +124,22 @@ window.pages["pdfUpload"] = function (container, institution) {
             checkJobStatus(180000);
             }));
         });
-        transitionToPage("pdfResult", "loading", institution);
-        Promise.all(promises).then(function(results){
-            var status = "success";
-            var steps = [];
-            results.forEach(function(result){
-                if(result.status === "failure") {
-                    status = "failure";
-                }
-                steps.push(result.step);
+        if(promises.length > 0){
+            transitionToPage("pdfResult", "loading", institution);
+            Promise.all(promises).then(function(results){
+                var status = "success";
+                var steps = [];
+                results.forEach(function(result){
+                    if(result.status === "failure") {
+                        status = "failure";
+                    }
+                    steps.push(result.step);
+                });
+                transitionToPage("pdfResult", status, institution, steps);
+            }).catch(function(err){
+                transitionToPage("loading", err);
             });
-            transitionToPage("pdfResult", status, institution, steps);
-        }).catch(function(err){
-            transitionToPage("loading", err);
-        });
+        }
     });
 
     pdfDropzone.on("addedfile", function() {

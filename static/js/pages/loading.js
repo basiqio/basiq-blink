@@ -12,7 +12,7 @@ window.pages["loading"] = function (_, error, title) {
         var errorContainer = document.createElement("div");
         errorContainer.id = "errorContainer";
         console.log(error);
-        errorContainer.textContent = error.title + " " + (error.detail !== null ? error.detail : "");
+        errorContainer.textContent = (error.title ? error.title : "") + " " + (error.detail ? error.detail : "");
         updateTitle(title);
     
         loadingContainer.classList.add("result-error");
