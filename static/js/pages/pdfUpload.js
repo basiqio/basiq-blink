@@ -79,9 +79,9 @@ window.pages["pdfUpload"] = function (container, institution) {
 
     window.jobs = window.jobs || [];
     window.jobIds = [];
-    pdfDropzone.on("success", function (_, response) {
+    pdfDropzone.on("success", function (event, response) {
         window.jobIds.push(response.id);
-        sendEventNotification("job", { success: true, data: { id: response.id }});
+        sendEventNotification("job", { success: true, data: { id: response.id, institutionShortName: event.institution.shortName, fileName: event.name }});
         if (response.links && response.links.self) {
             window.jobs.push(response.links.self);
         }
