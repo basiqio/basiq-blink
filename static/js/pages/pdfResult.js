@@ -39,7 +39,7 @@ window.pages["pdfResult"] = function (container, style, institution, steps) {
 function pdfConnectionCreationLoading(iconContainer) {
     iconContainer.innerHTML = "<div id=\"connectionSpinner\" class=\"spinner\"></div>";
     updateTitle("Connecting...");
-    updateStatusMessage("Parsing statements");
+    updateStatusMessage("Processing statements");
 }
 
 
