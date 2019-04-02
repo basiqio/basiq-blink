@@ -669,7 +669,7 @@
         hideElement("credentialsForm");
         hideElement("backButton");
         document.getElementById("headerTitle").innerHTML = "Connecting...";
-        document.getElementById("statusMessage").innerHTML = "Logging on securely";
+        document.getElementById("statusMessage").innerHTML = "Retrieving Data...";
         document.getElementById("statusMessage").className = "";
         document.getElementById("statusMessage").classList.add("result-text-default");
     }
@@ -763,7 +763,7 @@
         setTimeout(function () {
             document.getElementById("statusMessage").className = "";
             document.getElementById("statusMessage").classList.add("result-text-success");
-            document.getElementById("statusMessage").innerHTML = "Your account has been successfully linked.";
+            document.getElementById("statusMessage").innerHTML = "Your data has been successfully submitted.";
         }, 1100);
 
         if (demo) {
@@ -795,6 +795,7 @@
         document.getElementById("connectionSpinner").style.opacity = "0";
         document.getElementById("connectionLoader").classList.add("result-error");
         document.getElementById("headerTitle").innerHTML = "Unsuccessful";
+        document.getElementById("headerTitle").classList.add("result-text-error");
 
         setTimeout(function () {
             document.getElementById("statusMessage").className = "";
@@ -818,6 +819,7 @@
         document.getElementById("connectionSpinner").style.opacity = "0";
         document.getElementById("connectionLoader").classList.add("result-error");
         document.getElementById("headerTitle").innerHTML = "Unsuccessful";
+        document.getElementById("headerTitle").classList.add("result-text-error");
 
         setTimeout(function () {
             document.getElementById("statusMessage").className = "";

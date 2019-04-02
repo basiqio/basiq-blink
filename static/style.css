@@ -127,19 +127,36 @@ input, button, a {
     margin: 5%;
     padding: 5% 5% 5% 22%;
     background: white;
-    font-size: 0.80em;
+    font-size: 12px;
+    line-height: 14px;
     height: 40%;
     transition-duration: 200ms;
     transition-property: box-shadow;
     transition-timing-function: ease-in-out;
-    color: #8e8e8e;
+    color: #737373;
     border-radius: 5px;
     box-shadow: 0px 0px 0px 1px #cacaca !important;
 }
 
+.title {
+    color: #737373;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+}
+
 .pdfChoice h4, .onlineChoice h4 {
-    color: #464444;
+    color: #1A2D47;
     margin: 5px 0px 11px 0px;
+}
+
+.onlineChoice span {
+    padding: 2px 8px 2px 8px;
+    color: #FFFFFF;
+    font-size: 9px;
+    font-weight: 500;
+    background-color: #60B036;
+    margin-left: 24px;
 }
 
 .pdfChoice {
@@ -228,7 +245,9 @@ input, button, a {
     padding: 0;
     margin: auto auto 20px auto;
     width: 81%;
-    font-weight: normal;
+    color: #1A2D47;
+    font-size: 16px;
+    line-height: 19px;
 }
 
 .button {
@@ -268,6 +287,7 @@ button.button-primary {
 
 .input-container-right input {
     padding-right: 46px;
+    font-size: 14px;
 }
 
 #usernameInput, #passwordInput, #securityInput, #secondaryLoginId {
@@ -860,6 +880,24 @@ a#closeButton:hover {
     stroke-dasharray: 200;
     stroke-dashoffset: 200;
     animation: stroke 1.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+}
+
+.login-input-box{
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    border-radius: 9px;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5);
+    width: 264px;
+    height: 48px;
+    height: 48px;
+}
+
+.login-input-text{
+    color: #212121;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 22px;
+    text-align: left;
 }
 
 #connectionCross, #connectionCheckmark {

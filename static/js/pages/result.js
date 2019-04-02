@@ -39,7 +39,7 @@ window.pages["result"] = function (container, style, institution, step, message)
 function connectionCreationLoading(iconContainer) {
     iconContainer.innerHTML = "<div id=\"connectionSpinner\" class=\"spinner\"></div>";
     updateTitle("Connecting...");
-    updateStatusMessage("Logging on securely");
+    updateStatusMessage("Retrieving Data...");
 }
 
 
@@ -56,7 +56,7 @@ function connectionResultSuccess(iconContainer, institution, step) {
     updateTitle("Success");
 
     setTimeout(function () {
-       updateStatusMessage("Your account has been successfully linked.", "success");
+       updateStatusMessage("Your data has been successfully submitted.", "success");
     }, 1100);
 
     if (window.globalState.demo) {
@@ -91,7 +91,7 @@ function connectionResultFailure(iconContainer, institution, step, error) {
     }, true);
 
     iconContainer.classList.add("result-error");
-    updateTitle("Unsuccessful");
+    updateTitle("Unsuccessful", true);
 
     setTimeout(function () {
         if (error !== undefined) {
