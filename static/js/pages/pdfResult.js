@@ -39,7 +39,7 @@ window.pages["pdfResult"] = function (container, style, institution, steps) {
 function pdfConnectionCreationLoading(iconContainer) {
     iconContainer.innerHTML = "<div id=\"connectionSpinner\" class=\"spinner\"></div>";
     updateTitle("Connecting...");
-    updateStatusMessage("Processing statements");
+    updateStatusMessage("Retrieving Data...");
 }
 
 
@@ -56,7 +56,7 @@ function pdfConnectionResultSuccess(iconContainer, steps) {
     updateTitle("Success");
 
     setTimeout(function () {
-       updateStatusMessage("Statement parsing has succeeded.", "success");
+       updateStatusMessage("Your data has been successfully submitted.", "success");
     }, 1100);
 
     if (window.globalState.demo) {
