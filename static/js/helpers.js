@@ -263,8 +263,12 @@ function stringifyQueryParams(obj) {
   return str.join("&");
 }
 
-function updateTitle(title) {
+function updateTitle(title, failed) {
   document.getElementById("headerTitle").textContent = title;
+  if(failed){
+    document.getElementById("headerTitle").classList.add("result-text-error");
+  }
+
 }
 
 function showElement(elementId) {
@@ -305,6 +309,8 @@ function setActiveButton(elementId) {
 }
 
 function setActiveButton2(label, clickHandler, error) {
+    document.getElementById("headerTitle").classList.remove("result-text-error");
+
   var footer = document.getElementById("footer"),
     element = document.createElement("button");
 

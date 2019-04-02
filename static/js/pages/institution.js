@@ -70,7 +70,7 @@ window.pages["institution"] = {
             window.pages["institution"].formHandler(institution);
         });
 
-        setActiveButton2("Submit", function(){
+        setActiveButton2("Connect", function(){
             window.pages["institution"].formHandler(institution);
         });
     },
