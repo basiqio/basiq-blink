@@ -44,7 +44,8 @@ function getState(queryVars) {
     userId: queryVars["user_id"],
     connectionId: queryVars["connection_id"],
     accessToken: queryVars["access_token"],
-    demo: !!queryVars["demo"] && queryVars["demo"] === "true"
+    demo: !!queryVars["demo"] && queryVars["demo"] === "true",
+    ignoreParsing: queryVars["ignore_parsing"] === "true" ? true : false
   };
 }
 
