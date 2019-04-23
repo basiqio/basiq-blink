@@ -93,6 +93,11 @@ window.pages["pdfUpload"] = function (container, institution) {
     });
 
     pdfDropzone.on("queuecomplete", function () {
+        if (window.globalState.ignoreParsing) {
+            transitionToPage("pdfResult", "success", institution, []);
+            return;
+        }
+
         var promises = [];
         window.jobIds.forEach(function(jobId){
             promises.push(new Promise(function(resolve, reject){
