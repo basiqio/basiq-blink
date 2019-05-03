@@ -247,7 +247,7 @@
 }
 
 .dropzone h4 > span {
-  color: #03a5e1;
+  color: #4A90E2;
 }
 
 .dropzone.dz-clickable {
@@ -323,12 +323,13 @@
 .dz-file-preview {
   position: relative;
   padding: 8px;
-  border: 1px solid #cacaca;
+  border: 1px solid #EDEDED;
   border-radius: 4px;
   height: 26px;
 }
 
 .dz-remove-file {
+  color: #9B9B9B;
   position: absolute;
   top: 4px;
   right: 0px;
@@ -338,8 +339,10 @@
 }
 
 .dz-pdf-icon {
-  min-height: 30px;
-  min-width: 30px;
+  min-width: 25px;
+  min-height: 25px;
+  /* height: 25px;
+  width: 25px; */
   background: url("images/pdf.svg") center no-repeat;
 }
 
@@ -397,9 +400,12 @@
 
 .dz-filename {
   margin-left: 6px;
-  overflow-y: scroll;
+  margin-right: 40px;
+  overflow-x: hidden;
   white-space: nowrap;
-  font-size: 0.9em;
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
 }
 
 .dropzone .dz-preview .dz-details .dz-filename:hover span {
