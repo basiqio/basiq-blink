@@ -4,7 +4,7 @@ var host = readConfig("basiq-api-host");
 
 window.pages["pdfUpload"] = function (container, institution) {
     showElement("backButton");
-    updateTitle("Upload your bank statements");
+    updateTitle("Upload Statements");
     hideElement("institutionSearchForm");
     hideElement("hideSearchButton");
 
