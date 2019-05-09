@@ -48,15 +48,15 @@ window.pages["pdfUpload"] = function (container, institution) {
     var previewsContainer = document.createElement("div");
 
     previewsContainer.className = "dropzone-previews";
-
+    previewsContainer.id = "previews";
+ 
     var pdfDropzone = new Dropzone(dropzoneContainer, {
         url: host + "/users/" + window.globalState.userId + "/statements",
         previewsContainer: previewsContainer,
         parallelUploads: 3,
-        previewTemplate: "<div class=\"dz-preview dz-file-preview\">\n" + 
-            "<div class=\"dz-details\"><div class=\"dz-pdf-icon\"></div>\n<div class=\"dz-filename\"><span data-dz-name></span></div></div>\n" + 
-            "<div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div><a href=\"javascript:null;\" class=\"dz-remove-file\" data-dz-remove>X</a>\n" +
-            "<div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\n</div>",
+        previewTemplate: "<div id=\"tpl\" class=\"dz-preview dz-file-preview\">\n" + 
+            "<div class=\"dz-details\"><div id=\"pdficon\" class=\"dz-pdf-icon\"></div>\n<div class=\"dz-filename\"><span data-dz-name></span></div></div>\n" + 
+            "<div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div><a href=\"javascript:null;\" class=\"dz-remove-file\" data-dz-remove>X</a>\n",
         dictDefaultMessage: "<h4>Drag & Drop or <span>Browse</span></h4>We support only official statements downloaded directly from your banking institution",
         createImageThumbnails: false,
         acceptedFiles: "application/pdf",
@@ -87,9 +87,9 @@ window.pages["pdfUpload"] = function (container, institution) {
         }
     });
 
-    pdfDropzone.on("error", function(_, error){
-        var err = error && error.data && error.data[0] ? error.data[0] : {detail: "Unknown error"};
-        transitionToPage("loading", err);
+    pdfDropzone.on("error", function(response, error){
+        // var err = error && error.data && error.data[0] ? error.data[0] : {detail: "Unknown error"};
+        // transitionToPage("loading", err);
     });
 
     pdfDropzone.on("queuecomplete", function () {
@@ -146,15 +146,45 @@ window.pages["pdfUpload"] = function (container, institution) {
             });
         }
     });
+var i = 0;
+    pdfDropzone.on("addedfile", function(file) {
+        i++
+        console.log("TRIGGER :", i)
+        var fileExt = file.name.split('.').pop()
+        if(fileExt != "pdf"){
 
-    pdfDropzone.on("addedfile", function() {
+            details = document.querySelectorAll(".dz-details")
+            details.forEach(detail => { 
+                    fileNameElement = detail.querySelector(".dz-filename"); 
+                    if(file.name === fileNameElement.innerText){ 
+
+                        var pdfIcon = detail.querySelector("#pdficon")
+
+                        pdfIcon.className = ""
+                        pdfIcon.style.marginRight = 10
+                        pdfIcon.style.marginLeft = 10
+                        pdfIcon.innerHTML = "?"
+
+                        var divElement = document.createElement('div')
+                        divElement.style.marginTop = 4
+                        var spanElement = document.createElement('span')
+                        spanElement.style.fontWeight = 100
+                        spanElement.style.opacity = 0.9
+                        spanElement.innerText = "Not a supported file type."
+                        divElement.appendChild(spanElement)
+                        fileNameElement.appendChild(divElement)
+                    }
+                })
+
+            file.previewTemplate.style.color = "#E24A4A";
+        }
+
+
         document.getElementById("footer").innerHTML = "";
         setActiveButton2("Proceed", function (button) {
             button.disabled = true;
             window.filesToUpload = window.filesToUpload.concat(pdfDropzone.files.map(function (file) {file.institution = institution; return file;}));
             pdfDropzone.processQueue();
-            
-            //manualUpload(pdfDropzone.files, institution);
         });
     });
 
