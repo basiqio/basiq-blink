@@ -2,6 +2,30 @@
 
 var host = readConfig("basiq-api-host");
 
+function notSupportedFilesOrEmptyList(files){
+    if(files.length == 0){
+        return true
+    }
+
+    return files.some(function (file){
+        var fileExt = file.name.split('.').pop()
+
+        if(fileExt == "pdf"){
+            return getFileSizeInMB(file.size) > 10
+        }
+
+        return fileExt != "pdf"
+    })
+}
+
+function getFileSizeInMB(bytes) {
+    if (bytes === 0) return 0;
+
+    const k = 1024;
+    return bytes/k/k;
+
+}
+
 window.pages["pdfUpload"] = function (container, institution) {
     showElement("backButton");
     updateTitle("Upload Statements");
@@ -64,7 +88,6 @@ window.pages["pdfUpload"] = function (container, institution) {
         paramName: "statement",
         errorResolver: function (_, response) {
             if (!response.data || !response.data[0]) {
-                console.error(response);
                 return "Unknown error while uploading file";
             }
             return response.data[0].title + " " + response.data[0].detail; 
@@ -146,46 +169,47 @@ window.pages["pdfUpload"] = function (container, institution) {
             });
         }
     });
-var i = 0;
+
     pdfDropzone.on("addedfile", function(file) {
-        i++
-        console.log("TRIGGER :", i)
+        var notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files)
+
+        var fileSize = getFileSizeInMB(file.size)
         var fileExt = file.name.split('.').pop()
+
         if(fileExt != "pdf"){
-
-            details = document.querySelectorAll(".dz-details")
-            details.forEach(detail => { 
-                    fileNameElement = detail.querySelector(".dz-filename"); 
-                    if(file.name === fileNameElement.innerText){ 
-
-                        var pdfIcon = detail.querySelector("#pdficon")
-
-                        pdfIcon.className = ""
-                        pdfIcon.style.marginRight = 10
-                        pdfIcon.style.marginLeft = 10
-                        pdfIcon.innerHTML = "?"
-
-                        var divElement = document.createElement('div')
-                        divElement.style.marginTop = 4
-                        var spanElement = document.createElement('span')
-                        spanElement.style.fontWeight = 100
-                        spanElement.style.opacity = 0.9
-                        spanElement.innerText = "Not a supported file type."
-                        divElement.appendChild(spanElement)
-                        fileNameElement.appendChild(divElement)
-                    }
-                })
-
-            file.previewTemplate.style.color = "#E24A4A";
+            setNotValidItem(file, "Not a supported file type.")
         }
 
+        if(fileExt == "pdf" && fileSize > 10){
+            setNotValidItem(file, "File is bigger then 10MB.")
+        }
 
-        document.getElementById("footer").innerHTML = "";
-        setActiveButton2("Proceed", function (button) {
-            button.disabled = true;
-            window.filesToUpload = window.filesToUpload.concat(pdfDropzone.files.map(function (file) {file.institution = institution; return file;}));
-            pdfDropzone.processQueue();
-        });
+        if(notSupportedFileInList == false){
+            document.getElementById("footer").innerHTML = "";
+            setActiveButton2("Continue", function (button) {
+                button.disabled = true;
+                window.filesToUpload = window.filesToUpload.concat(pdfDropzone.files.map(function (file) {file.institution = institution; return file;}));
+                pdfDropzone.processQueue();
+            });
+        }
+        else{
+            hideAllButtons()
+        }
+    });
+
+    pdfDropzone.on("removedfile", function(file) {
+        var notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files)
+        if(notSupportedFileInList == false){
+            document.getElementById("footer").innerHTML = "";
+            setActiveButton2("Proceed", function (button) {
+                button.disabled = true;
+                window.filesToUpload = window.filesToUpload.concat(pdfDropzone.files.map(function (file) {file.institution = institution; return file;}));
+                pdfDropzone.processQueue();
+            });
+        }
+        else{
+            hideAllButtons()
+        }
     });
 
     pageContainer.appendChild(logoContainer);
@@ -194,4 +218,31 @@ var i = 0;
 
     return pageContainer;
 };
+
+function setNotValidItem(file, text){
+    details = document.querySelectorAll(".dz-details")
+    details.forEach(detail => { 
+            fileNameElement = detail.querySelector(".dz-filename"); 
+            if(file.name === fileNameElement.innerText){ 
+
+                var pdfIcon = detail.querySelector("#pdficon")
+
+                pdfIcon.className = ""
+                pdfIcon.style.marginRight = 10
+                pdfIcon.style.marginLeft = 10
+                pdfIcon.innerHTML = "?"
+
+                var divElement = document.createElement('div')
+                divElement.style.marginTop = 4
+                var spanElement = document.createElement('span')
+                spanElement.style.fontWeight = 100
+                spanElement.style.opacity = 0.9
+                spanElement.innerText = text
+                divElement.appendChild(spanElement)
+                fileNameElement.appendChild(divElement)
+            }
+        })
+
+    file.previewTemplate.style.color = "#E24A4A";
+}
 
