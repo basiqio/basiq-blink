@@ -1,6 +1,7 @@
 /*global showElement updateTitle hideElement transitionToPage resetSelection sendEventNotification setActiveButton2 readConfig Dropzone Promise*/
 
 var host = readConfig("basiq-api-host");
+var notSupportedFileInList = false;
 
 function notSupportedFilesOrEmptyList(files){
     if(files.length == 0){
@@ -152,7 +153,7 @@ window.pages["pdfUpload"] = function (container, institution) {
             checkJobStatus(180000);
             }));
         });
-        if(promises.length > 0){
+        if(promises.length > 0 && !notSupportedFileInList){
             transitionToPage("pdfResult", "loading", institution);
             Promise.all(promises).then(function(results){
                 var status = "success";
@@ -171,7 +172,7 @@ window.pages["pdfUpload"] = function (container, institution) {
     });
 
     pdfDropzone.on("addedfile", function(file) {
-        var notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files)
+        notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files)
 
         var fileSize = getFileSizeInMB(file.size)
         var fileExt = file.name.split('.').pop()
@@ -200,7 +201,7 @@ window.pages["pdfUpload"] = function (container, institution) {
     });
 
     pdfDropzone.on("removedfile", function(file) {
-        var notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files)
+        notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files)
         if(notSupportedFileInList == false){
             document.getElementById("footer").innerHTML = "";
             setActiveButton2("Proceed", function (button) {
@@ -230,8 +231,8 @@ function setNotValidItem(file, text){
                 var pdfIcon = detail.querySelector("#pdficon")
 
                 pdfIcon.className = ""
-                pdfIcon.style.marginRight = 10
-                pdfIcon.style.marginLeft = 10
+                pdfIcon.style.marginRight = 8
+                pdfIcon.style.marginLeft = 8
                 pdfIcon.innerHTML = "?"
 
                 var divElement = document.createElement('div')
