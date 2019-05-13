@@ -112,12 +112,16 @@ window.pages["pdfUpload"] = function (container, institution) {
     });
 
     pdfDropzone.on("error", function(response, error){
+        notSupportedFileInList = true;
         // var err = error && error.data && error.data[0] ? error.data[0] : {detail: "Unknown error"};
         // transitionToPage("loading", err);
     });
 
     pdfDropzone.on("queuecomplete", function () {
         if (window.globalState.ignoreParsing) {
+            if(notSupportedFileInList){
+                return;
+            }
             transitionToPage("pdfResult", "success", institution, []);
             return;
         }
