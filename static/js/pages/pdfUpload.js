@@ -176,6 +176,8 @@ window.pages["pdfUpload"] = function (container, institution) {
         var fileSize = getFileSizeInMB(file.size)
         var fileExt = file.name.split('.').pop()
 
+        file.previewTemplate.style.color = "#65828C";
+
         if(fileExt != "pdf"){
             setNotValidItem(file, "Not a supported file type.")
         }
