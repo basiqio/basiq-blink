@@ -11,6 +11,10 @@ function notSupportedFilesOrEmptyList(files){
     return files.some(function (file){
         var fileExt = file.name.split('.').pop()
 
+        if(fileExt){
+            fileExt = fileExt.toLowerCase()
+        }
+
         if(fileExt == "pdf"){
             return getFileSizeInMB(file.size) > 10
         }
@@ -182,6 +186,10 @@ window.pages["pdfUpload"] = function (container, institution) {
         var fileExt = file.name.split('.').pop()
 
         file.previewTemplate.style.color = "#65828C";
+
+        if(fileExt){
+            fileExt = fileExt.toLowerCase()
+        }
 
         if(fileExt != "pdf"){
             setNotValidItem(file, "Not a supported file type.")
