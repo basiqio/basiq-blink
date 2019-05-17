@@ -13,7 +13,7 @@ window.pages["institution"] = {
             resetSelection();
         };
 
-        var form = document.createElement("form"), 
+        var form = document.createElement("form"),
             logoContainer = document.createElement("div"),
             logo = document.createElement("img");
 
@@ -57,20 +57,20 @@ window.pages["institution"] = {
 
             this.style.height = "30%";
         };
-        form.addEventListener("keypress", function (e) { 
+        form.addEventListener("keypress", function (e) {
             // Accept enter for submit
             var code = (e.keyCode ? e.keyCode : e.which);
-            if (code === 13) { 
+            if (code === 13) {
                 window.pages["institution"].formHandler(institution);
             }
         });
 
-        form.addEventListener("submit", function(e){
+        form.addEventListener("submit", function (e) {
             e.preventDefault();
             window.pages["institution"].formHandler(institution);
         });
 
-        setActiveButton2("Connect", function(){
+        setActiveButton2("Connect", function () {
             window.pages["institution"].formHandler(institution);
         });
     },
@@ -78,7 +78,7 @@ window.pages["institution"] = {
         var username = document.getElementById("usernameInput") ? document.getElementById("usernameInput").value.trim() : undefined,
             password = document.getElementById("passwordInput") ? document.getElementById("passwordInput").value.trim() : undefined,
             security = document.getElementById("securityInput") ? document.getElementById("securityInput").value.trim() : undefined,
-            secondaryLoginId = document.getElementById("secondaryLoginId") ?  document.getElementById("secondaryLoginId").value.trim() : undefined;
+            secondaryLoginId = document.getElementById("secondaryLoginId") ? document.getElementById("secondaryLoginId").value.trim() : undefined;
 
         if (!username || !password) {
             return;
@@ -110,9 +110,9 @@ window.pages["institution"] = {
             }).catch(function (err) {
                 sendEventNotification("job", {
                     success: false,
-                    data:   err
+                    data: err
                 });
-                
+
                 transitionToPage("result", "failure", institution, { result: err }, err);
             });
         }
