@@ -50,7 +50,13 @@ function connectionResultSuccess(iconContainer, institution, step) {
     "</svg>";
 
     setActiveButton2("Done", function () {
-        sendEventNotification("completion");
+        sendEventNotification("completion", {
+            success: true,
+            data:{
+                institutionName: institution.shortName,
+                logo: institution.logo.links.square
+            }
+        });
     });
 
     updateTitle("Success");
@@ -74,7 +80,9 @@ function connectionResultSuccess(iconContainer, institution, step) {
     return sendEventNotification("connection", {
         success: true,
         data: {
-            id: connectionId
+            id: connectionId,
+            institutionName: institution.shortName,
+            logo: institution.logo.links.square
         }
     });
 }
@@ -114,7 +122,10 @@ function connectionResultFailure(iconContainer, institution, step, error) {
 
     return sendEventNotification("connection", {
         success: false,
-        data: step.result
+        data: {
+            step: step.result,
+            institutionName: institution.shortName,
+        }
     });
 }
 
