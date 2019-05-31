@@ -9,8 +9,8 @@
    API 
    :true */
 
-(function(window) {
-  document.getElementById("closeButton").addEventListener("click", function(e) {
+(function (window) {
+  document.getElementById("closeButton").addEventListener("click", function (e) {
     e.preventDefault();
 
     sendEventNotification("cancellation");
@@ -42,27 +42,35 @@
 
     window
       .checkUserID(window.globalState.userId, window.globalState.demo)
-      .then(function() {
+      .then(function () {
         return API.loadInstitutions();
       })
-      .then(function(loadedInstitutions) {
+      .then(function (loadedInstitutions) {
         window.globalState.institutions = loadedInstitutions;
 
         window.preloadImages(loadedInstitutions, 16);
         if (result.pdf) {
           window.globalState.statements = true;
-          transitionToPage("initialChoice");
+          if (window.globalState.connect === "true" && window.globalState.upload === "false") {
+            transitionToPage("institutionSelection", "online");
+          }
+          else if (window.globalState.upload === "true" && window.globalState.connect === "false") {
+            transitionToPage("institutionSelection", "pdf");
+          }
+          else {
+            transitionToPage("initialChoice");
+          }
         } else {
           window.globalState.statements = false;
           transitionToPage("institutionSelection", "online");
         }
       })
-      .catch(function(err) {
+      .catch(function (err) {
         transitionToPage("loading", err);
       });
   }
 
-  setTimeout(function() {
+  setTimeout(function () {
     sendEventNotification("handshake", { success: !result.error });
   }, 1000);
 
@@ -70,25 +78,25 @@
     hideElement("header");
     window
       .checkUserID(window.globalState.userId, window.globalState.demo)
-      .then(function() {
+      .then(function () {
         return window.checkConnectionID(
           window.globalState.userId,
           connectionId,
           window.globalState.demo
         );
       })
-      .then(function(resp) {
+      .then(function (resp) {
         return API.getInstitution(
           window.globalState.accessToken,
           resp.institutionId
         );
       })
-      .then(function(resp) {
+      .then(function (resp) {
         showElement("header");
         transitionToPage("institution", resp);
         hideElement("backButton");
       })
-      .catch(function(err) {
+      .catch(function (err) {
         transitionToPage("loading", err);
       });
   }

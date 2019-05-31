@@ -25,7 +25,6 @@ window.pages["initialChoice"] = function () {
 
     title.className = "title";
     title.innerHTML = "Select how you would like to share your financial data.";
-    
     container.appendChild(title);
     container.appendChild(onlineDiv);
     container.appendChild(pdfDiv);

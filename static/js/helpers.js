@@ -45,7 +45,9 @@ function getState(queryVars) {
     connectionId: queryVars["connection_id"],
     accessToken: queryVars["access_token"],
     demo: !!queryVars["demo"] && queryVars["demo"] === "true",
-    ignoreParsing: queryVars["ignore_parsing"] === "true"
+    ignoreParsing: queryVars["ignore_parsing"] === "true",
+    upload: queryVars["upload"] ? queryVars["upload"] : "false",
+    connect: queryVars["connect"] ? queryVars["connect"] : "false"
   };
 }
 
@@ -98,7 +100,7 @@ function transitionToPage(pageId) {
       break;
     case "object":
       if (result instanceof Array) {
-        result.forEach(function(elem) {
+        result.forEach(function (elem) {
           container.appendChild(elem);
         });
         break;
@@ -145,7 +147,7 @@ function naiveFlexBoxSupport(d) {
 }
 
 function loadScript(url) {
-  return window.request(url, "GET").then(function(resp) {
+  return window.request(url, "GET").then(function (resp) {
     var script = document.createElement("script");
     script.innerHTML = resp;
     var x = document.getElementsByTagName("script")[0];
@@ -157,10 +159,10 @@ function preloadImages(institutions, size) {
   if (size) {
     institutions = institutions.slice(0, size);
   }
-  institutions.forEach(function(institution) {
+  institutions.forEach(function (institution) {
     preloadImage(
       institution.logo.links.square || institution.logo.links.self
-    ).then(function(img) {
+    ).then(function (img) {
       if (img) {
         img.setAttribute("alt", institution.name);
         img.setAttribute("title", institution.name);
@@ -175,15 +177,15 @@ function preloadImage(url) {
   if (loadedImages.indexOf(url) !== -1) {
     return Promise.resolve(null);
   }
-  return new Promise(function(res, rej) {
+  return new Promise(function (res, rej) {
     var img = document.createElement("img");
 
     img.setAttribute("src", url);
-    img.onload = function() {
+    img.onload = function () {
       loadedImages.push(url);
       res(img);
     };
-    img.onerror = function(e) {
+    img.onerror = function (e) {
       rej(e);
     };
   });
@@ -195,22 +197,22 @@ function checkAccessToken(token, demo) {
   }
 
   if (!token) {
-    return {error: "Token is not valid"};
+    return { error: "Token is not valid" };
   }
 
   var sections = token.split(".").filter(Boolean);
   if (sections.length < 3) {
-    return {error:"Token is not valid"};
+    return { error: "Token is not valid" };
   }
 
   try {
     var claims = JSON.parse(atob(sections[1]));
     if (!claims.scope || claims.scope.toUpperCase() !== "CLIENT_ACCESS") {
-      return {error:"Scope is not valid"};
+      return { error: "Scope is not valid" };
     }
-    return {pdf: !!claims.connect_statements && claims.connect_statements === true};
+    return { pdf: !!claims.connect_statements && claims.connect_statements === true };
   } catch (err) {
-    return {error: err.message};
+    return { error: err.message };
   }
 }
 
@@ -218,16 +220,16 @@ function checkUserID(userId, demo) {
   if (demo === true) {
     return Promise.resolve(true);
   }
-  return new Promise(function(res, rej) {
+  return new Promise(function (res, rej) {
     if (!userId) {
       return rej("User ID is not valid");
     }
 
     API.getUser(window.globalState.accessToken, userId)
-      .then(function() {
+      .then(function () {
         res(true);
       })
-      .catch(function(e) {
+      .catch(function (e) {
         rej(e);
       });
   });
@@ -237,7 +239,7 @@ function checkConnectionID(userId, connectionId, demo) {
   if (demo === true) {
     return Promise.resolve(true);
   }
-  return new Promise(function(res, rej) {
+  return new Promise(function (res, rej) {
     if (!userId) {
       return rej("User ID is not valid");
     }
@@ -246,10 +248,10 @@ function checkConnectionID(userId, connectionId, demo) {
     }
 
     API.getConnection(window.globalState.accessToken, userId, connectionId)
-      .then(function(resp) {
+      .then(function (resp) {
         res({ institutionId: resp.institution.id, connectionId: resp.id });
       })
-      .catch(function(e) {
+      .catch(function (e) {
         rej(e);
       });
   });
@@ -266,7 +268,7 @@ function stringifyQueryParams(obj) {
 
 function updateTitle(title, failed) {
   document.getElementById("headerTitle").textContent = title;
-  if(failed){
+  if (failed) {
     document.getElementById("headerTitle").classList.add("result-text-error");
   }
 
@@ -285,7 +287,7 @@ function hideElement(elementId) {
   if (!element) {
     return console.error("Element: " + elementId + " not found.");
   }
-  if(element.nodeName === "FORM"){
+  if (element.nodeName === "FORM") {
     element.reset();
   }
   element.classList.add("hidden");
@@ -304,13 +306,13 @@ function setActiveButton(elementId) {
   hideAllButtons();
   showElement(elementId);
 
-  setTimeout(function() {
+  setTimeout(function () {
     element.classList.add("footer-button-active");
   }, 100);
 }
 
 function setActiveButton2(label, clickHandler, error) {
-    document.getElementById("headerTitle").classList.remove("result-text-error");
+  document.getElementById("headerTitle").classList.remove("result-text-error");
 
   var footer = document.getElementById("footer"),
     element = document.createElement("button");
@@ -325,10 +327,10 @@ function setActiveButton2(label, clickHandler, error) {
   }
 
   if (clickHandler !== undefined) {
-    element.onclick = function(e) { e.preventDefault(); clickHandler(element);};
+    element.onclick = function (e) { e.preventDefault(); clickHandler(element); };
   }
 
-  setTimeout(function() {
+  setTimeout(function () {
     element.classList.add("footer-button-active");
   }, 100);
 }
@@ -337,7 +339,7 @@ function hideAllButtons() {
   var footer = document.getElementById("footer"),
     buttons = footer.getElementsByTagName("button");
 
-  [].forEach.call(buttons, function(button) {
+  [].forEach.call(buttons, function (button) {
     button.classList.remove("footer-button-active");
     hideElement(button.id);
   });
