@@ -1,37 +1,28 @@
 /*global showElement hideElement updateTitle transitionToPage */
 
 window.pages["institutionSelection"] = {
-  render: function(container, type) {
+  render: function (container, type) {
     window.pages["institutionSelection"].hideSearchHandler = hideSearchHandler.bind(null, type);
     window.pages["institutionSelection"].searchHandler = searchHandler.bind(null, type);
     window.pages["institutionSelection"].searchFocusHandler = searchFocusHandler.bind(null, type);
 
     var institutionsContainer = document.createElement("ul");
+    window.filesToUpload = [];
 
     institutionsContainer.id = "institutionsContainer";
 
     showElement("institutionSearchForm");
     hideElement("hideSearchButton");
     updateTitle("Select your bank");
-
-    if (window.globalState.statements) {
-      showElement("backButton");
-      document.getElementById("backButton").onclick = function(e) {
-        e.preventDefault();
-        resetSelection();
-        transitionToPage("initialChoice");
-      };
-    } else {
-      hideElement("backButton");
-    }
+    hideElement("backButton");
 
     var timer = null;
-    institutionsContainer.addEventListener("scroll", function() {
+    institutionsContainer.addEventListener("scroll", function () {
       if (timer !== null) {
         clearTimeout(timer);
         institutionsContainer.classList.add("scrolling");
       }
-      timer = setTimeout(function() {
+      timer = setTimeout(function () {
         institutionsContainer.classList.remove("scrolling");
       }, 150);
     });
@@ -53,7 +44,7 @@ window.pages["institutionSelection"] = {
 
     renderInstitutions(institutionsContainer, type, window.globalState.institutions, window.globalState.url);
   },
-  unload: function() {
+  unload: function () {
     document
       .getElementById("hideSearchButton")
       .removeEventListener("click", window.pages["institutionSelection"].hideSearchHandler);
@@ -99,7 +90,7 @@ function renderInstitutions(container, type, institutions, url, search) {
 
   container.style.height = parentHeight - 110 - 65 - 20 + "px";
 
-  window.addEventListener("resize", function() {
+  window.addEventListener("resize", function () {
     var parentHeight = window.getComputedStyle(parent).getPropertyValue("height");
     container.style.height = parentHeight - 110 - 65 - 20 + "px";
   });
@@ -167,7 +158,7 @@ function renderSearchedInstitutions(container, type, institutions, url, searchWi
 
   resetSelection();
 
-  institutions.forEach(function(institution) {
+  institutions.forEach(function (institution) {
     var instUrl = url.replace("{inst_id}", institution.id),
       div = document.createElement("div"),
       a = document.createElement("a"),
@@ -182,7 +173,7 @@ function renderSearchedInstitutions(container, type, institutions, url, searchWi
     a.appendChild(div);
     a.setAttribute("href", instUrl);
 
-    a.onclick = function(e) {
+    a.onclick = function (e) {
       e.preventDefault();
       selectInstitution(type, institution);
     };
@@ -202,7 +193,7 @@ function renderSearchedInstitutions(container, type, institutions, url, searchWi
 
     img.setAttribute("alt", institution.name);
     img.setAttribute("title", institution.name);
-    img.onload = function() {
+    img.onload = function () {
       imageLoaded.call(this, true, searchHeight);
     };
     //img.onerror = function () {
@@ -241,7 +232,7 @@ function renderAllInstitutions(container, type, institutions, url, liW) {
 
   container.innerHTML = "";
 
-  institutions.forEach(function(institution) {
+  institutions.forEach(function (institution) {
     var instUrl = url.replace("{inst_id}", institution.id),
       a = document.createElement("a"),
       img = document.createElement("img"),
@@ -264,7 +255,7 @@ function renderAllInstitutions(container, type, institutions, url, liW) {
     a.appendChild(img);
     a.setAttribute("href", instUrl);
 
-    a.onclick = function(e) {
+    a.onclick = function (e) {
       e.preventDefault();
       selectInstitution(type, institution);
     };
@@ -282,7 +273,7 @@ function renderAllInstitutions(container, type, institutions, url, liW) {
     }
     img.setAttribute("alt", institution.name);
     img.setAttribute("title", institution.name);
-    img.onload = function() {
+    img.onload = function () {
       imageLoaded.call(this, false);
     };
     //img.onerror = function () {
@@ -358,7 +349,7 @@ function imageLoaded(search, searchHeight) {
 function resetSelection() {
   var links = document.getElementById("institutionsContainer").getElementsByTagName("a");
 
-  [].forEach.call(links, function(link) {
+  [].forEach.call(links, function (link) {
     link.classList.remove("active");
   });
 }
