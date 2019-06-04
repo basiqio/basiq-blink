@@ -50,7 +50,6 @@
 
         window.preloadImages(loadedInstitutions, 16);
         if (result.pdf) {
-          window.globalState.statements = true;
           if (window.globalState.connect === "true" && window.globalState.upload === "false") {
             transitionToPage("institutionSelection", "online");
           }
@@ -61,7 +60,6 @@
             transitionToPage("initialChoice");
           }
         } else {
-          window.globalState.statements = false;
           transitionToPage("institutionSelection", "online");
         }
       })
