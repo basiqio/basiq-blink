@@ -140,10 +140,8 @@ function parseQueryVariables() {
 }
 
 function naiveFlexBoxSupport(d) {
-  var f = "flex",
-    e = d.createElement("b");
-  e.style.display = f;
-  return e.style.display === f;
+  style = d.createElement("b").style.display = "flex";
+  return style === "flex";
 }
 
 function loadScript(url) {

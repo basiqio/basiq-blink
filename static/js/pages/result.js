@@ -28,10 +28,10 @@ window.pages["result"] = function (container, style, institution, step, message)
             connectionCreationLoading(connectionLoader);
             break;
         case "success": 
-            connectionResultSuccess(connectionLoader, institution, step, message);
+            connectionResultSuccess(connectionLoader, institution, step);
             break;
         case "failure":
-            connectionResultFailure(connectionLoader, institution, step, message);
+            connectionResultFailure(connectionLoader, institution, step);
             break;
     }
 };
