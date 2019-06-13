@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "pre-commit": "lint",
-  "dependencies": {},
+  "dependencies": {
+    "yaml-js": "^0.2.3"
+  },
   "devDependencies": {
     "eslint": "^5.14.1",
     "pre-commit": "^1.2.2"
