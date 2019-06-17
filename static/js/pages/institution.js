@@ -86,36 +86,23 @@ window.pages["institution"] = {
 
         hideElement("backButton");
 
-        if (window.globalState.demo) {
+        createOrUpdate(window.globalState.userId, window.globalState.connectionId, institution, username, password, security, secondaryLoginId).then(function (jobData) {
             sendEventNotification("job", {
                 success: true,
                 data: {
-                    id: "fake-job-id"
+                    id: jobData.id
                 }
             });
 
-            setTimeout(function () {
-                credentialsDemoCheck(username, password, institution);
-            }, 2100);
-        } else {
-            createOrUpdate(window.globalState.userId, window.globalState.connectionId, institution, username, password, security, secondaryLoginId).then(function (jobData) {
-                sendEventNotification("job", {
-                    success: true,
-                    data: {
-                        id: jobData.id
-                    }
-                });
-
-                setTimeout(checkJobStatus.bind(undefined, window.globalState.accessToken, institution, jobData), 100);
-            }).catch(function (err) {
-                sendEventNotification("job", {
-                    success: false,
-                    data: err
-                });
-
-                transitionToPage("result", "failure", institution, { result: err }, err);
+            setTimeout(checkJobStatus.bind(undefined, window.globalState.accessToken, institution, jobData), 100);
+        }).catch(function (err) {
+            sendEventNotification("job", {
+                success: false,
+                data: err
             });
-        }
+
+            transitionToPage("result", "failure", institution, { result: err }, err);
+        });
 
         transitionToPage("result", "loading", institution);
     }
@@ -181,12 +168,4 @@ function checkJobStatus(accessToken, institution, jobData) {
     }).catch(function (err) {
         transitionToPage("loading", err);
     });
-}
-
-function credentialsDemoCheck(username, password, institution) {
-    if (username === "username_valid" && password === "password_valid") {
-        return transitionToPage("result", "success", institution, null);
-    } else {
-        return transitionToPage("result", "failure", institution, null);
-    }
 }

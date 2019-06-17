@@ -20,7 +20,6 @@
 
   var result = window.checkAccessToken(
     window.globalState.accessToken,
-    window.globalState.demo
   );
 
   if (result.error) {
@@ -30,18 +29,11 @@
     transitionToPage("loading");
 
     if (window.globalState.connectionId) {
-      if (window.globalState.demo === true) {
-        transitionToPage(
-          "loading",
-          "Demo is not supported for update connection use-case."
-        );
-        return;
-      }
       return updateConnection(window.globalState.connectionId);
     }
 
     window
-      .checkUserID(window.globalState.userId, window.globalState.demo)
+      .checkUserID(window.globalState.userId)
       .then(function () {
         return API.loadInstitutions();
       })
@@ -75,12 +67,11 @@
   function updateConnection(connectionId) {
     hideElement("header");
     window
-      .checkUserID(window.globalState.userId, window.globalState.demo)
+      .checkUserID(window.globalState.userId)
       .then(function () {
         return window.checkConnectionID(
           window.globalState.userId,
-          connectionId,
-          window.globalState.demo
+          connectionId
         );
       })
       .then(function (resp) {

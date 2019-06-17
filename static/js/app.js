@@ -26,7 +26,6 @@
         userId = queryVars["user_id"],
         connectionId = queryVars["connection_id"],
         accessToken = queryVars["access_token"],
-        demo = !!queryVars["demo"] && queryVars["demo"] === "true",
         //serviceTypes = queryVars["service_types"],
         //countries = queryVars["countries"],
         errorContainer = document.getElementById("errorContainer"),
@@ -34,7 +33,7 @@
         instCont = document.getElementById("institutionsContainer"),
         url = "/authenticate.html?user_id=" + userId + "&institution_id={inst_id}&access_token=" + accessToken,
         searching = false,
-        error = checkAccessToken(accessToken, demo);
+        error = checkAccessToken(accessToken);
 
 
     if (iFrame) {
@@ -46,14 +45,10 @@
         renderError((error.title ? error.title : "") + " " + (error.detail ? error.detail : ""));
     } else {
         if (connectionId) {
-            if (demo === true) {
-                renderError("Demo is not supported for update connection use-case.");
-                return;
-            }
             return updateConnection(connectionId);
         }
 
-        checkUserID(userId, demo).then(function () {        
+        checkUserID(userId).then(function () {        
             return API.loadInstitutions();
         }).then(function (loadedInstitutions) {
             institutions = loadedInstitutions;
@@ -147,8 +142,8 @@
 
     function updateConnection(connectionId) {
         hideElement("header");
-        checkUserID(userId, demo).then(function () {        
-            return checkConnectionID(userId, connectionId, demo);
+        checkUserID(userId).then(function () {        
+            return checkConnectionID(userId, connectionId);
         }).then(function(resp) {
             return API.getInstitution(accessToken, resp.institutionId);
         }).then(function(resp) {
@@ -297,31 +292,18 @@
 
             hideLoadingScreen();
 
-            if (demo) {
+            createOrUpdate(institution, username, password, security, secondaryLoginId).then(function (jobData) {
                 sendEventNotification("job", {
                     success: true,
                     data: {
-                        id: "fake-job-id"
+                        id: jobData.id
                     }
                 });
 
-                setTimeout(function () {
-                    credentialsDemoCheck(username, password);
-                }, 2100);
-            } else {
-                createOrUpdate(institution, username, password, security, secondaryLoginId).then(function (jobData) {
-                    sendEventNotification("job", {
-                        success: true,
-                        data: {
-                            id: jobData.id
-                        }
-                    });
-
-                    setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
-                }).catch(function (err) {
-                    jobNotAcceptable(err);
-                });
-            }
+                setTimeout(checkJobStatus.bind(undefined, accessToken, jobData), 100);
+            }).catch(function (err) {
+                jobNotAcceptable(err);
+            });
 
             showLoadingScreen();
         };
@@ -387,11 +369,7 @@
         }
     }
 
-    function checkAccessToken(token, demo) {
-        if (demo === true) {
-            return null;
-        }
-
+    function checkAccessToken(token) {
         if (!token) {
             return {title: "Token is not valid"};
         }
@@ -414,10 +392,7 @@
 
     }
 
-    function checkUserID(userId, demo) {
-        if (demo === true) {
-            return Promise.resolve(true);
-        }
+    function checkUserID(userId) {
         return new Promise(function (res, rej) {
             if (!userId) {
                 return rej({title:"User ID is not valid"});
@@ -431,10 +406,7 @@
         });
     }
 
-    function checkConnectionID(userId, connectionId, demo) {
-        if (demo === true) {
-            return Promise.resolve(true);
-        }
+    function checkConnectionID(userId, connectionId) {
         return new Promise(function (res, rej) {
             if (!userId) {
                 return rej("User ID is not valid");
@@ -742,15 +714,7 @@
         });
     }
 
-    function credentialsDemoCheck(username, password) {
-        if (username === "username_valid" && password === "password_valid") {
-            return connectionResultSuccess(null, true);
-        } else {
-            return connectionResultFailure(null, true);
-        }
-    }
-
-    function connectionResultSuccess(step, demo) {
+    function connectionResultSuccess(step) {
         hideElement("backButton");
 
         setActiveButton("doneButton");
@@ -765,15 +729,6 @@
             document.getElementById("statusMessage").classList.add("result-text-success");
             document.getElementById("statusMessage").innerHTML = "Your data has been successfully submitted.";
         }, 1100);
-
-        if (demo) {
-            return sendEventNotification("connection", {
-                success: true,
-                data: {
-                    id: "fake-connection-id"
-                }
-            });
-        }
 
         var url = step.result.url,
             connectionId = url.substr(url.lastIndexOf("/") + 1);
@@ -810,7 +765,7 @@
         });
     }
 
-    function connectionResultFailure(step, demo) {
+    function connectionResultFailure(step) {
         hideElement("backButton");
 
         setActiveButton("retryButton");
@@ -826,17 +781,6 @@
             document.getElementById("statusMessage").classList.add("result-text-error");
             document.getElementById("statusMessage").innerHTML = "The credentials you provided were incorrect.";
         }, 1100);
-
-        if (demo) {
-            return sendEventNotification("connection", {
-                success: true,
-                data: {
-                    code: "invalid-credentials",
-                    title: "Cannot login to target institution, check credentials.",
-                    detail: "Cannot login to target institution using supplied credentials. Please check credentials and try again."
-                }
-            });
-        }
 
         return sendEventNotification("connection", {
             success: false,

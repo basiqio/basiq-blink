@@ -59,16 +59,6 @@ function pdfConnectionResultSuccess(iconContainer, steps) {
        updateStatusMessage("Your data has been successfully submitted.", "success");
     }, 1100);
 
-    if (window.globalState.demo) {
-        return sendEventNotification("connection", {
-            success: true,
-            data: {
-                id: "fake-connection-id"
-            }
-        });
-    }
-
-    
     steps && steps.forEach(function(step) {
         var url = step.result.url,
         connectionId = url.substr(url.lastIndexOf("/") + 1);
@@ -103,17 +93,6 @@ function pdfConnectionResultFailure(iconContainer, steps, error) {
             updateStatusMessage("Statement parsing has failed.", "failure");
         }
     }, 1100);
-
-    if (window.globalState.demo) {
-        return sendEventNotification("connection", {
-            success: false,
-            data: {
-                code: "invalid-credentials",
-                title: "Cannot login to target institution, check credentials.",
-                detail: "Cannot login to target institution using supplied credentials. Please check credentials and try again."
-            }
-        });
-    }
 
     steps && steps.forEach(function(step){
         sendEventNotification("connection", {

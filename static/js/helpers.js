@@ -44,7 +44,6 @@ function getState(queryVars) {
     userId: queryVars["user_id"],
     connectionId: queryVars["connection_id"],
     accessToken: queryVars["access_token"],
-    demo: !!queryVars["demo"] && queryVars["demo"] === "true",
     ignoreParsing: queryVars["ignore_parsing"] === "true",
     upload: queryVars["upload"] ? queryVars["upload"] : "false",
     connect: queryVars["connect"] ? queryVars["connect"] : "false"
@@ -189,11 +188,7 @@ function preloadImage(url) {
   });
 }
 
-function checkAccessToken(token, demo) {
-  if (demo === true) {
-    return null;
-  }
-
+function checkAccessToken(token) {
   if (!token) {
     return { error: "Token is not valid" };
   }
@@ -214,10 +209,7 @@ function checkAccessToken(token, demo) {
   }
 }
 
-function checkUserID(userId, demo) {
-  if (demo === true) {
-    return Promise.resolve(true);
-  }
+function checkUserID(userId) {
   return new Promise(function (res, rej) {
     if (!userId) {
       return rej("User ID is not valid");
@@ -233,10 +225,7 @@ function checkUserID(userId, demo) {
   });
 }
 
-function checkConnectionID(userId, connectionId, demo) {
-  if (demo === true) {
-    return Promise.resolve(true);
-  }
+function checkConnectionID(userId, connectionId) {
   return new Promise(function (res, rej) {
     if (!userId) {
       return rej("User ID is not valid");

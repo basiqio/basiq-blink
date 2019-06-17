@@ -65,15 +65,6 @@ function connectionResultSuccess(iconContainer, institution, step) {
        updateStatusMessage("Your data has been successfully submitted.", "success");
     }, 1100);
 
-    if (window.globalState.demo) {
-        return sendEventNotification("connection", {
-            success: true,
-            data: {
-                id: "fake-connection-id"
-            }
-        });
-    }
-
     var url = step.result.url,
         connectionId = url.substr(url.lastIndexOf("/") + 1);
 
@@ -108,17 +99,6 @@ function connectionResultFailure(iconContainer, institution, step, error) {
             updateStatusMessage("The credentials you provided were incorrect.", "failure");
         }
     }, 1100);
-
-    if (window.globalState.demo) {
-        return sendEventNotification("connection", {
-            success: false,
-            data: {
-                code: "invalid-credentials",
-                title: "Cannot login to target institution, check credentials.",
-                detail: "Cannot login to target institution using supplied credentials. Please check credentials and try again."
-            }
-        });
-    }
 
     return sendEventNotification("connection", {
         success: false,
