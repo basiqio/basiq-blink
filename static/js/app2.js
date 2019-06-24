@@ -101,7 +101,6 @@
 
   loadScript("js/pages/pdfResult.js");
   loadScript("js/pages/pdfUpload.js");
-  loadScript("js/pages/institutionSelection.js");
   loadScript("js/pages/institution.js");
   loadScript("js/pages/pdfOverview.js");
   loadScript("js/pages/result.js");
