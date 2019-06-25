@@ -100,6 +100,12 @@ function renderInstitutions(container, type, institutions, url, search) {
     return renderSearchedInstitutions(container, type, institutions, url, searchWidth, liW, w, h);
   } else {
     container.classList.remove("container-search");
+    if(isWindowsOS()){
+      var scrollbarWidth = container.offsetWidth - container.clientWidth;
+      if(scrollbarWidth > 0){
+        liW = liW - (scrollbarWidth / 2);
+      }
+    }
     return renderAllInstitutions(container, type, institutions, url, liW);
   }
 }
@@ -280,6 +286,14 @@ function renderAllInstitutions(container, type, institutions, url, liW) {
     //this.setAttribute("src", "https://s3-ap-southeast-2.amazonaws.com/basiq-institutions/AU00000.png");
     //};
   });
+}
+
+function isWindowsOS(){
+  if (navigator.appVersion.indexOf("Win") != -1){
+    return true;
+  }
+
+  return false;
 }
 
 function resolveSearchedInstName(institution) {
