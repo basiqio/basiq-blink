@@ -3,6 +3,38 @@
 
 var host = readConfig("basiq-api-host");
 
+function sortByTierAndCountry(institutions){
+    var groupedInstitutions = institutions.reduce(function (acc, obj) {
+        var key = obj["country"];
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(obj);
+        return acc;
+      }, {});
+
+    var institutionsSorted = [];
+
+    for (var group in groupedInstitutions){
+        institutionsSorted = institutionsSorted.concat(groupedInstitutions[group].sort(function(a,b) {
+            var tier = a.tier - b.tier;
+            if(tier == 0){
+                var nameA = a.shortName.toLowerCase(), nameB = b.shortName.toLowerCase();
+                if(nameA < nameB)
+                    return -1;
+                if(nameA > nameB)
+                    return 1;
+
+                return 0;
+            }
+
+            return a.tier - b.tier;
+        }));
+    }
+
+    return institutionsSorted;
+}
+
 window.API = {
     loadInstitutions: function () {
         return new Promise(function (resolve, reject) {
@@ -15,6 +47,7 @@ window.API = {
                     && (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
                 ) {
                     var institutions = JSON.parse(cachedInstitutions);
+                    institutions = sortByTierAndCountry(institutions);
                     resolve(institutions);
                     return;
                 }
@@ -39,8 +72,10 @@ window.API = {
                 var institutions = [];
                 
                 for (var st in groups) {
-                    institutions = institutions.concat(groups[st].sort(function(a,b) {return a.tier > b.tier;}));
+                    institutions = institutions.concat(groups[st]);
                 }
+
+                institutions = sortByTierAndCountry(institutions)
 
                if (window.localStorage && window.JSON) {
                     localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
