@@ -32,6 +32,9 @@ function sortByTierAndCountry(institutions){
         }));
     }
 
+    var logResult = institutionsSorted.map(function(item) { return {tier: item.tier, country: item.country, shortName: item.shortName}})
+    console.log("INSTITUTIONS: ", logResult)
+
     return institutionsSorted;
 }
 
