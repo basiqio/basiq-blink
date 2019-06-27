@@ -27,7 +27,7 @@ window.pages["result"] = function (container, style, institution, step, message)
         case "loading":
             connectionCreationLoading(connectionLoader);
             break;
-        case "success": 
+        case "success":
             connectionResultSuccess(connectionLoader, institution, step, message);
             break;
         case "failure":
@@ -44,15 +44,15 @@ function connectionCreationLoading(iconContainer) {
 
 
 function connectionResultSuccess(iconContainer, institution, step) {
-    iconContainer.innerHTML = "<svg id=\"connectionCheckmark\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\""+
-         "viewBox=\"5 0 40 36\">"+
-        "<path class=\"checkmark__check\" fill=\"none\" d=\"M14.1 27.2l7.1 7.2 16.7-16.8\"/>"+
-    "</svg>";
+    iconContainer.innerHTML = "<svg id=\"connectionCheckmark\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\"" +
+        "viewBox=\"5 0 40 36\">" +
+        "<path class=\"checkmark__check\" fill=\"none\" d=\"M14.1 27.2l7.1 7.2 16.7-16.8\"/>" +
+        "</svg>";
 
     setActiveButton2("Done", function () {
         sendEventNotification("completion", {
             success: true,
-            data:{
+            data: {
                 institutionName: institution.shortName,
                 logo: institution.logo.links.square
             }
@@ -62,7 +62,7 @@ function connectionResultSuccess(iconContainer, institution, step) {
     updateTitle("Success");
 
     setTimeout(function () {
-       updateStatusMessage("Your data has been successfully submitted.", "success");
+        updateStatusMessage("Your data has been successfully submitted.", "success");
     }, 1100);
 
     if (window.globalState.demo) {
@@ -89,10 +89,10 @@ function connectionResultSuccess(iconContainer, institution, step) {
 
 
 function connectionResultFailure(iconContainer, institution, step, error) {
-    iconContainer.innerHTML = "<svg id=\"connectionCross\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\""+
-         "viewBox=\"5 0 40 52\">"+
-        "<path class=\"checkmark__cross\" d=\"M 15,20 L 35,40 M 35,20 L 15,40\"/>"+
-    "</svg>";
+    iconContainer.innerHTML = "<svg id=\"connectionCross\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\"" +
+        "viewBox=\"5 0 40 52\">" +
+        "<path class=\"checkmark__cross\" d=\"M 15,20 L 35,40 M 35,20 L 15,40\"/>" +
+        "</svg>";
 
     setActiveButton2("Try again", function () {
         transitionToPage("institution", institution);
@@ -102,8 +102,14 @@ function connectionResultFailure(iconContainer, institution, step, error) {
     updateTitle("Unsuccessful", true);
 
     setTimeout(function () {
+
         if (error !== undefined) {
-            updateStatusMessage((error.title ? error.title: "") + " " + (error.detail  ? error.detail : ""), "failure");
+            if (error.title === "Resource already exists") {
+                updateStatusMessage(`You have already connected to ${institution.shortName} with the supplied credentials`, "failure");
+            }
+            else {
+                updateStatusMessage((error.title ? error.title : "") + " " + (error.detail ? error.detail : ""), "failure");
+            }
         } else {
             updateStatusMessage("The credentials you provided were incorrect.", "failure");
         }
