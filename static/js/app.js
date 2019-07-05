@@ -358,7 +358,8 @@
                 payload: payload
             };
 
-            window.parent.postMessage(JSON.stringify(data), "*");
+            var content = window.parent;
+            content.postMessage(JSON.stringify(data), "*");
         } else {
             var url = "basiq://" + event + "/";
 
