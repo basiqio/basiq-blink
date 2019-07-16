@@ -105,7 +105,6 @@ window.pages["institution"] = {
                         id: jobData.id
                     }
                 });
-
                 setTimeout(checkJobStatus.bind(undefined, window.globalState.accessToken, institution, jobData), 100);
             }).catch(function (err) {
                 sendEventNotification("job", {
@@ -113,7 +112,7 @@ window.pages["institution"] = {
                     data: err
                 });
 
-                transitionToPage("result", "failure", institution, { result: err }, err);
+                transitionToPage("result", "failure", institution, { result: err }, err, null);
             });
         }
 
@@ -160,7 +159,6 @@ function createOrUpdate(userId, connectionId, institution, username, password, s
 function checkJobStatus(accessToken, institution, jobData) {
     window.API.checkJobStatus(window.globalState.accessToken, jobData.id).then(function (resp) {
         var steps = resp.steps;
-
         for (var step in steps) {
             if (!steps.hasOwnProperty(step)) {
                 continue;
@@ -168,7 +166,7 @@ function checkJobStatus(accessToken, institution, jobData) {
             if (steps[step].title === "verify-credentials") {
                 switch (steps[step].status) {
                     case "failed":
-                        return transitionToPage("result", "failure", institution, steps[step]);
+                        return transitionToPage("result", "failure", institution, steps[step], null, resp.links.source);
                     case "success":
                         return transitionToPage("result", "success", institution, steps[step]);
                     case "pending":
@@ -185,8 +183,8 @@ function checkJobStatus(accessToken, institution, jobData) {
 
 function credentialsDemoCheck(username, password, institution) {
     if (username === "username_valid" && password === "password_valid") {
-        return transitionToPage("result", "success", institution, null);
+        return transitionToPage("result", "success", institution, null, null, null);
     } else {
-        return transitionToPage("result", "failure", institution, null);
+        return transitionToPage("result", "failure", institution, null, null, null);
     }
 }

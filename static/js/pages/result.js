@@ -1,6 +1,6 @@
 /*global hideElement updateTitle updateStatusMessage setActiveButton2 sendEventNotification transitionToPage sendEventNotification */
 
-window.pages["result"] = function (container, style, institution, step, message) {
+window.pages["result"] = function (container, style, institution, step, message, job) {
     hideElement("backButton");
 
     var statusContainer = document.createElement("div");
@@ -31,7 +31,7 @@ window.pages["result"] = function (container, style, institution, step, message)
             connectionResultSuccess(connectionLoader, institution, step, message);
             break;
         case "failure":
-            connectionResultFailure(connectionLoader, institution, step, message);
+            connectionResultFailure(connectionLoader, institution, step, message, job);
             break;
     }
 };
@@ -88,7 +88,7 @@ function connectionResultSuccess(iconContainer, institution, step) {
 }
 
 
-function connectionResultFailure(iconContainer, institution, step, error) {
+function connectionResultFailure(iconContainer, institution, step, error, job) {
     iconContainer.innerHTML = "<svg id=\"connectionCross\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\"" +
         "viewBox=\"5 0 40 52\">" +
         "<path class=\"checkmark__cross\" d=\"M 15,20 L 35,40 M 35,20 L 15,40\"/>" +
@@ -103,7 +103,7 @@ function connectionResultFailure(iconContainer, institution, step, error) {
 
     setTimeout(function () {
 
-        if (error !== undefined) {
+        if (error !== undefined && error !== null) {
             if (error.title === "Resource already exists") {
                 updateStatusMessage(`You have already connected to ${institution.shortName} with the supplied credentials`, "failure");
             }
@@ -112,6 +112,9 @@ function connectionResultFailure(iconContainer, institution, step, error) {
             }
         } else {
             updateStatusMessage("The credentials you provided were incorrect.", "failure");
+            window.API.deleteUserConnection(
+                window.globalState.accessToken, job
+            );
         }
     }, 1100);
 

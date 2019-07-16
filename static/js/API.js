@@ -3,26 +3,26 @@
 
 var host = readConfig("basiq-api-host");
 
-function sortByTierAndCountry(institutions){
+function sortByTierAndCountry(institutions) {
     var groupedInstitutions = institutions.reduce(function (acc, obj) {
         var key = obj["country"];
         if (!acc[key]) {
-          acc[key] = [];
+            acc[key] = [];
         }
         acc[key].push(obj);
         return acc;
-      }, {});
+    }, {});
 
     var institutionsSorted = [];
 
-    for (var group in groupedInstitutions){
-        institutionsSorted = institutionsSorted.concat(groupedInstitutions[group].sort(function(a,b) {
+    for (var group in groupedInstitutions) {
+        institutionsSorted = institutionsSorted.concat(groupedInstitutions[group].sort(function (a, b) {
             var tier = a.tier - b.tier;
-            if(tier == 0){
+            if (tier == 0) {
                 var nameA = a.shortName.toLowerCase(), nameB = b.shortName.toLowerCase();
-                if(nameA < nameB)
+                if (nameA < nameB)
                     return -1;
-                if(nameA > nameB)
+                if (nameA > nameB)
                     return 1;
 
                 return 0;
@@ -64,20 +64,20 @@ window.API = {
                     if (!acc[v.serviceType]) {
                         acc[v.serviceType] = [];
                     }
-                    
+
                     acc[v.serviceType].push(v);
                     return acc;
                 }, {});
-                
+
                 var institutions = [];
-                
+
                 for (var st in groups) {
                     institutions = institutions.concat(groups[st]);
                 }
 
                 institutions = sortByTierAndCountry(institutions)
 
-               if (window.localStorage && window.JSON) {
+                if (window.localStorage && window.JSON) {
                     localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
                     localStorage.setItem("cacheTime", Date.now());
                 }
@@ -85,7 +85,7 @@ window.API = {
                 resolve(institutions);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(JSON.stringify(err));
@@ -124,7 +124,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
             });
         });
@@ -167,7 +167,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(err);
@@ -192,7 +192,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(err);
@@ -217,7 +217,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(err);
@@ -245,7 +245,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(err);
@@ -288,11 +288,32 @@ window.API = {
                 resolve(institution);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(JSON.stringify(err));
             });
         });
-    }
+    },
+    deleteUserConnection: function (token, job) {
+        return new Promise(function (resolve, reject) {
+            window.request(job, "DELETE", {}, {
+                "Authorization": "Bearer " + token
+            }).then(function (resp) {
+                if (resp.statusCode > 299) {
+                    throw resp;
+                }
+
+                return resp.body;
+            }).then(function (resp) {
+                resolve(resp);
+            }).catch(function (err) {
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
+                    { detail: "Unknown error" }
+                );
+
+                console.error(err);
+            });
+        });
+    },
 };

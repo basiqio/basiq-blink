@@ -55,6 +55,7 @@ var currentPage,
   loadedPages = [];
 
 function transitionToPage(pageId) {
+  console.log(pageId)
   var container = document.getElementById("contentContainer");
 
   container.innerHTML = "";
