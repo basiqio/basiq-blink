@@ -88,7 +88,7 @@ window.pages["pdfUpload"] = function (container, institution) {
             "<div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div><a href=\"javascript:null;\" class=\"dz-remove-file\" data-dz-remove>X</a>\n",
         dictDefaultMessage: "<h4>Drag & Drop or <span>Browse</span></h4>We support only official statements downloaded directly from your banking institution",
         createImageThumbnails: false,
-        acceptedFiles: "application/pdf,text/csv",
+        acceptedFiles: "application/pdf,text/csv,.pdf,.csv",
         autoProcessQueue: false,
         paramName: "statement",
         errorResolver: function (_, response) {
