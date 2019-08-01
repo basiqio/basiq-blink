@@ -3169,6 +3169,24 @@ Dropzone.isValidFile = function (file, acceptedFiles) {
   acceptedFiles = acceptedFiles.split(",");
 
   var mimeType = file.type;
+
+  // OS may return empty mimeType if file type is not register with any app.
+  if (!mimeType || mimeType.length === 0) {
+    // Therefore, we will check type from extension.
+    let fileExt = file.name.split('.').pop().toLowerCase();
+    switch (fileExt) {
+      case "pdf":
+        mimeType = acceptedFiles[0];
+        break;
+      case "csv":
+        mimeType = acceptedFiles[1];
+        break;
+      default:
+        // Unknown extension. Return invalid file.
+        return false;
+    }
+  }
+
   var baseMimeType = mimeType.replace(/\/.*$/, "");
 
   for (var _iterator38 = acceptedFiles, _isArray38 = true, _i40 = 0, _iterator38 = _isArray38 ? _iterator38 : _iterator38[Symbol.iterator](); ;) {
