@@ -15,11 +15,11 @@ function notSupportedFilesOrEmptyList(files) {
             fileExt = fileExt.toLowerCase();
         }
 
-        if (["pdf", "csv"].includes(fileExt)) {
+        if (["pdf", "csv"].indexOf(fileExt) >= 0) {
             return getFileSizeInMB(file.size) > 10;
         }
 
-        return !["pdf", "csv"].includes(fileExt);
+        return !(["pdf", "csv"].indexOf(fileExt) >= 0);
     })
 }
 
@@ -186,11 +186,11 @@ window.pages["pdfUpload"] = function (container, institution) {
             fileExt = fileExt.toLowerCase();
         }
 
-        if (!["pdf", "csv"].includes(fileExt)) {
+        if (!(["pdf", "csv"].indexOf(fileExt) >= 0)) {
             setNotValidItem(file, "Not a supported file type.");
         }
 
-        if (["pdf", "csv"].includes(fileExt) && fileSize > 10) {
+        if (["pdf", "csv"].indexOf(fileExt) >= 0 && fileSize > 10) {
             setNotValidItem(file, "File is bigger then 10MB.");
         }
 
