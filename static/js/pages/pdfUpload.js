@@ -238,15 +238,15 @@ function setNotValidItem(file, text) {
             var pdfIcon = detail.querySelector("#pdficon");
 
             pdfIcon.className = "";
-            // pdfIcon.style.marginRight = 8
-            // pdfIcon.style.marginLeft = 8
+            pdfIcon.style.marginRight = 8;
+            pdfIcon.style.marginLeft = 8;
             pdfIcon.innerHTML = "?";
 
             var divElement = document.createElement('div');
-            // divElement.style.marginTop = 4
+            divElement.style.marginTop = 4;
             var spanElement = document.createElement('span');
-            // spanElement.style.fontWeight = 100
-            // spanElement.style.opacity = 0.9
+            spanElement.style.fontWeight = 100;
+            spanElement.style.opacity = 0.9;
             spanElement.innerText = text;
             divElement.appendChild(spanElement);
             fileNameElement.appendChild(divElement);
