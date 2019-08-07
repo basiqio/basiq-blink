@@ -5,30 +5,28 @@ var notSupportedFileInList = false;
 
 function notSupportedFilesOrEmptyList(files) {
     if (files.length == 0) {
-        return true
+        return true;
     }
 
     return files.some(function (file) {
-        var fileExt = file.name.split('.').pop()
+        var fileExt = file.name.split('.').pop();
 
         if (fileExt) {
-            fileExt = fileExt.toLowerCase()
+            fileExt = fileExt.toLowerCase();
         }
 
         if (["pdf", "csv"].includes(fileExt)) {
-            return getFileSizeInMB(file.size) > 10
+            return getFileSizeInMB(file.size) > 10;
         }
 
-        return !["pdf", "csv"].includes(fileExt)
+        return !["pdf", "csv"].includes(fileExt);
     })
 }
 
 function getFileSizeInMB(bytes) {
     if (bytes === 0) return 0;
-
     const k = 1024;
     return bytes / k / k;
-
 }
 
 window.pages["pdfUpload"] = function (container, institution) {
@@ -36,7 +34,6 @@ window.pages["pdfUpload"] = function (container, institution) {
     updateTitle("Upload Statements");
     hideElement("institutionSearchForm");
     hideElement("hideSearchButton");
-
     document.getElementById("backButton").onclick = function (e) {
         e.preventDefault();
         transitionToPage("institutionSelection", "pdf");
@@ -47,7 +44,6 @@ window.pages["pdfUpload"] = function (container, institution) {
         dropzoneContainer = document.createElement("div");
 
     pageContainer.id = "pdfUploadPage";
-
     dropzoneContainer.id = "dropzone";
     dropzoneContainer.className = "dropzoneContainer dropzone";
 
@@ -75,7 +71,6 @@ window.pages["pdfUpload"] = function (container, institution) {
     };
 
     var previewsContainer = document.createElement("div");
-
     previewsContainer.className = "dropzone-previews";
     previewsContainer.id = "previews";
 
@@ -180,23 +175,23 @@ window.pages["pdfUpload"] = function (container, institution) {
     });
 
     pdfDropzone.on("addedfile", function (file) {
-        notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files)
+        notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files);
 
-        var fileSize = getFileSizeInMB(file.size)
-        var fileExt = file.name.split('.').pop()
+        var fileSize = getFileSizeInMB(file.size);
+        var fileExt = file.name.split('.').pop();
 
         file.previewTemplate.style.color = "#65828C";
 
         if (fileExt) {
-            fileExt = fileExt.toLowerCase()
+            fileExt = fileExt.toLowerCase();
         }
 
         if (!["pdf", "csv"].includes(fileExt)) {
-            setNotValidItem(file, "Not a supported file type.")
+            setNotValidItem(file, "Not a supported file type.");
         }
 
         if (["pdf", "csv"].includes(fileExt) && fileSize > 10) {
-            setNotValidItem(file, "File is bigger then 10MB.")
+            setNotValidItem(file, "File is bigger then 10MB.");
         }
 
         if (notSupportedFileInList == false) {
@@ -208,12 +203,12 @@ window.pages["pdfUpload"] = function (container, institution) {
             });
         }
         else {
-            hideAllButtons()
+            hideAllButtons();
         }
     });
 
     pdfDropzone.on("removedfile", function (file) {
-        notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files)
+        notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files);
         if (notSupportedFileInList == false) {
             document.getElementById("footer").innerHTML = "";
             setActiveButton2("Proceed", function (button) {
@@ -223,7 +218,7 @@ window.pages["pdfUpload"] = function (container, institution) {
             });
         }
         else {
-            hideAllButtons()
+            hideAllButtons();
         }
     });
 
@@ -235,28 +230,28 @@ window.pages["pdfUpload"] = function (container, institution) {
 };
 
 function setNotValidItem(file, text) {
-    details = document.querySelectorAll(".dz-details")
-    details.forEach(detail => {
+    details = document.querySelectorAll(".dz-details");
+    details.forEach(function (detail) {
         fileNameElement = detail.querySelector(".dz-filename");
         if (file.name === fileNameElement.innerText) {
 
-            var pdfIcon = detail.querySelector("#pdficon")
+            var pdfIcon = detail.querySelector("#pdficon");
 
-            pdfIcon.className = ""
-            pdfIcon.style.marginRight = 8
-            pdfIcon.style.marginLeft = 8
-            pdfIcon.innerHTML = "?"
+            pdfIcon.className = "";
+            // pdfIcon.style.marginRight = 8
+            // pdfIcon.style.marginLeft = 8
+            pdfIcon.innerHTML = "?";
 
-            var divElement = document.createElement('div')
-            divElement.style.marginTop = 4
-            var spanElement = document.createElement('span')
-            spanElement.style.fontWeight = 100
-            spanElement.style.opacity = 0.9
-            spanElement.innerText = text
-            divElement.appendChild(spanElement)
-            fileNameElement.appendChild(divElement)
+            var divElement = document.createElement('div');
+            // divElement.style.marginTop = 4
+            var spanElement = document.createElement('span');
+            // spanElement.style.fontWeight = 100
+            // spanElement.style.opacity = 0.9
+            spanElement.innerText = text;
+            divElement.appendChild(spanElement);
+            fileNameElement.appendChild(divElement);
         }
-    })
+    });
 
     file.previewTemplate.style.color = "#E24A4A";
 }
