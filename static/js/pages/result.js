@@ -105,7 +105,7 @@ function connectionResultFailure(iconContainer, institution, step, error) {
 
         if (error !== undefined) {
             if (error.title === "Resource already exists") {
-                updateStatusMessage(`You have already connected to ${institution.shortName} with the supplied credentials`, "failure");
+                updateStatusMessage("You have already connected to " + institution.shortName + " with the supplied credentials", "failure");
             }
             else {
                 updateStatusMessage((error.title ? error.title : "") + " " + (error.detail ? error.detail : ""), "failure");
