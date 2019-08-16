@@ -402,7 +402,10 @@ button.button-primary {
 }
 
 .bank-link img {
-    margin: auto;
+    width: inherit;
+    height: inherit;
+    max-width: 72%;
+    max-height: 95%;
 }
 
 .bank-link-search {
