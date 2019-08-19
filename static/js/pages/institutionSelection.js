@@ -340,7 +340,13 @@ function selectInstitution(type, institution) {
 }
 
 function imageLoaded(search, searchHeight) {
-  if (search) {
+  if (!search) {
+    if (this.width - this.height > this.height / 2) {
+      this.style.width = "72%";
+    } else {
+      this.style.height = "95%";
+    }
+  } else {
     var target = this.parentElement;
 
     target.style.lineHeight = searchHeight / 2 + "px";
