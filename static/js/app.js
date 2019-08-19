@@ -211,7 +211,7 @@
 
         if (search) {
             container.classList.add("container-search");
-            renderSearchedInstitutions(container, institutions, url, searchWidth, liW, w, h);
+            renderSearchedInstitutions(container, institutions, url, liW, w, h);
         } else {
             container.classList.remove("container-search");
             renderAllInstitutions(container, institutions, url, liW, w, h);
@@ -534,7 +534,7 @@
         });
     }
 
-    function renderSearchedInstitutions(container, institutions, url, searchWidth, liW, w, h) {
+    function renderSearchedInstitutions(container, institutions, url, liW, w, h) {
         institutions.forEach(function (institution) {
             var instUrl = url.replace("{inst_id}", institution.id),
                 div = document.createElement("div"),
@@ -549,6 +549,7 @@
 
             div.appendChild(img);
             div.style.width = "25%";
+            div.style.height = "100%";
 
             a.appendChild(div);
             a.setAttribute("href", instUrl);
@@ -559,7 +560,6 @@
 
             li.appendChild(a);
             li.className = "bank-link";
-            li.style.width = liW + "px";
             li.style.height = liW / 2 + "px";
 
             container.appendChild(li);
@@ -588,7 +588,6 @@
             a.appendChild(h3);
 
             li.className = "bank-link-search";
-            li.style.width = searchWidth;
             li.style.height = searchHeight + "px";
 
             img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
@@ -617,14 +616,8 @@
 
     function imageLoaded(search, searchHeight) {
         if (search) {
-            var target = this.parentElement;
-
-            target.style.lineHeight = (searchHeight) / 2 + "px";
-            if (this.width - this.height > this.height / 6) {
-                this.style.width = "100%";
-            } else {
-                this.style.height = searchHeight - 15 + "px";
-            }
+            this.style.maxWidth = "100%";
+            this.style.maxHeight = "100%";
         }
 
         this.style.opacity = "1";

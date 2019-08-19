@@ -97,7 +97,7 @@ function renderInstitutions(container, type, institutions, url, search) {
 
   if (search) {
     container.classList.add("container-search");
-    return renderSearchedInstitutions(container, type, institutions, url, searchWidth, liW, w, h);
+    return renderSearchedInstitutions(container, type, institutions, url, liW, w, h);
   } else {
     container.classList.remove("container-search");
     if(isWindowsOS()){
@@ -157,7 +157,7 @@ function renderEmptySearch(text) {
     "</div>";
 }
 
-function renderSearchedInstitutions(container, type, institutions, url, searchWidth, liW, w, h) {
+function renderSearchedInstitutions(container, type, institutions, url, liW, w, h) {
   container.innerHTML = "";
   var flexBox = window.naiveFlexBoxSupport(document),
     searchHeight = liW / (w / h > 0.8 ? 1.4 : 2.5);
@@ -175,6 +175,7 @@ function renderSearchedInstitutions(container, type, institutions, url, searchWi
 
     div.appendChild(img);
     div.style.width = "25%";
+    div.style.height = "100%";
 
     a.appendChild(div);
     a.setAttribute("href", instUrl);
@@ -186,7 +187,6 @@ function renderSearchedInstitutions(container, type, institutions, url, searchWi
 
     li.appendChild(a);
     li.className = "bank-link";
-    li.style.width = liW + "px";
     li.style.height = liW / 2 + "px";
 
     container.appendChild(li);
@@ -215,7 +215,6 @@ function renderSearchedInstitutions(container, type, institutions, url, searchWi
     a.appendChild(h3);
 
     li.className = "bank-link-search";
-    li.style.width = searchWidth;
     li.style.height = searchHeight + "px";
 
     img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
@@ -341,14 +340,8 @@ function selectInstitution(type, institution) {
 
 function imageLoaded(search, searchHeight) {
   if (search) {
-    var target = this.parentElement;
-
-    target.style.lineHeight = searchHeight / 2 + "px";
-    if (this.width - this.height > this.height / 6) {
-      this.style.width = "100%";
-    } else {
-      this.style.height = searchHeight - 15 + "px";
-    }
+    this.style.maxWidth = "100%";
+    this.style.maxHeight = "100%";
   }
 
   this.style.opacity = "1";
