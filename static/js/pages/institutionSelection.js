@@ -176,6 +176,9 @@ function renderSearchedInstitutions(container, type, institutions, url, liW, w, 
     div.appendChild(img);
     div.style.width = "25%";
     div.style.height = "100%";
+    div.style.flexDirection = "column";
+    div.style.justifyContent = "center";
+    div.style.display = "flex";
 
     a.appendChild(div);
     a.setAttribute("href", instUrl);
@@ -218,6 +221,7 @@ function renderSearchedInstitutions(container, type, institutions, url, liW, w, 
     li.style.height = searchHeight + "px";
 
     img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
+    img.style.display = "table";
 
     if (flexBox) {
       a.style.display = "flex";
