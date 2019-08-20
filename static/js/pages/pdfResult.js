@@ -96,10 +96,18 @@ function pdfConnectionResultSuccess(iconContainer, steps) {
 
 
 function pdfConnectionResultFailure(iconContainer, steps, error) {
-    iconContainer.innerHTML = "<svg id=\"connectionCross\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\""+
-         "viewBox=\"5 0 40 52\">"+
-        "<path class=\"checkmark__cross\" d=\"M 15,20 L 35,40 M 35,20 L 15,40\"/>"+
-    "</svg>";
+    iconContainer.innerHTML = isIE()
+        ?
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"-900 -900 2800 2800\" x=\"0px\" y=\"0px\" version=\"1.1\" xml:space=\"preserve\">" +
+        "<g stroke=\"#ffffff\" stroke-width=\"40\">" +
+        "<path fill=\"#ffffff\" d=\"M 538.7 500 L 980.5 58.2 c 6 -6 9.5 -14.1 9.5 -22.3 c 0 -7.1 -2.7 -13.7 -7.5 -18.5 c -4.8 -4.8 -11.4 -7.5 -18.5 -7.5 c -8.1 0 -16.2 3.5 -22.2 9.5 L 500 461.3 L 58.2 19.5 c -6 -6 -14.1 -9.5 -22.2 -9.5 c -7.1 0 -13.7 2.7 -18.5 7.5 C 12.7 22.2 10 28.8 10 36 c 0 8.1 3.5 16.1 9.5 22.2 L 461.3 500 L 19.5 941.8 c -5.8 5.8 -9.1 13.2 -9.5 20.9 c -0.3 7.6 2.3 14.7 7.4 19.8 c 4.8 4.8 11.4 7.4 18.5 7.4 c 8.1 0 16.2 -3.4 22.2 -9.5 L 500 538.7 l 441.8 441.8 c 11.3 11.3 30.4 12.2 40.7 2 c 10.7 -10.7 9.8 -28.9 -2 -40.7 L 538.7 500 Z\" />" +
+        "</g>" +
+        "</svg>"
+        :
+        "<svg id=\"connectionCross\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\"" +
+        "viewBox=\"5 0 40 52\">" +
+        "<path class=\"checkmark__cross\" d=\"M 15,20 L 35,40 M 35,20 L 15,40\"/>" +
+        "</svg>";
 
     setActiveButton2("Finish", function () {
         sendEventNotification("completion");
