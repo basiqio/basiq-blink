@@ -44,10 +44,23 @@ function pdfConnectionCreationLoading(iconContainer) {
 
 
 function pdfConnectionResultSuccess(iconContainer, steps) {
-    iconContainer.innerHTML = "<svg id=\"connectionCheckmark\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\""+
-         "viewBox=\"5 0 40 36\">"+
-        "<path class=\"checkmark__check\" fill=\"none\" d=\"M14.1 27.2l7.1 7.2 16.7-16.8\"/>"+
-    "</svg>";
+    iconContainer.innerHTML = isIE()
+        ?
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"3 1 13 13\" width=\"56px\" height=\"56px\" version=\"1.1\">" +
+        "<g id=\"ggroup1\" fill=\"none\" fill-rule=\"evenodd\" stroke=\"#4a90e2\" stroke-width=\"1\">" +
+        "<g id=\"ggroup2\" fill=\"#ffffff\" fill-rule=\"nonzero\" transform=\"translate(-753 -562)\">" +
+        "<g id=\"ggroup3\" transform=\"translate(753 562)\">" +
+        "<g id=\"ggroup4\">" +
+        "<polygon id=\"polypath\" points=\"8.32967,11.6703 5.51648,8.85714 4.1978,10.1758 8.32967,14.2857 14.967,7.64835 13.6484,6.32967\" />" +
+        "</g>" +
+        "</g>" +
+        "</g>" +
+        "</g>" +
+        "</svg>"
+        :
+        "<svg id=\"connectionCheckmark\" class=\"checkmark\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"5 0 40 36\">" +
+        "<path class=\"checkmark__check\" fill=\"none\" d=\"M14.1 27.2l7.1 7.2 16.7-16.8\"/>" +
+        "</svg>";
 
     setActiveButton2("Done", function () {
         sendEventNotification("completion");

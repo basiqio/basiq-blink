@@ -345,3 +345,7 @@ function hideAllButtons() {
     hideElement(button.id);
   });
 }
+
+function isIE() {
+  return window.navigator.userAgent.match(/(MSIE|Trident)/);
+}
