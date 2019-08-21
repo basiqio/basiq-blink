@@ -23,6 +23,7 @@ window.pages["institution"] = {
         logoContainer.className = "bank-logo-container";
 
         logo.id = "bankLogo";
+        logo.className = "bank-logo";
 
         logoContainer.appendChild(logo);
         form.appendChild(logoContainer);
@@ -48,15 +49,6 @@ window.pages["institution"] = {
             logo.src = institution.logo.links.self;
         }
 
-        logo.onload = function () {
-            if (this.width === this.height) {
-                return this.style.width = "30%";
-            } else if (this.width > this.height) {
-                return this.style.width = "70%";
-            }
-
-            this.style.height = "30%";
-        };
         form.addEventListener("keypress", function (e) {
             // Accept enter for submit
             var code = (e.keyCode ? e.keyCode : e.which);
