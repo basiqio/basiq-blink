@@ -50,6 +50,7 @@ window.pages["pdfUpload"] = function (container, institution) {
     var logoContainer = document.createElement("div"),
         logo = document.createElement("img");
 
+    logo.className = "bank-logo";
     logoContainer.className = "bank-logo-container";
     logoContainer.appendChild(logo);
 
@@ -58,17 +59,6 @@ window.pages["pdfUpload"] = function (container, institution) {
     } else {
         logo.src = institution.logo.links.self;
     }
-
-    logo.onload = function () {
-        this.removeAttribute("style");
-        if (this.width === this.height) {
-            return this.style.width = "30%";
-        } else if (this.width > this.height) {
-            return this.style.width = "70%";
-        }
-
-        this.style.height = "30%";
-    };
 
     var previewsContainer = document.createElement("div");
     previewsContainer.className = "dropzone-previews";
