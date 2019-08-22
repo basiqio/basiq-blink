@@ -593,7 +593,6 @@
             li.className = "bank-link-search";
             li.style.height = searchHeight + "px";
 
-            img.style.width = (liW - (liW / 16) * 2) / 2 + "px";
             img.style.display = "table";
 
             if (naiveFlexBoxSupport(document)) {
