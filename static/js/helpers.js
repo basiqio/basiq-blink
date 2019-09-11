@@ -21,6 +21,7 @@ Promise
 /*exported showElement*/
 /*exported hideElement*/
 /*exported loadScript*/
+/*exported getPartnerId*/
 
 if (!window.pages) {
   window.pages = {};
@@ -256,6 +257,27 @@ function checkConnectionID(userId, connectionId, demo) {
         rej(e);
       });
   });
+}
+
+function getPartnerId(token) {
+  if (!token) {
+      return null;
+  }
+
+  var sections = token.split(".").filter(Boolean);
+  if (sections.length < 3) {
+      return null;
+  }
+
+  try {
+      var claims = JSON.parse(atob(sections[1]));
+      if (!claims.partnerid) {
+          return null;
+      }
+      return claims.partnerid;
+  } catch (err) {
+      return null;
+  }
 }
 
 function stringifyQueryParams(obj) {

@@ -6,7 +6,8 @@
    sendEventNotification
    transitionToPage
    getState
-   API 
+   API
+   getPartnerId 
    :true */
 
 (function (window) {
@@ -46,7 +47,18 @@
         return API.loadInstitutions();
       })
       .then(function (loadedInstitutions) {
-        window.globalState.institutions = loadedInstitutions;
+        var partnerId = getPartnerId(window.globalState.accessToken);
+
+        if (partnerId == "8f6d03ae-e2ca-4bc9-950d-53f20b30ba73") {
+          window.globalState.institutions = loadedInstitutions.filter(function(institution) {
+            if (institution.id == "AU00000" || institution.id == "AU00001") {
+              return false;
+            }
+            return true;
+          });
+        } else {
+          window.globalState.institutions = loadedInstitutions;
+        }
 
         window.preloadImages(loadedInstitutions, 16);
         if (result.pdf) {
