@@ -36,11 +36,25 @@ function sortByTierAndCountry(institutions){
 }
 
 window.API = {
-    loadInstitutions: function () {
+    loadInstitutions: function (institutionRegion) {
         return new Promise(function (resolve, reject) {
+            institutionRegion = decodeURIComponent(institutionRegion);
             if (window.localStorage && window.JSON) {
-                var cachedInstitutions = localStorage.getItem("cachedInstitutions"),
+                var cachedInstitutions, cacheTime;
+                var isRegionAus = institutionRegion && institutionRegion === "Australia";
+                var isRegionNZ = institutionRegion && institutionRegion === "New Zealand";
+                if(isRegionAus){
+                    cachedInstitutions = localStorage.getItem("cachedInstitutionsAus"),
+                    cacheTime = localStorage.getItem("cacheTimeAus");
+                }
+                else if(isRegionNZ){
+                    cachedInstitutions = localStorage.getItem("cachedInstitutionsNZ"),
+                    cacheTime = localStorage.getItem("cacheTimeNZ");
+                }
+                else {
+                    cachedInstitutions = localStorage.getItem("cachedInstitutions"),
                     cacheTime = localStorage.getItem("cacheTime");
+                }
 
                 // Cache should expire after one hour
                 if (cachedInstitutions
@@ -52,8 +66,11 @@ window.API = {
                     return;
                 }
             }
-
-            window.request(host + "/public/institutions?filter=institution.authorization.eq('user')", "GET", {}, {}).then(function (resp) {
+            let filter = "institution.authorization.eq('user')"
+            if(isRegionAus || isRegionNZ){
+                filter += ",institution.country.eq(\'" + institutionRegion + "\')";
+            }
+            window.request(host + "/public/institutions?filter=" + filter, "GET", {}, {}).then(function (resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
@@ -78,9 +95,19 @@ window.API = {
                 institutions = sortByTierAndCountry(institutions)
 
                if (window.localStorage && window.JSON) {
+                   if(isRegionAus){
+                        localStorage.setItem("cachedInstitutionsAus", JSON.stringify(institutions));
+                        localStorage.setItem("cacheTimeAus", Date.now());
+                    }
+                else if(isRegionNZ){
+                        localStorage.setItem("cachedInstitutionsNZ", JSON.stringify(institutions));
+                        localStorage.setItem("cacheTimeNZ", Date.now());
+                }
+                else {
                     localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
                     localStorage.setItem("cacheTime", Date.now());
                 }
+            }
 
                 resolve(institutions);
             }).catch(function (err) {

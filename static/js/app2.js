@@ -44,7 +44,7 @@
     window
       .checkUserID(window.globalState.userId, window.globalState.demo)
       .then(function () {
-        return API.loadInstitutions();
+        return API.loadInstitutions(window.globalState.institutionRegion);
       })
       .then(function (loadedInstitutions) {
         var partnerId = getPartnerId(window.globalState.accessToken);
