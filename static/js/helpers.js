@@ -49,7 +49,7 @@ function getState(queryVars) {
     ignoreParsing: queryVars["ignore_parsing"] === "true",
     upload: queryVars["upload"] ? queryVars["upload"] : "false",
     connect: queryVars["connect"] ? queryVars["connect"] : "false",
-    institutionRegion: queryVars["institutionRegion"]
+    institutionRegion: queryVars["institution_region"]
   };
 }
 
