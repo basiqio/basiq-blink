@@ -574,8 +574,8 @@ button.button-primary {
 }
 
 .bank-logo {
-    max-width: 70%;
-    max-height: 100%;
+    width: 70%;
+    height: 100%;
 }
 
 .rounded-check {

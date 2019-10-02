@@ -212,6 +212,10 @@ window.pages["pdfUpload"] = function (container, institution) {
         }
     });
 
+    pdfDropzone.on("sending", function () {
+        hideElement("backButton");
+    });
+
     pageContainer.appendChild(logoContainer);
     pageContainer.appendChild(previewsContainer);
     pageContainer.appendChild(dropzoneContainer);
