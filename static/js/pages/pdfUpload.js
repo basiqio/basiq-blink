@@ -181,7 +181,7 @@ window.pages["pdfUpload"] = function (container, institution) {
         }
 
         if (["pdf", "csv"].indexOf(fileExt) >= 0 && fileSize > 4.5) {
-            setNotValidItem(file, "File is bigger then 4.5MB.");
+            setNotValidItem(file, "File is bigger than 4.5MB.");
         }
 
         if (notSupportedFileInList == false) {
@@ -225,7 +225,8 @@ window.pages["pdfUpload"] = function (container, institution) {
 
 function setNotValidItem(file, text) {
     details = document.querySelectorAll(".dz-details");
-    details.forEach(function (detail) {
+    for (let index = 0; index < details.length; index++) {
+        const detail = details[index];
         fileNameElement = detail.querySelector(".dz-filename");
         if (file.name === fileNameElement.innerText) {
 
@@ -245,7 +246,7 @@ function setNotValidItem(file, text) {
             divElement.appendChild(spanElement);
             fileNameElement.appendChild(divElement);
         }
-    });
+    }
 
     file.previewTemplate.style.color = "#E24A4A";
 }
