@@ -181,7 +181,7 @@ window.pages["pdfUpload"] = function (container, institution) {
         }
 
         if (["pdf", "csv"].indexOf(fileExt) >= 0 && fileSize > 4.5) {
-            setNotValidItem(file, "File is bigger than 4.5MB.");
+            setNotValidItem(file, "File size limit is 4.5MB.");
         }
 
         if (notSupportedFileInList == false) {
