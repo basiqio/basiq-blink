@@ -177,7 +177,7 @@ window.pages["pdfUpload"] = function (container, institution) {
         }
 
         if (!(["pdf", "csv"].indexOf(fileExt) >= 0)) {
-            setNotValidItem(file, "Not a supported file type.");
+            setNotValidItem(file, "Unsupported file type.");
         }
 
         if (["pdf", "csv"].indexOf(fileExt) >= 0 && fileSize > 4.5) {
