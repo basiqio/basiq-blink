@@ -8,6 +8,7 @@ Promise
 /*exported stringifyQueryParams*/
 /*exported setActiveButton*/
 /*exported setActiveButton2*/
+/*exported setForgotPasswordLink*/
 /*exported updateTitle*/
 /*exported transitionToPage*/
 /*exported renderError*/
@@ -367,6 +368,20 @@ function hideAllButtons() {
     button.classList.remove("footer-button-active");
     hideElement(button.id);
   });
+}
+
+function setForgotPasswordLink(url) {
+  var footer = document.getElementById("footer"),
+  a = document.createElement("a");
+
+  a.id="forgottenPasswordUrl";
+  a.className="footer-forgot-password";
+  a.target="_blank";
+  a.href=url;
+  a.rel = "noopener noreferrer";
+  a.textContent = "Forgot your password?";
+  
+  footer.appendChild(a);
 }
 
 function isIE() {
