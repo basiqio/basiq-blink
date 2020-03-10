@@ -120,6 +120,7 @@
         document.getElementById("backButton").addEventListener("click", function (e) {
             e.preventDefault();
             hideAllButtons();
+            hideElement("forgottenPasswordUrl");
             hideElement("authenticationContainer");
             hideElement("backButton");
             showElement("institutionSearchForm");
@@ -275,6 +276,10 @@
             };
         }
 
+        if(institution.forgottenPasswordUrl) {
+            showElement("forgottenPasswordUrl");
+            document.getElementById("forgottenPasswordUrl").setAttribute("href", institution.forgottenPasswordUrl);
+        }
        
         var formHandler = function (e) {
             e.preventDefault();
@@ -660,6 +665,7 @@
         showElement("statusContainer");
         hideElement("credentialsForm");
         hideElement("backButton");
+        hideElement("forgottenPasswordUrl");
         document.getElementById("headerTitle").innerHTML = "Connecting...";
         document.getElementById("statusMessage").innerHTML = "Retrieving Data...";
         document.getElementById("statusMessage").className = "";

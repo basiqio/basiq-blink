@@ -1,4 +1,4 @@
-/*global showElement hideElement updateTitle transitionToPage resetSelection setActiveButton2 sendEventNotification */
+/*global showElement hideElement updateTitle transitionToPage resetSelection setActiveButton2 setForgotPasswordLink sendEventNotification */
 
 window.pages["institution"] = {
     render: function (container, institution) {
@@ -65,6 +65,10 @@ window.pages["institution"] = {
         setActiveButton2("Connect", function () {
             window.pages["institution"].formHandler(institution);
         });
+        
+        if(institution.forgottenPasswordUrl) {
+            setForgotPasswordLink(institution.forgottenPasswordUrl);
+        }
     },
     formHandler: function (institution) {
         var username = document.getElementById("usernameInput") ? document.getElementById("usernameInput").value.trim() : undefined,
