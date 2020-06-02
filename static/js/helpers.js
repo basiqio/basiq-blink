@@ -344,6 +344,7 @@ function setActiveButton2(label, clickHandler, error) {
 
   element.textContent = label;
   element.className = "button footer-button";
+  element.id = "button" + label;
 
   footer.appendChild(element);
 

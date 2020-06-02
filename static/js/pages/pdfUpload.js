@@ -201,7 +201,7 @@ window.pages["pdfUpload"] = function (container, institution) {
         notSupportedFileInList = notSupportedFilesOrEmptyList(pdfDropzone.files);
         if (notSupportedFileInList == false) {
             document.getElementById("footer").innerHTML = "";
-            setActiveButton2("Proceed", function (button) {
+            setActiveButton2("Continue", function (button) {
                 button.disabled = true;
                 window.filesToUpload = window.filesToUpload.concat(pdfDropzone.files.map(function (file) { file.institution = institution; return file; }));
                 pdfDropzone.processQueue();
