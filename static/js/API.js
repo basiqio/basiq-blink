@@ -3,26 +3,26 @@
 
 var host = readConfig("basiq-api-host");
 
-function sortByTierAndCountry(institutions){
+function sortByTierAndCountry(institutions) {
     var groupedInstitutions = institutions.reduce(function (acc, obj) {
         var key = obj["country"];
         if (!acc[key]) {
-          acc[key] = [];
+            acc[key] = [];
         }
         acc[key].push(obj);
         return acc;
-      }, {});
+    }, {});
 
     var institutionsSorted = [];
 
-    for (var group in groupedInstitutions){
-        institutionsSorted = institutionsSorted.concat(groupedInstitutions[group].sort(function(a,b) {
+    for (var group in groupedInstitutions) {
+        institutionsSorted = institutionsSorted.concat(groupedInstitutions[group].sort(function (a, b) {
             var tier = a.tier - b.tier;
-            if(tier == 0){
+            if (tier == 0) {
                 var nameA = a.shortName.toLowerCase(), nameB = b.shortName.toLowerCase();
-                if(nameA < nameB)
+                if (nameA < nameB)
                     return -1;
-                if(nameA > nameB)
+                if (nameA > nameB)
                     return 1;
 
                 return 0;
@@ -43,17 +43,17 @@ window.API = {
                 var cachedInstitutions, cacheTime;
                 var isRegionAus = institutionRegion && institutionRegion === "Australia";
                 var isRegionNZ = institutionRegion && institutionRegion === "New Zealand";
-                if(isRegionAus){
+                if (isRegionAus) {
                     cachedInstitutions = localStorage.getItem("cachedInstitutionsAus"),
-                    cacheTime = localStorage.getItem("cacheTimeAus");
+                        cacheTime = localStorage.getItem("cacheTimeAus");
                 }
-                else if(isRegionNZ){
+                else if (isRegionNZ) {
                     cachedInstitutions = localStorage.getItem("cachedInstitutionsNZ"),
-                    cacheTime = localStorage.getItem("cacheTimeNZ");
+                        cacheTime = localStorage.getItem("cacheTimeNZ");
                 }
                 else {
                     cachedInstitutions = localStorage.getItem("cachedInstitutions"),
-                    cacheTime = localStorage.getItem("cacheTime");
+                        cacheTime = localStorage.getItem("cacheTime");
                 }
 
                 // Cache should expire after one hour
@@ -66,8 +66,8 @@ window.API = {
                     return;
                 }
             }
-            let filter = "institution.authorization.eq('user')"
-            if(isRegionAus || isRegionNZ){
+            let filter = "institution.authorization.eq('user'),institution.stage.ne('alpha')"
+            if (isRegionAus || isRegionNZ) {
                 filter += ",institution.country.eq(\'" + institutionRegion + "\')";
             }
             window.request(host + "/public/institutions?filter=" + filter, "GET", {}, {}).then(function (resp) {
@@ -81,38 +81,38 @@ window.API = {
                     if (!acc[v.serviceType]) {
                         acc[v.serviceType] = [];
                     }
-                    
+
                     acc[v.serviceType].push(v);
                     return acc;
                 }, {});
-                
+
                 var institutions = [];
-                
+
                 for (var st in groups) {
                     institutions = institutions.concat(groups[st]);
                 }
 
                 institutions = sortByTierAndCountry(institutions)
 
-               if (window.localStorage && window.JSON) {
-                   if(isRegionAus){
+                if (window.localStorage && window.JSON) {
+                    if (isRegionAus) {
                         localStorage.setItem("cachedInstitutionsAus", JSON.stringify(institutions));
                         localStorage.setItem("cacheTimeAus", Date.now());
                     }
-                else if(isRegionNZ){
+                    else if (isRegionNZ) {
                         localStorage.setItem("cachedInstitutionsNZ", JSON.stringify(institutions));
                         localStorage.setItem("cacheTimeNZ", Date.now());
+                    }
+                    else {
+                        localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
+                        localStorage.setItem("cacheTime", Date.now());
+                    }
                 }
-                else {
-                    localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
-                    localStorage.setItem("cacheTime", Date.now());
-                }
-            }
 
                 resolve(institutions);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(JSON.stringify(err));
@@ -151,7 +151,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
             });
         });
@@ -194,7 +194,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(err);
@@ -219,7 +219,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(err);
@@ -244,7 +244,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(err);
@@ -272,7 +272,7 @@ window.API = {
                 resolve(resp);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(err);
@@ -315,7 +315,7 @@ window.API = {
                 resolve(institution);
             }).catch(function (err) {
                 reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    {detail: "Unknown error"}
+                    { detail: "Unknown error" }
                 );
 
                 console.error(JSON.stringify(err));
