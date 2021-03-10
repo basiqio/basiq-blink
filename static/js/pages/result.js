@@ -123,8 +123,10 @@ function connectionResultFailure(iconContainer, institution, step, error) {
     updateTitle("Unsuccessful", true);
 
     setTimeout(function () {
-
-        if (error !== undefined) {
+        if (step && step.result && step.result.code === "invalid-credentials" && step.result.detail) {
+            updateStatusMessage(step.result.detail, "failure");
+        }
+        else if (error !== undefined) {
             if (error.title === "Resource already exists") {
                 updateStatusMessage("You have already connected to " + institution.shortName + " with the supplied credentials", "failure");
             }
