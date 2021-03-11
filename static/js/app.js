@@ -53,7 +53,7 @@
             return updateConnection(connectionId);
         }
 
-        checkUserID(userId, demo).then(function () {        
+        checkUserID(userId, demo).then(function () {
             return API.loadInstitutions();
         }).then(function (loadedInstitutions) {
             institutions = loadedInstitutions;
@@ -76,7 +76,7 @@
                 }, 150);
             });
         }).catch(function (err) {
-            renderError((err.title ? err.title: "") + " " + (err.detail  ? err.detail : ""));
+            renderError((err.title ? err.title : "") + " " + (err.detail ? err.detail : ""));
         });
 
         document.getElementById("closeButton").addEventListener("click", function (e) {
@@ -142,23 +142,23 @@
         });
 
         setTimeout(function () {
-            sendEventNotification("handshake", {"success": true});
+            sendEventNotification("handshake", { "success": true });
         }, 1000);
     }
 
     function updateConnection(connectionId) {
         hideElement("header");
-        checkUserID(userId, demo).then(function () {        
+        checkUserID(userId, demo).then(function () {
             return checkConnectionID(userId, connectionId, demo);
-        }).then(function(resp) {
+        }).then(function (resp) {
             return API.getInstitution(accessToken, resp.institutionId);
-        }).then(function(resp) {
+        }).then(function (resp) {
             hideElement("loading");
             showElement("header");
             renderInstitution(resp);
             hideElement("backButton");
-        }).catch(function(err) {
-            renderError((err.title ? err.title: "") + " " + (err.detail  ? err.detail : ""));
+        }).catch(function (err) {
+            renderError((err.title ? err.title : "") + " " + (err.detail ? err.detail : ""));
         });
     }
 
@@ -276,11 +276,11 @@
             };
         }
 
-        if(institution.forgottenPasswordUrl) {
+        if (institution.forgottenPasswordUrl) {
             showElement("forgottenPasswordUrl");
             document.getElementById("forgottenPasswordUrl").setAttribute("href", institution.forgottenPasswordUrl);
         }
-       
+
         var formHandler = function (e) {
             e.preventDefault();
             hideElement("backButton");
@@ -400,21 +400,21 @@
         }
 
         if (!token) {
-            return {title: "Token is not valid"};
+            return { title: "Token is not valid" };
         }
 
         var sections = token.split(".").filter(Boolean);
         if (sections.length < 3) {
-            return {title: "Token is not valid"};
+            return { title: "Token is not valid" };
         }
 
         try {
             var claims = JSON.parse(atob(sections[1]));
             if (!claims.scope || claims.scope.toUpperCase() !== "CLIENT_ACCESS") {
-                return {title: "Scope is not valid"};
+                return { title: "Scope is not valid" };
             }
         } catch (err) {
-            return {title: err.message};
+            return { title: err.message };
         }
 
         return null;
@@ -427,7 +427,7 @@
         }
         return new Promise(function (res, rej) {
             if (!userId) {
-                return rej({title:"User ID is not valid"});
+                return rej({ title: "User ID is not valid" });
             }
 
             API.getUser(accessToken, userId).then(function () {
@@ -451,7 +451,7 @@
             }
 
             API.getConnection(accessToken, userId, connectionId).then(function (resp) {
-                    res({institutionId: resp.institution.id, connectionId: resp.id});
+                res({ institutionId: resp.institution.id, connectionId: resp.id });
             }).catch(function (e) {
                 rej(e);
             });
@@ -471,18 +471,18 @@
                     shortName: "NZ"
                 }
             ];
-            for(var i=0; i<countries.length; i++) if (countries[i].longName === country) return countries[i];
+            for (var i = 0; i < countries.length; i++) if (countries[i].longName === country) return countries[i];
         }
         var serviceTypes = ["Personal Banking", "Business Banking"];
         var country = getCountry(institution.country);
-        result = institution.name.length > 18 ? (institution.shortName > 18 ?  institution.name.substr(0, 16).trim() + "..." : institution.shortName ) : institution.name;
+        result = institution.name.length > 18 ? (institution.shortName > 18 ? institution.name.substr(0, 16).trim() + "..." : institution.shortName) : institution.name;
         // Add suffix if country is not Australia
-        if (country.longName !== "Australia" && institution.shortName.indexOf("("+country.shortName+")") === -1) result += (" (" + country.shortName + ")");
+        if (country.longName !== "Australia" && institution.shortName.indexOf("(" + country.shortName + ")") === -1) result += (" (" + country.shortName + ")");
         // Add suffix if service type is not personal
         if (institution.serviceType !== serviceTypes[0]) result += (" (" + institution.serviceType + ")");
         return result;
     }
-    
+
 
     function renderAllInstitutions(container, institutions, url, liW, w, h) {
         var newUl = true, ul;
@@ -798,10 +798,10 @@
         setTimeout(function () {
             document.getElementById("statusMessage").className = "";
             document.getElementById("statusMessage").classList.add("result-text-error");
-            document.getElementById("statusMessage").innerHTML = (err.title ? err.title: "") + " " + (err.detail  ? err.detail : "");
+            document.getElementById("statusMessage").innerHTML = (err.title ? err.title : "") + " " + (err.detail ? err.detail : "");
         }, 1100);
 
-        
+
         sendEventNotification("job", {
             success: false,
             data: err
@@ -822,7 +822,12 @@
         setTimeout(function () {
             document.getElementById("statusMessage").className = "";
             document.getElementById("statusMessage").classList.add("result-text-error");
-            document.getElementById("statusMessage").innerHTML = "The credentials you provided were incorrect.";
+            if (step && step.result && step.result.code === "invalid-credentials" && step.result.detail) {
+                document.getElementById("statusMessage").innerHTML = step.result.detail;
+            }
+            else {
+                document.getElementById("statusMessage").innerHTML = "The credentials you provided were incorrect.";
+            }
         }, 1100);
 
         if (demo) {
