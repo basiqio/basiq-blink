@@ -4,7 +4,7 @@
 var host = readConfig("basiq-api-host");
 
 function sortByTierAndCountry(institutions) {
-    var groupedInstitutions = institutions.reduce(function (acc, obj) {
+    var groupedInstitutions = institutions.reduce(function(acc, obj) {
         var key = obj["country"];
         if (!acc[key]) {
             acc[key] = [];
@@ -16,10 +16,11 @@ function sortByTierAndCountry(institutions) {
     var institutionsSorted = [];
 
     for (var group in groupedInstitutions) {
-        institutionsSorted = institutionsSorted.concat(groupedInstitutions[group].sort(function (a, b) {
+        institutionsSorted = institutionsSorted.concat(groupedInstitutions[group].sort(function(a, b) {
             var tier = a.tier - b.tier;
             if (tier == 0) {
-                var nameA = a.shortName.toLowerCase(), nameB = b.shortName.toLowerCase();
+                var nameA = a.shortName.toLowerCase(),
+                    nameB = b.shortName.toLowerCase();
                 if (nameA < nameB)
                     return -1;
                 if (nameA > nameB)
@@ -36,8 +37,8 @@ function sortByTierAndCountry(institutions) {
 }
 
 window.API = {
-    loadInstitutions: function (institutionRegion) {
-        return new Promise(function (resolve, reject) {
+    loadInstitutions: function(institutionRegion) {
+        return new Promise(function(resolve, reject) {
             institutionRegion = decodeURIComponent(institutionRegion);
             if (window.localStorage && window.JSON) {
                 var cachedInstitutions, cacheTime;
@@ -46,19 +47,17 @@ window.API = {
                 if (isRegionAus) {
                     cachedInstitutions = localStorage.getItem("cachedInstitutionsAus"),
                         cacheTime = localStorage.getItem("cacheTimeAus");
-                }
-                else if (isRegionNZ) {
+                } else if (isRegionNZ) {
                     cachedInstitutions = localStorage.getItem("cachedInstitutionsNZ"),
                         cacheTime = localStorage.getItem("cacheTimeNZ");
-                }
-                else {
+                } else {
                     cachedInstitutions = localStorage.getItem("cachedInstitutions"),
                         cacheTime = localStorage.getItem("cacheTime");
                 }
 
                 // Cache should expire after one hour
-                if (cachedInstitutions
-                    && (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
+                if (cachedInstitutions &&
+                    (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
                 ) {
                     var institutions = JSON.parse(cachedInstitutions);
                     institutions = sortByTierAndCountry(institutions);
@@ -66,18 +65,19 @@ window.API = {
                     return;
                 }
             }
-            let filter = "institution.authorization.eq('user'),institution.stage.ne('alpha')"
+            let filter = "institution.stage.ne('alpha')"
             if (isRegionAus || isRegionNZ) {
                 filter += ",institution.country.eq(\'" + institutionRegion + "\')";
             }
-            window.request(host + "/public/institutions?filter=" + filter, "GET", {}, {}).then(function (resp) {
+            filter += "institution.authorization.in('user', 'user-mfa-intermittent')"
+            window.request(host + "/public/institutions?filter=" + filter, "GET", {}, {}).then(function(resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
 
                 return resp.body;
-            }).then(function (resp) {
-                var groups = resp.data.reduce(function (acc, v) {
+            }).then(function(resp) {
+                var groups = resp.data.reduce(function(acc, v) {
                     if (!acc[v.serviceType]) {
                         acc[v.serviceType] = [];
                     }
@@ -98,28 +98,26 @@ window.API = {
                     if (isRegionAus) {
                         localStorage.setItem("cachedInstitutionsAus", JSON.stringify(institutions));
                         localStorage.setItem("cacheTimeAus", Date.now());
-                    }
-                    else if (isRegionNZ) {
+                    } else if (isRegionNZ) {
                         localStorage.setItem("cachedInstitutionsNZ", JSON.stringify(institutions));
                         localStorage.setItem("cacheTimeNZ", Date.now());
-                    }
-                    else {
+                    } else {
                         localStorage.setItem("cachedInstitutions", JSON.stringify(institutions));
                         localStorage.setItem("cacheTime", Date.now());
                     }
                 }
 
                 resolve(institutions);
-            }).catch(function (err) {
-                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    { detail: "Unknown error" }
-                );
+            }).catch(function(err) {
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] : {
+                    detail: "Unknown error"
+                });
 
                 console.error(JSON.stringify(err));
             });
         });
     },
-    createUserConnection: function (token, userId, institution, loginId, password, securityCode, secondaryLoginId) {
+    createUserConnection: function(token, userId, institution, loginId, password, securityCode, secondaryLoginId) {
         if (!loginId || !password) {
             throw new Error("No user id or password provided: " + JSON.stringify(arguments));
         }
@@ -139,24 +137,24 @@ window.API = {
             payload["secondaryLoginId"] = secondaryLoginId;
         }
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             window.request(host + "/users/" + userId + "/connections", "POST", payload, {
                 "Authorization": "Bearer " + token
-            }).then(function (resp) {
+            }).then(function(resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
                 return resp.body;
-            }).then(function (resp) {
+            }).then(function(resp) {
                 resolve(resp);
-            }).catch(function (err) {
-                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    { detail: "Unknown error" }
-                );
+            }).catch(function(err) {
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] : {
+                    detail: "Unknown error"
+                });
             });
         });
     },
-    updateUserConnection: function (token, userId, connectionId, institution, loginId, password, securityCode, secondaryLoginId) {
+    updateUserConnection: function(token, userId, connectionId, institution, loginId, password, securityCode, secondaryLoginId) {
         if (!loginId || !password) {
             throw new Error("No user id or password provided: " + JSON.stringify(arguments));
         }
@@ -181,77 +179,77 @@ window.API = {
             payload["secondaryLoginId"] = secondaryLoginId;
         }
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             window.request(host + "/users/" + userId + "/connections/" + connectionId, "POST", payload, {
                 "Authorization": "Bearer " + token
-            }).then(function (resp) {
+            }).then(function(resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
 
                 return resp.body;
-            }).then(function (resp) {
+            }).then(function(resp) {
                 resolve(resp);
-            }).catch(function (err) {
-                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    { detail: "Unknown error" }
-                );
+            }).catch(function(err) {
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] : {
+                    detail: "Unknown error"
+                });
 
                 console.error(err);
             });
         });
     },
-    checkJobStatus: function (token, jobId) {
+    checkJobStatus: function(token, jobId) {
         if (!jobId) {
             throw new Error("Job id not provided: " + JSON.stringify(arguments));
         }
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             window.request(host + "/jobs/" + jobId, "GET", {}, {
                 "Authorization": "Bearer " + token
-            }).then(function (resp) {
+            }).then(function(resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
 
                 return resp.body;
-            }).then(function (resp) {
+            }).then(function(resp) {
                 resolve(resp);
-            }).catch(function (err) {
-                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    { detail: "Unknown error" }
-                );
+            }).catch(function(err) {
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] : {
+                    detail: "Unknown error"
+                });
 
                 console.error(err);
             });
         });
     },
-    getUser: function (token, userId) {
+    getUser: function(token, userId) {
         if (!userId) {
             throw new Error("User id not provided: " + JSON.stringify(arguments));
         }
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             window.request(host + "/users/" + userId, "GET", {}, {
                 "Authorization": "Bearer " + token
-            }).then(function (resp) {
+            }).then(function(resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
 
                 return resp.body;
-            }).then(function (resp) {
+            }).then(function(resp) {
                 resolve(resp);
-            }).catch(function (err) {
-                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    { detail: "Unknown error" }
-                );
+            }).catch(function(err) {
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] : {
+                    detail: "Unknown error"
+                });
 
                 console.error(err);
             });
         });
     },
-    getConnection: function (token, userId, connectionId) {
+    getConnection: function(token, userId, connectionId) {
         if (!userId) {
             throw new Error("User id not provided: " + JSON.stringify(arguments));
         }
@@ -259,37 +257,37 @@ window.API = {
             throw new Error("Connection id not provided: " + JSON.stringify(arguments));
         }
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             window.request(host + "/users/" + userId + "/connections/" + connectionId, "GET", {}, {
                 "Authorization": "Bearer " + token
-            }).then(function (resp) {
+            }).then(function(resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
 
                 return resp.body;
-            }).then(function (resp) {
+            }).then(function(resp) {
                 resolve(resp);
-            }).catch(function (err) {
-                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    { detail: "Unknown error" }
-                );
+            }).catch(function(err) {
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] : {
+                    detail: "Unknown error"
+                });
 
                 console.error(err);
             });
         });
     },
-    getInstitution: function (token, institutionId) {
-        return new Promise(function (resolve, reject) {
+    getInstitution: function(token, institutionId) {
+        return new Promise(function(resolve, reject) {
             if (window.localStorage && window.JSON) {
                 var cachedInstitutions = window.localStorage.getItem("cachedInstitutions"),
                     cacheTime = window.localStorage.getItem("cacheTime");
 
                 // Cache should expire after one hour
-                if (cachedInstitutions
-                    && (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
+                if (cachedInstitutions &&
+                    (Date.now() - parseInt(cacheTime)) < 1000 * 60 * 60
                 ) {
-                    var institution = JSON.parse(cachedInstitutions).filter(function (i) {
+                    var institution = JSON.parse(cachedInstitutions).filter(function(i) {
                         return i.id === institutionId;
                     })[0];
                     resolve(institution);
@@ -297,26 +295,26 @@ window.API = {
                 }
             }
 
-            window.request(host + "/public/institutions", "GET").then(function (resp) {
+            window.request(host + "/public/institutions", "GET").then(function(resp) {
                 if (resp.statusCode > 299) {
                     throw resp;
                 }
 
                 return resp.body;
-            }).then(function (resp) {
+            }).then(function(resp) {
                 if (window.localStorage && window.JSON) {
                     window.localStorage.setItem("cachedInstitutions", JSON.stringify(resp.data));
                     window.localStorage.setItem("cacheTime", Date.now());
                 }
 
-                var institution = resp.data.filter(function (i) {
+                var institution = resp.data.filter(function(i) {
                     return i.id === institutionId;
                 })[0];
                 resolve(institution);
-            }).catch(function (err) {
-                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] :
-                    { detail: "Unknown error" }
-                );
+            }).catch(function(err) {
+                reject(err.body && err.body.data && err.body.data[0] ? err.body.data[0] : {
+                    detail: "Unknown error"
+                });
 
                 console.error(JSON.stringify(err));
             });
