@@ -56,7 +56,12 @@
         checkUserID(userId, demo).then(function () {
             return API.loadInstitutions();
         }).then(function (loadedInstitutions) {
-            institutions = loadedInstitutions;
+            var tokenVersion = getTokenVersion(accessToken);
+            institutions = loadedInstitutions.filter(institution => {
+                if (tokenVersion !== "2.1" && (institution.authorization == "user-mfa" || institution.authorization === "user-mfa-intermittent")) {
+                    return false;
+                } return true;
+            });
 
             return preloadImages(institutions);
         }).then(function () {

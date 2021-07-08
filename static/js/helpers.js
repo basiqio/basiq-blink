@@ -263,22 +263,43 @@ function checkConnectionID(userId, connectionId, demo) {
 
 function getPartnerId(token) {
   if (!token) {
-      return null;
+    return null;
   }
 
   var sections = token.split(".").filter(Boolean);
   if (sections.length < 3) {
-      return null;
+    return null;
   }
 
   try {
-      var claims = JSON.parse(atob(sections[1]));
-      if (!claims.partnerid) {
-          return null;
-      }
-      return claims.partnerid;
-  } catch (err) {
+    var claims = JSON.parse(atob(sections[1]));
+    if (!claims.partnerid) {
       return null;
+    }
+    return claims.partnerid;
+  } catch (err) {
+    return null;
+  }
+}
+
+function getTokenVersion(token) {
+  if (!token) {
+    return null;
+  }
+
+  var sections = token.split(".").filter(Boolean);
+  if (sections.length < 3) {
+    return null;
+  }
+
+  try {
+    var claims = JSON.parse(atob(sections[1]));
+    if (!claims.version) {
+      return null;
+    }
+    return claims.version;
+  } catch (err) {
+    return null;
   }
 }
 
@@ -373,15 +394,15 @@ function hideAllButtons() {
 
 function setForgotPasswordLink(url) {
   var footer = document.getElementById("footer"),
-  a = document.createElement("a");
+    a = document.createElement("a");
 
-  a.id="forgottenPasswordUrl";
-  a.className="footer-forgot-password";
-  a.target="_blank";
-  a.href=url;
+  a.id = "forgottenPasswordUrl";
+  a.className = "footer-forgot-password";
+  a.target = "_blank";
+  a.href = url;
   a.rel = "noopener noreferrer";
   a.textContent = "Forgot your password?";
-  
+
   footer.appendChild(a);
 }
 
