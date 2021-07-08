@@ -48,17 +48,17 @@
       })
       .then(function (loadedInstitutions) {
         var partnerId = getPartnerId(window.globalState.accessToken);
+        var tokenVersion = getTokenVersion(window.globalState.accessToken);
 
-        if (partnerId == "8f6d03ae-e2ca-4bc9-950d-53f20b30ba73") {
-          window.globalState.institutions = loadedInstitutions.filter(function(institution) {
-            if (institution.id == "AU00000" || institution.id == "AU00001") {
-              return false;
-            }
-            return true;
-          });
-        } else {
-          window.globalState.institutions = loadedInstitutions;
-        }
+        window.globalState.institutions = loadedInstitutions.filter(function (institution) {
+          if (partnerId == "8f6d03ae-e2ca-4bc9-950d-53f20b30ba73" && (institution.id == "AU00000" || institution.id == "AU00001")) {
+            return false;
+          } else if (tokenVersion !== "2.1" && (institution.authorization == "user-mfa" || institution.authorization === "user-mfa-intermittent")) {
+            return false;
+          }
+          return true;
+        });
+
 
         window.preloadImages(loadedInstitutions, 16);
         if (result.pdf) {
